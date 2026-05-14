@@ -1,0 +1,421 @@
+// Business AI OS — Prisma Schema
+// TaskCategory: CASH | CLIENTS | VISIBILITY | ADMIN
+// TaskStatus: TODO | IN_PROGRESS | DONE | CANCELLED
+// TaskPriority: HIGH | MEDIUM | LOW
+// RecurrenceType: NONE | DAILY | WEEKLY | MONTHLY_START | MONTHLY_END | QUARTERLY | CUSTOM
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Plans: FREE | PRO
+// TransactionType: INCOME | EXPENSE
+// ProspectStatus: IDENTIFIED | CONTACTED | INTERESTED | PROPOSAL | NEGOTIATION | WON | LOST
+// PostStatus: DRAFT | SCHEDULED | PUBLISHED
+// MessageRole: USER | ASSISTANT
+// CalendarEventStatus: CONFIRMED | CANCELLED | RESCHEDULED
+// TaskCategory: CASH | CLIENTS | VISIBILITY | ADMIN
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  passwordHash  String
+  plan          String   @default("FREE")
+  stripeCustomerId String?
+  businessName  String?
+  sector        String?
+  monthlyGoal   Float    @default(0)
+  fixedCharges  Float    @default(0)
+  linkedinUrl   String?
+  // Cal.com intégration
+  calcomWebhookSecret String?  // Secret pour valider les webhooks Cal.com
+  calcomBookingUrl    String?  // Lien de prise de RDV Cal.com
+  // Informations légales entreprise (pour devis & factures)
+  legalName     String?
+  address       String?
+  zipCode       String?
+  city          String?
+  country       String?  @default("France")
+  siret         String?
+  legalForm     String?  @default("Auto-entrepreneur")
+  vatNumber     String?  // TVA intracommunautaire optionnel
+  shareCapital  String?  // Capital social si SARL/SAS
+  logoUrl       String?  // Base64 ou URL logo
+  paymentTerms  Int?     @default(30) // Délai paiement en jours
+  invoiceFooter String?  // Pied de page facture (RIB, mentions)
+  quoteCounter  Int      @default(0) // Compteur numérotation devis
+  invoiceCounter Int     @default(0) // Compteur numérotation facture
+  // Statut fiscal auto-entrepreneur
+  activityType  String?  @default("SERVICE_BNC") // SERVICE_BNC | SERVICE_BIC | COMMERCE | LIBERAL
+  urssafRate    Float?   @default(22.0) // taux cotisations URSSAF en %
+  urssafPeriodicity String? @default("MONTHLY") // MONTHLY | QUARTERLY
+  tvaThreshold  Float?   @default(36800) // seuil franchise TVA annuel
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  transactions    Transaction[]
+  prospects       Prospect[]
+  posts           LinkedInPost[]
+  wikiPages       WikiPage[]
+  wikiEvents      WikiEvent[]
+  dailyFocuses    DailyFocus[]
+  chatMessages    ChatMessage[]
+  quotes          Quote[]
+  invoices        Invoice[]
+  knowledgeDocs   KnowledgeDocument[]
+  calendarEvents  CalendarEvent[]
+  tasks           Task[]
+  agentActivations AgentActivation[]
+  urssafDeclarations UrssafDeclaration[]
+  agentMessages   AgentChatMessage[]
+
+  @@map("users")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  amount      Float
+  type        String   // INCOME | EXPENSE
+  category    String
+  description String?
+  date        DateTime
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@map("transactions")
+}
+
+model Prospect {
+  id              String    @id @default(cuid())
+  userId          String
+  name            String
+  company         String?
+  email           String?
+  status          String    @default("IDENTIFIED") // IDENTIFIED | CONTACTED | INTERESTED | PROPOSAL | NEGOTIATION | WON | LOST
+  value           Float     @default(0)
+  lastContactDate DateTime?
+  notes           String?
+  lostReason      String?
+  phone           String?
+  // Enrichissement prospect
+  siret           String?
+  linkedinUrl     String?
+  position        String?
+  enrichCity      String?
+  enrichAddress   String?
+  enrichZip       String?
+  employeeRange   String?
+  nafCode         String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relances        Relance[]
+  quotes          Quote[]
+  invoices        Invoice[]
+  calendarEvents  CalendarEvent[]
+  tasks           Task[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("prospects")
+}
+
+model Relance {
+  id          String    @id @default(cuid())
+  prospectId  String
+  message     String
+  sentAt      DateTime  @default(now())
+  openedAt    DateTime?
+  repliedAt   DateTime?
+
+  prospect    Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@index([prospectId])
+  @@map("relances")
+}
+
+model LinkedInPost {
+  id          String    @id @default(cuid())
+  userId      String
+  content     String
+  postType    String    @default("insight")
+  topic       String?
+  status      String    @default("DRAFT") // DRAFT | SCHEDULED | PUBLISHED
+  publishedAt DateTime?
+  impressions Int       @default(0)
+  engagement  Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("linkedin_posts")
+}
+
+model WikiPage {
+  id        String   @id @default(cuid())
+  userId    String
+  path      String
+  content   String
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, path])
+  @@index([userId])
+  @@map("wiki_pages")
+}
+
+model WikiEvent {
+  id          String    @id @default(cuid())
+  userId      String
+  eventType   String
+  data        String    // JSON-encoded string
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([processedAt])
+  @@map("wiki_events")
+}
+
+model DailyFocus {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime
+  actions     String   // JSON-encoded array of {priority, action, context, why}
+  statuses    String   @default("[]") // JSON-encoded array of action statuses
+  generatedAt DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@map("daily_focuses")
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  role      String   // USER | ASSISTANT
+  content   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("chat_messages")
+}
+
+// ─── Devis & Factures ───────────────────────────────────────────────────────
+
+model Quote {
+  id          String    @id @default(cuid())
+  userId      String
+  prospectId  String?
+  number      String    // DEVIS-2026-001
+  status      String    @default("DRAFT") // DRAFT | SENT | ACCEPTED | DECLINED | EXPIRED
+  lines       String    // JSON [{title, description, qty, unitPrice, vatRate, unit}]
+  subtotalHT  Float     @default(0)
+  totalVAT    Float     @default(0)
+  totalTTC    Float     @default(0)
+  validUntil  DateTime?
+  clientInfo  String?   // JSON {name, address, zipCode, city, siret}
+  notes       String?
+  sentAt      DateTime?
+  acceptedAt  DateTime?
+  invoiceId   String?   // Si converti en facture
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prospect    Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("quotes")
+}
+
+model Invoice {
+  id              String    @id @default(cuid())
+  userId          String
+  prospectId      String?
+  number          String    // FAC-2026-001
+  status          String    @default("DRAFT") // DRAFT | SENT | PAID | OVERDUE | CANCELLED
+  lines           String    // JSON [{title, description, qty, unitPrice, vatRate, unit}]
+  subtotalHT      Float     @default(0)
+  totalVAT        Float     @default(0)
+  totalTTC        Float     @default(0)
+  dueDate         DateTime?
+  notes           String?
+  sentAt          DateTime?
+  paidAt          DateTime?
+  transactionId   String?   // Lien avec Cash si payée
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prospect        Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+  quotes          Quote[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("invoices")
+}
+
+model KnowledgeDocument {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  fileName    String
+  fileType    String   // pdf | docx | pptx | txt | md
+  category    String   @default("Général")
+  size        Int
+  status      String   @default("PROCESSING") // PROCESSING | INDEXED | ERROR
+  textPath    String   // Chemin relatif dans wiki-data/{userId}/knowledge/
+  pageCount   Int?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("knowledge_documents")
+}
+
+// ─── Cal.com — Événements calendrier ────────────────────────────────────────
+
+model CalendarEvent {
+  id              String    @id @default(cuid())
+  userId          String
+  calcomEventUid  String    @unique // UID unique Cal.com
+  title           String
+  startTime       DateTime
+  endTime         DateTime
+  attendeeName    String?
+  attendeeEmail   String?
+  status          String    @default("CONFIRMED") // CONFIRMED | CANCELLED | RESCHEDULED
+  meetingUrl      String?   // Lien visio si applicable
+  notes           String?   // Notes / description
+  prospectId      String?   // Lien optionnel vers un prospect
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prospect        Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, startTime])
+  @@index([prospectId])
+  @@map("calendar_events")
+}
+
+model AssessmentLead {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String
+  answers     String   // JSON encoded answers array
+  scores      String   // JSON encoded section scores
+  totalScore  Int
+  roiData     String   // JSON encoded ROI inputs
+  synthesis   String   // AI generated synthesis
+  createdAt   DateTime @default(now())
+
+  @@map("assessment_leads")
+}
+
+// ─── Tâches ─────────────────────────────────────────────────────────────────
+
+model Task {
+  id               String    @id @default(cuid())
+  userId           String
+  title            String
+  description      String?
+  category         String    @default("ADMIN")   // CASH | CLIENTS | VISIBILITY | ADMIN
+  status           String    @default("TODO")    // TODO | IN_PROGRESS | DONE | CANCELLED
+  priority         String    @default("MEDIUM")  // HIGH | MEDIUM | LOW
+  aiPriorityScore  Float?    // 0–100 calculé par l'agent
+  aiReason         String?   // "Cette tâche bloque 3 deals !"
+  estimatedMinutes Int?      // durée estimée en minutes
+  dueDate          DateTime?
+  // Liens business
+  linkedProspectId String?
+  linkedProspect   Prospect? @relation(fields: [linkedProspectId], references: [id], onDelete: SetNull)
+  linkedInvoiceId  String?   // référence facture (pas de relation FK pour flexibilité)
+  // Récurrence
+  isRecurring      Boolean   @default(false)
+  recurrenceType   String?   // NONE | DAILY | WEEKLY | MONTHLY_START | MONTHLY_END | QUARTERLY | CUSTOM
+  recurrenceLabel  String?   // "Fin de mois" affiché en UI
+  parentTaskId     String?   // pour les occurrences d'une tâche récurrente
+  completedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+  @@index([userId, status])
+  @@map("tasks")
+}
+
+// ─── Agents IA Spécialisés ───────────────────────────────────────────────────
+
+model AgentActivation {
+  id          String   @id @default(cuid())
+  userId      String
+  agentId     String   // référence à AGENTS_CATALOG[].id
+  activatedAt DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, agentId])
+  @@index([userId])
+  @@map("agent_activations")
+}
+
+model UrssafDeclaration {
+  id          String   @id @default(cuid())
+  userId      String
+  period      String   // format YYYY-MM
+  ca          Float    @default(0) // CA du mois
+  cotisations Float    @default(0) // cotisations dues
+  status      String   @default("PENDING") // PENDING | DECLARED
+  declaredAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period])
+  @@index([userId])
+  @@map("urssaf_declarations")
+}
+
+model AgentChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  agentId   String   // référence à AGENTS_CATALOG[].id
+  role      String   // USER | ASSISTANT
+  content   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, agentId])
+  @@map("agent_chat_messages")
+}

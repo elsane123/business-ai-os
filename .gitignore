@@ -1,0 +1,35 @@
+# Agent Zero internal
+.a0proj/
+
+# Logs
+*.log
+nextjs.log
+nextjs.out.log
+nextjs.error.log
+python.log
+python.out.log
+python.error.log
+
+# Next.js
+business-ai-os/.next/
+business-ai-os/node_modules/
+business-ai-os/tsconfig.tsbuildinfo
+
+# Secrets
+business-ai-os/.env
+
+# Base de données locale
+business-ai-os/prisma/dev.db
+business-ai-os/prisma/dev.db.backup
+
+# Données utilisateurs wiki (données privées)
+business-ai-os/wiki-data/
+
+# Python
+business-ai-os/python/venv/
+business-ai-os/python/__pycache__/
+business-ai-os/python/agents/__pycache__/
+
+# OS
+.DS_Store
+*.swp

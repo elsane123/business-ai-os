@@ -1,0 +1,41 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env
+.env
+.env.local
+.env.production
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+
+# prisma
+prisma/dev.db
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# wiki data (user generated - not in repo)
+/wiki-data/
+prisma/dev.db.backup
+*.tsbuildinfo

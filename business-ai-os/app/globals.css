@@ -1,0 +1,266 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --surface-900: #0f0f1a;
+  --surface-800: #151524;
+  --surface-700: #1e1e30;
+}
+
+body {
+  background-color: var(--surface-900);
+  color: #f1f5f9;
+}
+
+@layer components {
+  .glass {
+    @apply bg-surface-800/80 backdrop-blur-sm border border-surface-600/50;
+  }
+  .btn-primary {
+    @apply bg-brand-600 hover:bg-brand-500 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+  }
+  .btn-secondary {
+    @apply bg-surface-700 hover:bg-surface-600 text-gray-200 font-medium px-4 py-2 rounded-lg transition-colors border border-surface-600;
+  }
+  .input-field {
+    @apply bg-surface-700 border border-surface-600 text-gray-100 placeholder-gray-500 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent;
+  }
+  .card {
+    @apply bg-surface-800 border border-surface-600/50 rounded-xl p-4;
+  }
+}
+
+/* ============================================================
+   ONBOARDING — AI SYSTEM ANIMATIONS
+   ============================================================ */
+
+/* Orb outer glow pulse */
+@keyframes orb-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+    box-shadow:
+      0 0 40px 10px rgba(99, 102, 241, 0.4),
+      0 0 80px 20px rgba(139, 92, 246, 0.25),
+      0 0 120px 40px rgba(6, 182, 212, 0.1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    box-shadow:
+      0 0 60px 20px rgba(99, 102, 241, 0.7),
+      0 0 120px 40px rgba(139, 92, 246, 0.45),
+      0 0 200px 60px rgba(6, 182, 212, 0.2);
+  }
+}
+
+/* Orb intense activation */
+@keyframes orb-activate {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+    box-shadow:
+      0 0 60px 20px rgba(99, 102, 241, 0.6),
+      0 0 120px 40px rgba(139, 92, 246, 0.4),
+      0 0 200px 80px rgba(6, 182, 212, 0.2);
+  }
+  33% {
+    opacity: 1;
+    transform: scale(1.12);
+    box-shadow:
+      0 0 80px 30px rgba(99, 102, 241, 0.9),
+      0 0 160px 60px rgba(139, 92, 246, 0.6),
+      0 0 250px 100px rgba(6, 182, 212, 0.35);
+  }
+  66% {
+    opacity: 0.9;
+    transform: scale(1.05);
+    box-shadow:
+      0 0 70px 25px rgba(6, 182, 212, 0.7),
+      0 0 140px 50px rgba(99, 102, 241, 0.5),
+      0 0 220px 90px rgba(139, 92, 246, 0.25);
+  }
+}
+
+/* Slow rotation for orb ring */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Reverse slow rotation */
+@keyframes spin-reverse {
+  from { transform: rotate(360deg); }
+  to   { transform: rotate(0deg); }
+}
+
+/* Floating particles */
+@keyframes float-up {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 0.6; }
+  100% {
+    transform: translateY(-100vh) translateX(var(--drift, 20px)) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Horizontal drift for particles */
+@keyframes float-drift {
+  0%, 100% { transform: translateX(0); }
+  50%       { transform: translateX(var(--drift, 30px)); }
+}
+
+/* Gentle float for static elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+/* Typewriter cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Animated gradient shift */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Fade + slide up entry */
+@keyframes fade-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in only */
+@keyframes fade-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Progress bar fill */
+@keyframes progress-fill {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* Glow pulse */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 8px 2px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 6px rgba(139, 92, 246, 0.7),
+                0 0 40px 12px rgba(6, 182, 212, 0.3);
+  }
+}
+
+/* Particle convergence (step 3) */
+@keyframes converge {
+  0% {
+    transform: translate(var(--from-x, 0px), var(--from-y, 0px)) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Scan line sweep */
+@keyframes scan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  20%  { opacity: 0.5; }
+  80%  { opacity: 0.5; }
+  100% { transform: translateY(400%); opacity: 0; }
+}
+
+/* Checkmark draw */
+@keyframes check-draw {
+  0%   { stroke-dashoffset: 30; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* Utility animation classes */
+.animate-orb-pulse     { animation: orb-pulse 3s ease-in-out infinite; }
+.animate-orb-activate  { animation: orb-activate 2s ease-in-out infinite; }
+.animate-spin-slow     { animation: spin-slow 8s linear infinite; }
+.animate-spin-reverse  { animation: spin-reverse 12s linear infinite; }
+.animate-float         { animation: float 4s ease-in-out infinite; }
+.animate-blink         { animation: blink 1s step-end infinite; }
+.animate-fade-slide-up { animation: fade-slide-up 0.5s ease-out forwards; }
+.animate-fade-in       { animation: fade-in 0.6s ease-out forwards; }
+.animate-glow          { animation: glow 2s ease-in-out infinite; }
+.animate-scan          { animation: scan 3s ease-in-out infinite; }
+
+/* Gradient text utility */
+.text-gradient-ai {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Gradient border */
+.border-gradient-ai {
+  border: 1px solid transparent;
+  background: linear-gradient(#030712, #030712) padding-box,
+              linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4) border-box;
+}
+
+/* Glass card AI */
+.glass-ai {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Input AI style */
+.input-ai {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 0.9rem;
+}
+
+.input-ai::placeholder {
+  color: rgba(148, 163, 184, 0.5);
+}
+
+.input-ai:focus {
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15),
+              0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+.input-ai option {
+  background: #0f0f1a;
+  color: white;
+}
+
+/* Prevent horizontal scrollbar on kanban pages */
+html, body {
+  overflow-x: hidden;
+}
