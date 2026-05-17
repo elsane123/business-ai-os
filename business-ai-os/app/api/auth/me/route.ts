@@ -23,7 +23,8 @@ export async function GET() {
       }
     })
     if (!user) return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 })
-    return NextResponse.json({ user })
+    // BUG-AUTH-02 fix: expose all fields at root level (not nested under {user:{...}})
+    return NextResponse.json({ ...user })
   } catch (error) {
     console.error('[auth/me]', error)
     return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })

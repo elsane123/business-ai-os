@@ -65,11 +65,13 @@ export async function POST(req: NextRequest) {
           ? Math.round((allProspects.filter(p => p.status === 'WON').length / allProspects.length) * 100)
           : 0
 
-        const tasks: Task[] = await prisma.task.findMany({
+        // BUG-TS fix: use inferred type from select (not full Task model)
+        const tasks = await prisma.task.findMany({
           where: { userId: user.id },
-          select: { completed: true, priority: true, createdAt: true },
+          select: { completedAt: true, priority: true, createdAt: true },
         })
-        const completedThisMonth = tasks.filter(t => t.completed && t.createdAt >= startDate && t.createdAt <= endDate).length
+        // BUG-TS fix: Task model uses completedAt (Date|null), not completed (boolean)
+        const completedThisMonth = tasks.filter(t => t.completedAt !== null && t.createdAt >= startDate && t.createdAt <= endDate).length
         const totalTasks = tasks.filter(t => t.createdAt >= startDate && t.createdAt <= endDate).length
 
         const focusDays = await prisma.dailyFocus.count({

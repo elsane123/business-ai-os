@@ -59,13 +59,14 @@ export async function POST(request: NextRequest) {
       `Tu es le Business Brain d'un entrepreneur solo. Tu as accès à son contexte business complet:\n\n` +
       `${wikiContext}\n\nRéponds en français de manière concise, actionnable et personnalisée.`
 
-    const llmMessages = [
-      { role: 'system', content: systemPrompt },
+    type ChatRole = 'user' | 'assistant' | 'system'
+    const llmMessages: { role: ChatRole; content: string }[] = [
+      { role: 'system' as ChatRole, content: systemPrompt },
       ...historyMessages.map((m) => ({
-        role: m.role.toLowerCase(),
+        role: m.role.toLowerCase() as ChatRole,
         content: m.content,
       })),
-      { role: 'user', content: message },
+      { role: 'user' as ChatRole, content: message },
     ]
 
     const response = await chatCompletion(llmMessages, { temperature: 0.7 })

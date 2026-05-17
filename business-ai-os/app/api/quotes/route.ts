@@ -13,7 +13,7 @@ export interface QuoteLine {
 
 function calcTotals(lines: QuoteLine[]) {
   // Normalize: accept both `qty` and `quantity` from frontend
-  const normalized = lines.map(l => ({ ...l, qty: l.qty ?? (l as Record<string,unknown>).quantity as number ?? 0 }))
+  const normalized = lines.map(l => ({ ...l, qty: l.qty ?? (l as any).quantity as number ?? 0 }))
   const subtotalHT = normalized.reduce((s, l) => s + l.qty * l.unitPrice, 0)
   const totalVAT = normalized.reduce((s, l) => s + l.qty * l.unitPrice * (l.vatRate / 100), 0)
   const totalTTC = subtotalHT + totalVAT
@@ -46,12 +46,8 @@ export async function GET(req: NextRequest) {
       include: { prospect: { select: { id: true, name: true, company: true } } }
     })
     if (!quote) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    // BUG-TS fix: removed dead code (unreachable after return above)
     return NextResponse.json(quote)
-    // Enrichir clientInfo pour la page d'impression
-    const rawSingle: { id: string; clientInfo: string | null }[] = await prisma.$queryRaw`
-      SELECT id, "clientInfo" FROM quotes WHERE id = ${id} AND "userId" = ${user.userId}
-    `
-    return NextResponse.json({ ...quote, clientInfo: rawSingle[0]?.clientInfo ?? null })
   }
 
   const quotes = await prisma.quote.findMany({

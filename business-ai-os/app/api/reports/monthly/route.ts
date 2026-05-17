@@ -8,7 +8,7 @@ import prisma from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
-  const session = await getSession(req)
+  const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
@@ -68,10 +68,10 @@ export async function GET(req: NextRequest) {
     // ── 3. Tâches ───────────────────────────────────────────────────────────
     const tasks = await prisma.task.findMany({
       where: { userId: session.userId },
-      select: { completed: true, priority: true, createdAt: true },
+      select: { completedAt: true, priority: true, createdAt: true },
     })
     const completedThisMonth = tasks.filter(
-      t => t.completed && t.createdAt >= startDate && t.createdAt <= endDate
+      t => t.completedAt !== null && t.createdAt >= startDate && t.createdAt <= endDate
     ).length
     const totalTasks = tasks.filter(
       t => t.createdAt >= startDate && t.createdAt <= endDate
@@ -134,7 +134,7 @@ export async function GET(req: NextRequest) {
 
 // POST: send monthly report email to current user
 export async function POST(req: NextRequest) {
-  const session = await getSession(req)
+  const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
 
   // Reuse GET logic to get report data

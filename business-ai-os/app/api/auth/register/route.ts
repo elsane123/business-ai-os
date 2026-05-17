@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     // Require businessName for Focus IA to work properly
     if (!businessName || String(businessName).trim().length < 2) {
       return NextResponse.json(
-        { error: 'Le nom de votre entreprise est requis (min. 2 caractères)' },
+        { error: "Le champ 'businessName' (nom de votre entreprise) est requis (min. 2 caractères)" },
         { status: 400 }
       )
     }
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     response.cookies.set('auth_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'strict',
       maxAge: 60 * 60 * 24 * 7,
       path: '/'
     })

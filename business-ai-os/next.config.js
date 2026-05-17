@@ -28,7 +28,8 @@ const nextConfig = {
         key: 'Content-Security-Policy',
         value: [
           "default-src 'self'",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
+          // BUG-CSP-01 fix: removed 'unsafe-eval' (was only needed for old bundlers, Next.js 14 doesn't require it)
+          "script-src 'self' 'unsafe-inline' https://js.stripe.com",
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: blob: https:",

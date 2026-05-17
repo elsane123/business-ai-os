@@ -8,28 +8,31 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await getSession()
 
   const userEmail = session?.email ?? 'user@example.com'
-  const userInitials = session?.name
-    ? session.name
+
+  // BUG-AUTH-02 fix: read name + plan from DB (JWT doesn't carry 'name')
+  let plan = 'FREE'
+  let userName: string | null = null
+  if (session?.userId) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { plan: true, name: true },
+      })
+      plan = user?.plan ?? 'FREE'
+      userName = user?.name ?? null
+    } catch {
+      plan = session?.plan ?? 'FREE'
+    }
+  }
+
+  const userInitials = userName
+    ? userName
         .split(' ')
         .map((n: string) => n[0])
         .join('')
         .toUpperCase()
         .slice(0, 2)
     : userEmail[0]?.toUpperCase() ?? 'U'
-
-  // Lire le plan depuis la DB (et non le JWT qui peut être obsolète après un upgrade)
-  let plan = 'FREE'
-  if (session?.userId) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: session.userId },
-        select: { plan: true },
-      })
-      plan = user?.plan ?? 'FREE'
-    } catch {
-      plan = session?.plan ?? 'FREE'
-    }
-  }
 
   return (
     <div className="flex min-h-screen bg-[#0f0f1a]">

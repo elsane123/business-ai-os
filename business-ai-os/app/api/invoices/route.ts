@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
 function calcTotals(lines: { qty: number; unitPrice: number; vatRate: number }[]) {
-  const normalized = lines.map(l => ({ ...l, qty: l.qty ?? (l as Record<string,unknown>).quantity as number ?? 0 }))
+  const normalized = lines.map(l => ({ ...l, qty: l.qty ?? (l as any).quantity as number ?? 0 }))
   const subtotalHT = normalized.reduce((s, l) => s + l.qty * l.unitPrice, 0)
   const totalVAT = normalized.reduce((s, l) => s + l.qty * l.unitPrice * (l.vatRate / 100), 0)
   return { subtotalHT, totalVAT, totalTTC: subtotalHT + totalVAT }
