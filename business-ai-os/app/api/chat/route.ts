@@ -55,9 +55,17 @@ export async function POST(request: NextRequest) {
       }),
     ])
 
+    // Compter les docs KB pour enrichir le prompt si base vide
+    const kbCount = await prisma.knowledgeDocument.count({
+      where: { userId, status: 'READY' }
+    })
+    const kbNote = kbCount === 0
+      ? `\n\n⚠️ Note : Cet utilisateur n'a encore uploadé aucun document dans sa Knowledge Base. Si la question porte sur des documents, tarifs, CGV ou contrats, précise-lui qu'il peut enrichir sa KB via le menu Knowledge Base pour obtenir des réponses personnalisées.`
+      : `\n\n📚 Knowledge Base : ${kbCount} document(s) indexé(s).`
+
     const systemPrompt =
       `Tu es le Business Brain d'un entrepreneur solo. Tu as accès à son contexte business complet:\n\n` +
-      `${wikiContext}\n\nRéponds en français de manière concise, actionnable et personnalisée.`
+      `${wikiContext}${kbNote}\n\nRéponds en français de manière concise, actionnable et personnalisée.`
 
     type ChatRole = 'user' | 'assistant' | 'system'
     const llmMessages: { role: ChatRole; content: string }[] = [

@@ -44,6 +44,10 @@ export class RateLimiter {
   }
 
   check(key: string): RateLimitResult {
+    // Bypass rate limiting in test/development environments
+    if (process.env.NODE_ENV === 'test' || process.env.DISABLE_RATE_LIMIT === 'true') {
+      return { allowed: true, remaining: this.max, resetAt: Date.now() + this.windowMs, retryAfter: 0 }
+    }
     const now = Date.now()
     const entry = this.store.get(key)
 

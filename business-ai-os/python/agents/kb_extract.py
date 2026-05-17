@@ -25,6 +25,8 @@ async def extract_document(req: KBExtractRequest) -> KBExtractResponse:
         elif ext in (".txt", ".md"):
             text = file_path.read_text(encoding="utf-8", errors="ignore")
             page_count = 1
+        elif ext in (".xlsx", ".xls"):
+            text, page_count = _extract_xlsx(file_path)
         else:
             return KBExtractResponse(success=False, error=f"Format non supporté: {ext}", page_count=0, text_path="")
     except Exception as e:
@@ -94,6 +96,23 @@ def _extract_pptx(path: Path) -> tuple[str, int]:
         if texts:
             slides.append(f"### Slide {i+1}\n" + "\n".join(texts))
     return "\n\n".join(slides), len(prs.slides)
+
+
+def _extract_xlsx(path: Path) -> tuple[str, int]:
+    import openpyxl
+    wb = openpyxl.load_workbook(str(path), read_only=True, data_only=True)
+    sheets = []
+    for sheet_name in wb.sheetnames:
+        ws = wb[sheet_name]
+        rows = []
+        for row in ws.iter_rows(values_only=True):
+            cells = [str(c) for c in row if c is not None and str(c).strip()]
+            if cells:
+                rows.append(" | ".join(cells))
+        if rows:
+            sheets.append(f"### Feuille: {sheet_name}\n" + "\n".join(rows))
+    wb.close()
+    return "\n\n".join(sheets), len(wb.sheetnames)
 
 
 def _slugify(text: str) -> str:

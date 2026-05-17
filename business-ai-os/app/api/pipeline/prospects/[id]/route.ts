@@ -6,6 +6,29 @@ import { sanitizeText, sanitizeEmail, sanitizePhone } from '@/lib/sanitize'
 
 type RouteContext = { params: { id: string } }
 
+// ── GET /api/pipeline/prospects/:id ──────────────────────────────────────────
+export async function GET(
+  _request: NextRequest,
+  { params }: RouteContext
+) {
+  try {
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+    }
+    const prospect = await prisma.prospect.findFirst({
+      where: { id: params.id, userId: session.userId },
+    })
+    if (!prospect) {
+      return NextResponse.json({ error: 'Prospect introuvable' }, { status: 404 })
+    }
+    return NextResponse.json({ prospect })
+  } catch (error) {
+    console.error('GET /api/pipeline/prospects/:id error:', error)
+    return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
+  }
+}
+
 // ── PATCH /api/pipeline/prospects/:id ────────────────────────────────────────
 export async function PATCH(
   request: NextRequest,

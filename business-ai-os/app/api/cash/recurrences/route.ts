@@ -112,3 +112,47 @@ export async function GET() {
     return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
   }
 }
+
+// POST /api/cash/recurrences — Enregistrer manuellement une charge récurrente
+export async function POST(request: Request) {
+  try {
+    const session = await getSession()
+    if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+
+    const body = await request.json().catch(() => null)
+    const { description, category, type, amount, label } = body || {}
+
+    if (!description || !category || !type || amount === undefined) {
+      return NextResponse.json(
+        { error: 'description, category, type et amount sont requis' },
+        { status: 400 }
+      )
+    }
+    if (!['INCOME', 'EXPENSE'].includes(type)) {
+      return NextResponse.json({ error: 'type doit être INCOME ou EXPENSE' }, { status: 400 })
+    }
+    const parsedAmount = parseFloat(amount)
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return NextResponse.json({ error: 'amount doit être un nombre positif' }, { status: 400 })
+    }
+
+    // Ajouter le label de récurrence dans la description
+    const recurrenceLabel = label ? String(label) : 'Mensuel'
+    const fullDescription = `[${recurrenceLabel}] ${String(description).slice(0, 180)}`
+
+    const transaction = await prisma.transaction.create({
+      data: {
+        userId: session.userId,
+        description: fullDescription,
+        category: String(category),
+        type: type as 'INCOME' | 'EXPENSE',
+        amount: parsedAmount,
+        date: new Date(),
+      },
+    })
+    return NextResponse.json({ transaction }, { status: 201 })
+  } catch (error) {
+    console.error('[cash/recurrences POST]', error)
+    return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
+  }
+}

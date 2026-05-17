@@ -8,7 +8,7 @@ import { existsSync, mkdirSync } from 'fs'
 const PYTHON_URL = process.env.PYTHON_AGENT_URL || 'http://localhost:8000'
 const WIKI_BASE = process.env.WIKI_BASE_PATH || join(process.cwd(), 'wiki-data')
 const MAX_SIZE = 10 * 1024 * 1024 // 10MB
-const ALLOWED = ['.pdf', '.docx', '.pptx', '.txt', '.md']
+const ALLOWED = ['.pdf', '.docx', '.pptx', '.xlsx', '.txt', '.md']
 
 // GET — liste les documents de l'utilisateur
 export async function GET() {

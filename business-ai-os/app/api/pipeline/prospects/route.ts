@@ -44,6 +44,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Le nom est requis' }, { status: 400 })
     }
 
+    // ── Plan enforcement: FREE plan limited to 3 prospects ────────────────────
+    const sessionUser = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { plan: true },
+    })
+    if (sessionUser?.plan === 'FREE') {
+      const count = await prisma.prospect.count({ where: { userId: session.userId } })
+      if (count >= 3) {
+        return NextResponse.json(
+          { error: 'Limite de 3 prospects atteinte sur le plan gratuit', upgradeRequired: true },
+          { status: 402 }
+        )
+      }
+    }
+
     // ── BUG-07: Sanitize all user-supplied text fields against stored XSS ────
     const prospect = await prisma.prospect.create({
       data: {

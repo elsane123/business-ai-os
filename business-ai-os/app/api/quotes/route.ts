@@ -69,6 +69,21 @@ export async function POST(req: NextRequest) {
   const user = await getSession()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  // ── Limite plan FREE : max 3 devis ───────────────────────────────────────
+  const fullUser = await prisma.user.findUnique({
+    where: { id: user.userId },
+    select: { plan: true }
+  })
+  if (fullUser?.plan === 'FREE') {
+    const quoteCount = await prisma.quote.count({ where: { userId: user.userId } })
+    if (quoteCount >= 3) {
+      return NextResponse.json(
+        { error: 'Limite de 3 devis atteinte sur le plan gratuit', upgradeRequired: true },
+        { status: 402 }
+      )
+    }
+  }
+
   const body = await req.json()
   const { prospectId, lines, notes, validDays = 30, clientInfo } = body
 

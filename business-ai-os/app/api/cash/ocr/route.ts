@@ -59,7 +59,15 @@ Exemple: {"amount":42.50,"type":"EXPENSE","category":"Logiciels & SaaS","descrip
     if (!res.ok) {
       const err = await res.text()
       console.error('[cash/ocr] OpenRouter error:', err)
-      return NextResponse.json({ error: 'Erreur LLM Vision' }, { status: 500 })
+      // 422 pour image invalide/illisible, 500 pour erreur serveur
+      const errLower = err.toLowerCase()
+      const isImageError = errLower.includes('image') || errLower.includes('vision') ||
+        errLower.includes('unsupported') || errLower.includes('invalid') ||
+        res.status === 400 || res.status === 422
+      return NextResponse.json(
+        { error: 'Erreur LLM Vision', detail: 'Image illisible ou format non supporté' },
+        { status: isImageError ? 422 : 500 }
+      )
     }
 
     const data = await res.json()
