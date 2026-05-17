@@ -303,7 +303,8 @@ function StepWelcome({ onDone }: { onDone: () => void }) {
 function StepIdentity({ formData, update, onNext }: {
   formData: FormData; update: (f: keyof FormData, v: string) => void; onNext: () => void
 }) {
-  const canContinue = formData.name.trim().length > 0 && formData.email.includes('@') && formData.password.length >= 8 && formData.businessName.trim().length > 0
+  const isValidEmail = (email: string) => /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email.trim())
+  const canContinue = formData.name.trim().length > 0 && isValidEmail(formData.email) && formData.password.length >= 8 && formData.businessName.trim().length > 0
   return (
     <div style={{ animation: 'fade-slide-up 0.5s ease-out forwards', width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 28 }}>
@@ -321,6 +322,9 @@ function StepIdentity({ formData, update, onNext }: {
           <Field label="Entreprise" value={formData.businessName} onChange={v => update('businessName', v)} placeholder="Acme SAS" />
         </div>
         <Field label="Email professionnel" type="email" value={formData.email} onChange={v => update('email', v)} placeholder="jean@entreprise.com" />
+        {formData.email.length > 0 && !isValidEmail(formData.email) && (
+          <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Veuillez saisir une adresse email valide (ex: jean@entreprise.com)</p>
+        )}
         <Field label="Mot de passe" type="password" value={formData.password} onChange={v => update('password', v)} placeholder="8 caractères minimum" min={8} />
         {formData.password.length > 0 && formData.password.length < 8 && (
           <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Le mot de passe doit contenir au moins 8 caractères</p>
