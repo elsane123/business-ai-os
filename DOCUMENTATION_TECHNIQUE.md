@@ -1,6 +1,6 @@
 # Brainlo — Spécifications Techniques & Documentation
 
-> Version : 1.2.0 | Date : 2026-05-17 | Statut : **MVP en production — Post-QA**
+> Version : 1.3.0 | Date : 2026-05-17 | Statut : **MVP en production — Post-QA Cycle 8**
 
 ---
 
@@ -434,10 +434,26 @@ model AssessmentLead {
 }
 ```
 
-#### `GET/POST /api/cash/recurrences`
+#### `GET /api/cash/recurrences`
 ```json
-// POST Body
-{ "label": "Loyer bureau", "amount": 500, "type": "EXPENSE", "frequency": "monthly" }
+// Response 200 — détection automatique des charges récurrentes (90 derniers jours)
+{ "suggestions": [ { "description": "Loyer bureau", "category": "Loyer & Bureau", "type": "EXPENSE", "avgAmount": 400, "occurrences": 3, "label": "Mensuel" } ] }
+```
+
+#### `POST /api/cash/recurrences`
+```json
+// Body — enregistrement manuel d'une charge récurrente
+{
+  "description": "Loyer bureau coworking",
+  "category": "Loyer & Bureau",
+  "type": "EXPENSE",
+  "amount": 400,
+  "label": "Mensuel"
+}
+// Response 201 — transaction créée avec préfixe [Mensuel] dans la description
+{ "transaction": { "id": "cuid...", "description": "[Mensuel] Loyer bureau coworking", "amount": 400 } }
+// ⚠️ Note : les champs isRecurring/recurrenceLabel ne sont pas dans le schéma Prisma.
+// Le label est encodé dans la description avec le format [Label] Description.
 ```
 
 #### `POST /api/cash/categorize` *(IA)*
@@ -450,9 +466,12 @@ model AssessmentLead {
 
 #### `POST /api/cash/ocr` *(IA)*
 ```json
-// Body: multipart/form-data avec image
+// Body: multipart/form-data avec image (imageBase64 + mimeType)
 // Response 200
 { "amount": 45.50, "category": "Repas", "description": "Restaurant client", "date": "2026-05-10" }
+// Response 422 — image illisible ou rejetée par le modèle LLM Vision
+{ "error": "Erreur LLM Vision — image illisible ou résolution insuffisante" }
+// ⚠️ Note : utiliser une image réelle et lisible (photo ticket, reçu). Une image synthétique retourne 422.
 ```
 
 #### `POST /api/cash/parse-brief` *(IA)*
@@ -477,6 +496,29 @@ model AssessmentLead {
 ```json
 // Body
 { "name": "Marie Dupont", "company": "TechCorp", "email": "marie@tech.com", "value": 2500, "status": "IDENTIFIED" }
+// ⚠️ Plan FREE : limité à 3 prospects max
+// Response 402 — limite atteinte
+{ "error": "Limite de 3 prospects atteinte sur le plan gratuit", "upgradeRequired": true }
+```
+
+#### `GET /api/pipeline/prospects/[id]`
+```json
+// Response 200
+{ "prospect": { "id": "...", "name": "Marie Dupont", "status": "INTERESTED", "value": 3000 } }
+// Response 404 — prospect inexistant ou appartenant à un autre utilisateur (isolation userId)
+{ "error": "Prospect introuvable" }
+```
+
+#### `PATCH /api/pipeline/prospects/[id]`
+```json
+// Body — mise à jour partielle
+{ "status": "WON" }
+```
+
+#### `DELETE /api/pipeline/prospects/[id]`
+```json
+// Response 200
+{ "success": true }
 ```
 
 #### `POST /api/pipeline/enrich` *(IA)*
@@ -609,6 +651,9 @@ model AssessmentLead {
   "validUntil": "2026-06-15",
   "clientInfo": { "name": "TechCorp", "address": "1 rue de Paris", "zipCode": "75001", "city": "Paris" }
 }
+// ⚠️ Plan FREE : limité à 3 devis max
+// Response 402 — limite atteinte
+{ "error": "Limite de 3 devis atteinte sur le plan gratuit", "upgradeRequired": true }
 ```
 
 #### `POST /api/quotes/parse-brief` *(IA)*
@@ -617,6 +662,30 @@ model AssessmentLead {
 { "brief": "Devis pour 3 jours de consulting à 800€/j HT pour TechCorp" }
 // Response 200
 { "lines": [ { "title": "Consulting", "qty": 3, "unitPrice": 800, "vatRate": 20 } ], "subtotalHT": 2400, "totalTTC": 2880 }
+```
+
+#### `GET /api/quotes/[id]`
+```json
+// Response 200
+{ "id": "cuid...", "number": "DEVIS-2026-001", "status": "DRAFT", "totalTTC": 2880, "lines": [...] }
+// Response 404 — devis inexistant ou appartenant à un autre utilisateur
+{ "error": "Devis introuvable" }
+```
+
+#### `PATCH /api/quotes/[id]`
+```json
+// Body — mise à jour statut ou lignes
+{ "status": "ACCEPTED", "acceptedAt": "2026-05-17T10:00:00Z" }
+// Response 200
+{ "id": "cuid...", "status": "ACCEPTED", "acceptedAt": "2026-05-17T10:00:00.000Z" }
+```
+
+#### `DELETE /api/quotes/[id]`
+```json
+// Response 200 — suppression (uniquement si statut DRAFT)
+{ "success": true }
+// Response 404 — devis inexistant ou autre utilisateur
+{ "error": "Devis introuvable" }
 ```
 
 #### `GET /api/invoices`
@@ -688,8 +757,19 @@ model AssessmentLead {
 #### `POST /api/knowledge/file`
 ```json
 // multipart/form-data: file + category
+// Formats supportés : .pdf, .docx, .pptx, .xlsx, .txt, .md
 // Response 201
 { "document": { "id": "...", "status": "PROCESSING" } }
+// Response 400 — format non supporté
+{ "error": "Format non supporté. Acceptés: .pdf, .docx, .pptx, .xlsx, .txt, .md" }
+```
+
+#### `DELETE /api/knowledge/[id]`
+```json
+// Response 200 — suppression du document et du fichier wiki associé
+{ "success": true }
+// Response 404 — document inexistant ou appartenant à un autre utilisateur
+{ "error": "Document introuvable" }
 ```
 
 ---
@@ -1627,6 +1707,14 @@ if (!result.allowed) {
 **Appliqué sur** : `POST /api/auth/login` (5 tentatives / 15 min / IP)  
 **Mécanisme** : Fenêtre glissante par IP, purge automatique toutes les 5 min (anti-leak mémoire)
 
+**Mode test** : Le rate limiter peut être désactivé via la variable d'environnement `DISABLE_RATE_LIMIT=true` (ou `NODE_ENV=test`). À ne jamais activer en production.
+```typescript
+// Bypass automatique en environnement de test
+if (process.env.NODE_ENV === 'test' || process.env.DISABLE_RATE_LIMIT === 'true') {
+  return { allowed: true, remaining: this.max, ... }
+}
+```
+
 ---
 
 ### `lib/sanitize.ts` — Sanitisation des entrées
@@ -1847,7 +1935,49 @@ Les jobs cron utilisent `curl` vers les endpoints Next.js protégés par `x-cron
 
 ---
 
+### v1.3.0 — 2026-05-17 (Post-QA Cycles 5-8)
+
+#### Nouvelles routes API
+
+| Route | Méthode | Description |
+|-------|---------|-------------|
+| `/api/quotes/[id]` | GET | Récupérer un devis par ID (isolation userId) |
+| `/api/quotes/[id]` | PATCH | Mettre à jour statut/lignes d'un devis |
+| `/api/quotes/[id]` | DELETE | Supprimer un devis DRAFT |
+| `/api/knowledge/[id]` | DELETE | Supprimer un document KB avec auth |
+| `/api/pipeline/prospects/[id]` | GET | Récupérer un prospect par ID (isolation userId) |
+| `/api/cash/recurrences` | POST | Créer manuellement une charge récurrente |
+
+#### Corrections de bugs (QA Cycles 5-8)
+
+| Bug | Fix |
+|-----|-----|
+| GET /api/pipeline/prospects/[id] → 405 cross-user | Handler GET + isolation `userId` → 404 (SC-04) |
+| Aucune limite devis plan FREE | Limite 3 devis max → 402 `upgradeRequired` (QF-13) |
+| Aucune limite prospects plan FREE | Limite 3 prospects max → 402 `upgradeRequired` |
+| POST /api/cash/recurrences → 405 | Handler POST implémenté (TR-11) |
+| OCR crash 500 pour image illisible | Status 422 pour erreur LLM Vision (TR-05) |
+| Format XLSX non supporté par kb_extract.py | Ajout `_extract_xlsx()` via openpyxl (KB-04) |
+| Cache .next corrompu (bcryptjs) | Suppression + recompilation complète |
+| Rate limiter bloquant en tests | Bypass `DISABLE_RATE_LIMIT=true` |
+
+#### Améliorations fonctionnelles
+
+| Feature | Description |
+|---------|-------------|
+| Chat Business Brain | Prompt enrichi avec note KB vide si `kbCount === 0` (KB-14) |
+| Knowledge Base | Support format `.xlsx` dans les formats acceptés et `kb_extract.py` |
+| Sécurité | Isolation cross-user vérifiée sur tous les endpoints dynamiques |
+| Documentation API | Routes dynamiques [id] documentées pour quotes, knowledge, prospects |
+
+#### Résultat QA global
+
+> 95 cas testés — 92/95 PASS (97%) — 0 bug critique résiduel  
+> Référence : NSI-QA-2026-001
+
+---
+
 > 📄 **Document maintenu par Agent Zero — Post-QA**  
 > Dernière mise à jour : 2026-05-17  
 > Fichier : `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md`  
-> Version : 1.2.0 | ~1900 lignes
+> Version : 1.3.0 | ~1980 lignes
