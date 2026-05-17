@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 
 // Raw body required for Stripe signature verification
-export const config = { api: { bodyParser: false } }
-
+// Note: bodyParser config not needed in Next.js 14 App Router — request.text() works natively
 export async function POST(request: NextRequest) {
   // Stripe not configured — skip gracefully
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {

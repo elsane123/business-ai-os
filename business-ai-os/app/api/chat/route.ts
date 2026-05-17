@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: { role: assistantMessage.role, content: assistantMessage.content },
+      reply: assistantMessage.content,  // normalized alias for easier frontend consumption
     })
   } catch (error) {
     console.error('[chat POST]', error)

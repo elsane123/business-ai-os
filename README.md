@@ -1,4 +1,4 @@
-# 🤖 Business AI OS
+# 🤖 Brainlo
 
 > **Suite d'agents IA pour solopreneurs et PME** — Dashboard centralisé piloté par l'intelligence artificielle.
 
@@ -9,7 +9,7 @@
 
 ## 🎯 Concept
 
-Business AI OS est un système d'exploitation d'entreprise piloté par l'IA. Un dashboard central où chaque fonction métier est gérée par un agent IA dédié : trésorerie, CRM, focus journalier, devis, factures, contenu LinkedIn.
+Brainlo est un système d'exploitation d'entreprise piloté par l'IA. Un dashboard central où chaque fonction métier est gérée par un agent IA dédié : trésorerie, CRM, focus journalier, devis, factures, contenu LinkedIn.
 
 ## ✨ Fonctionnalités
 
@@ -46,8 +46,8 @@ node >= 18.x | npm >= 9.x | python >= 3.11 | postgresql >= 15
 ### Installation
 ```bash
 # 1. Cloner
-git clone https://github.com/elsane123/business-ai-os.git
-cd business-ai-os/business-ai-os
+git clone https://github.com/elsane123/brainlo.git
+cd brainlo/brainlo
 
 # 2. Dépendances Node
 npm install

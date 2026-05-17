@@ -1,4 +1,4 @@
-# Business AI OS — Stratégie de Test Complète
+# Brainlo — Stratégie de Test Complète
 ## Personas Fictifs, Données de Test & Scénarios End-to-End
 
 > **Version** : 2.0 | **Date** : 2026-05-15  
@@ -112,7 +112,7 @@
 | T08 | Loyer bureau partagé | 400€ | Loyer | 2026-05-01 | EXPENSE |
 | T09 | Comptable | 150€ | Comptabilité | 2026-05-03 | EXPENSE |
 | T10 | Déjeuner client TechCorp | 42€ | Repas | 2026-05-07 | EXPENSE |
-| T11 | Abonnement Business AI OS | 29€ | Logiciels & SaaS | 2026-05-01 | EXPENSE |
+| T11 | Abonnement Brainlo | 29€ | Logiciels & SaaS | 2026-05-01 | EXPENSE |
 | T12 | Transport — meeting Lyon | 67€ | Transport | 2026-04-22 | EXPENSE |
 
 ---
@@ -838,6 +838,6 @@ curl -s -X POST http://51.159.164.33:50082/api/assessment \
 
 ---
 
-> 🧪 **Document créé par Agent Zero — Business AI OS**  
+> 🧪 **Document créé par Agent Zero — Brainlo**  
 > Fichier : `/a0/usr/projects/business_ai_os/STRATEGIE_DE_TEST_COMPLETE.md`  
 > **3 personas | 6 scénarios E2E | 100+ cas de test | Données fictives complètes**

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import BrainloLogo from '@/components/ui/BrainloLogo'
 
 const navItems = [
   { icon: '🎯', label: 'Diagnostic IA', href: '/assessment' },
@@ -50,14 +51,10 @@ export default function Sidebar({
       {/* Header / Logo */}
       <div className="flex items-center justify-between px-3 py-4 border-b border-[#2a2a42] min-h-[64px]">
         {!collapsed && (
-          <span className="text-white font-bold text-sm tracking-wide truncate">
-            Business AI OS
-          </span>
+          <BrainloLogo size={30} showText={true} collapsed={false} textSize="15px" />
         )}
         {collapsed && (
-          <span className="text-[#818cf8] font-bold text-xs w-full text-center">
-            BAI
-          </span>
+          <BrainloLogo size={30} showText={false} />
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}

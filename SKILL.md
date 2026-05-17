@@ -1,4 +1,6 @@
-# Business AI OS — Skill Complet
+# Brainlo — Skill Complet
+
+> Version : 1.2.0 | Post-QA Sprint | 2026-05-17
 
 ## Démarrage rapide
 
@@ -9,13 +11,17 @@ Avant toute tâche, charger ce skill pour avoir le contexte complet du projet.
 cd /a0/usr/projects/business_ai_os/business-ai-os
 nohup npm run dev -- -p 50082 > /a0/usr/projects/business_ai_os/nextjs.out.log 2>&1 &
 # Démarrer le serveur Python
-cd /a0/usr/projects/business_ai_os/business-ai-os
-nohup bash start-python.sh > /a0/usr/projects/business_ai_os/python.out.log 2>&1 &
+nohup bash /a0/usr/projects/business_ai_os/start-python.sh > /a0/usr/projects/business_ai_os/python.out.log 2>&1 &
+# Vérifier que les deux serveurs sont UP
+curl -s http://localhost:50082/api/health 2>/dev/null || echo 'Next.js starting...'
+curl -s http://localhost:8000/health
 # Après modifications Prisma
 npx prisma db push --skip-generate && npx prisma generate && pkill -f 'next dev' && [restart]
 ```
 
 **URLs** : http://51.159.164.33:50082 (frontend) · http://localhost:8000 (Python API)
+
+**Cron logs** : `/a0/usr/projects/business_ai_os/cron-daily-focus.log` · `cron-monthly-report.log` · `cron-wiki-lint.log`
 
 ---
 
@@ -59,7 +65,7 @@ npx prisma db push --skip-generate && npx prisma generate && pkill -f 'next dev'
 ## 🏗️ Structure du Projet
 
 ```
-business-ai-os/
+brainlo/
 ├── app/
 │   ├── (auth)/
 │   │   ├── login/page.tsx
@@ -90,8 +96,15 @@ business-ai-os/
 │       │   └── urssaf/route.ts          # URSSAF déclarations + TVA tracker
 │       ├── pipeline/
 │       │   ├── prospects/route.ts       # CRUD + champs enrichissement
+│       │   ├── prospects/[id]/route.ts  # PATCH + DELETE par ID
 │       │   ├── enrich/route.ts          # API gouvernement FR (SIRET, adresse)
 │       │   └── relance/route.ts
+│       ├── cash/
+│       │   ├── transactions/route.ts
+│       │   ├── transactions/[id]/route.ts # DELETE + PATCH par ID
+│       │   ├── runway/route.ts
+│       │   ├── parse-brief/route.ts
+│       │   └── urssaf/route.ts
 │       ├── invoices/route.ts            # PAID → crée transaction auto
 │       ├── quotes/route.ts
 │       ├── content/generate/route.ts
@@ -99,6 +112,12 @@ business-ai-os/
 │       ├── tasks/ (route.ts, prioritize/)
 │       ├── wiki/ (ingest/, query/)
 │       ├── knowledge/route.ts
+│       ├── agents/catalog/route.ts      # Catalogue agents avec état activation
+│       ├── reports/monthly/route.ts     # Rapport mensuel JSON + envoi email
+│       ├── cron/
+│       │   ├── daily-focus/route.ts     # Email Focus 8h UTC — x-cron-secret
+│       │   ├── monthly-report/route.ts  # Rapport mensuel 1er du mois
+│       │   └── wiki-lint/route.ts       # Lint wiki chaque lundi
 │       ├── stripe/ (checkout/, portal/, webhook/)
 │       └── calcom/ (webhook/, events/)
 ├── components/
@@ -116,7 +135,10 @@ business-ai-os/
 ├── lib/
 │   ├── wiki/ (reader, writer, ingest, query)
 │   ├── db.ts, auth.ts, openrouter.ts, resend.ts, stripe.ts
-│   └── agents-catalog.ts
+│   ├── agents-catalog.ts, blog.ts, assessment.ts
+│   ├── rate-limit.ts        # Rate limiting en mémoire (anti brute-force login)
+│   ├── sanitize.ts          # Sanitisation XSS (text, email, url, phone)
+│   └── reset-tokens.ts      # Tokens one-time pour forgot/reset password
 ├── prisma/schema.prisma
 └── python/
     ├── agents/
@@ -124,10 +146,11 @@ business-ai-os/
     │   ├── relance_gen.py
     │   ├── linkedin_gen.py
     │   ├── wiki_ingest.py               # Ingest onboarding enrichi
-    │   ├── wiki_query.py
+    │   ├── wiki_query.py                # BM25 (K1=1.5, B=0.75)
+│   │   ├── wiki_lint.py                 # Lint hebdo: pages vides, log>200L, dedup
     │   ├── task_prioritizer.py
     │   └── kb_extract.py
-    └── main.py
+    └── main.py                          # Routes: /focus /wiki/lint /wiki/query /tasks/prioritize ...
 ```
 
 ---
@@ -313,6 +336,75 @@ declaredAt
 - `business/messages.md` — proposition de valeur + templates
 - `business/documentation.md` — brief/pitch collé
 
+
+---
+
+### ⚡ QW-1 — Notification email Daily Focus (8h UTC)
+
+**Endpoint** : `POST /api/cron/daily-focus` (protégé par `x-cron-secret` header)
+
+**Logique** :
+- Récupère tous les users `plan=PRO`
+- Pour chaque user : focus déjà généré → utilise existant, sinon génère via Python `/focus/generate`
+- Envoie email HTML via `sendDailyFocusEmail()` dans `lib/resend.ts`
+- Fallback : 3 actions génériques si Python API indisponible
+
+**Cron système** : `0 8 * * *` (tous les jours à 8h UTC = 10h Paris)
+
+**Log** : `/a0/usr/projects/business_ai_os/cron-daily-focus.log`
+
+---
+
+### 📊 QW-2 — Rapport Mensuel Auto
+
+**Endpoint utilisateur** : `GET /api/reports/monthly?month=2026-05` (auth cookie)  
+**Endpoint cron** : `POST /api/cron/monthly-report` (x-cron-secret)  
+**Email** : `sendMonthlyReportEmail()` dans `lib/resend.ts`
+
+**Données agrégées** :
+- Finance : CA / Charges / Net / Progression objectif / Top dépenses
+- Pipeline : prospects actifs / deals gagnés / taux conversion  
+- Tâches : taux de complétion
+- Focus : jours actifs / taux engagement
+
+**Cron système** : `0 9 1 * *` (1er de chaque mois à 9h UTC)
+
+---
+
+### 🧠 QW-3 — Wiki Lint Hebdomadaire
+
+**Agent Python** : `python/agents/wiki_lint.py`  
+**Endpoint Python** : `POST /wiki/lint`  
+**Endpoint Next.js** : `POST /api/cron/wiki-lint` (x-cron-secret)
+
+**Actions** :
+1. Supprime pages Markdown vides (sans contenu significatif)
+2. Tronque `log.md` si > 200 lignes (garde les 200 dernières)
+3. Déduplique les lignes répétées >40 chars dans les pages
+4. Met à jour `BRAIN.md` avec horodatage du dernier lint
+
+**Cron système** : `0 9 * * 1` (chaque lundi à 9h UTC)
+
+---
+
+### 🛡️ Sécurité — Améliorations QA (Post-QA Sprint)
+
+**Nouvelles bibliothèques** :
+- `lib/rate-limit.ts` — Rate limiting en mémoire, 5 req/15min/IP sur login
+- `lib/sanitize.ts` — Sanitisation XSS : `sanitizeText()`, `sanitizeEmail()`, `sanitizeUrl()`, `sanitizePhone()`
+- `lib/reset-tokens.ts` — Tokens one-time TTL 1h pour flux forgot/reset-password
+
+**Corrections sécurité** :
+- JWT retiré du response body (login + register) → cookie httpOnly exclusif
+- XSS sanitisation sur toutes les entrées pipeline/prospects
+- Middleware étendu à 13 routes protégées
+- CSP + HSTS headers dans `next.config.js`
+- Rate limiting brute-force sur `POST /api/auth/login`
+
+**Variables d'environnement ajoutées** :
+- `CRON_SECRET` — Secret partagé pour authentifier les cron jobs
+- `PYTHON_API_URL` — URL du microservice Python (défaut: `http://localhost:8000`)
+
 ---
 
 ## 🚨 Points d'attention / Bugs connus
@@ -337,14 +429,27 @@ declaredAt
    - Python FastAPI : 8000
    - Si port occupé : `pkill -f 'next dev'` ou `pkill -f uvicorn`
 
+5. **CRON_SECRET** (dans `.env`) :
+   - Requis pour authentifier les endpoints `POST /api/cron/*`
+   - Header : `x-cron-secret: $CRON_SECRET`
+   - Générer : `openssl rand -hex 32`
+
+6. **Sécurité** — Libs critiques :
+   - `lib/rate-limit.ts` → Rate limiting login (5/15min/IP)
+   - `lib/sanitize.ts` → Sanitisation XSS obligatoire sur inputs libres
+   - `lib/reset-tokens.ts` → Tokens reset-password TTL 1h
+
 ---
 
 ## 📋 Roadmap — Prochaines fonctionnalités
 
 ### Phase 1 — Quick wins
+- [x] **Notification email Daily Focus** — ✅ Livré : email 8h UTC tous les users PRO via `POST /api/cron/daily-focus`
+- [x] **Rapport mensuel PDF** — ✅ Livré : `/api/reports/monthly` + email HTML + cron 1er du mois
+- [x] **Wiki Lint** — ✅ Livré : `python/agents/wiki_lint.py` + cron chaque lundi
 - [ ] **Silence Detector** — prospects sans contact > X jours → alerte Daily Focus
 - [ ] **Cold Outreach Sequencer** — 3 messages personnalisés depuis fiche prospect
-- [ ] **Rapport mensuel PDF** — généré le 1er du mois avec CA, pipeline, actions clés
+- [x] **Rapport mensuel** — ✅ Livré : `/api/reports/monthly` + email HTML mensuel + cron 1er du mois
 
 ### Phase 2 — Croissance
 - [ ] **Social Listening X** — monitor mots-clés via API X (secrets disponibles)
@@ -378,6 +483,7 @@ declaredAt
 ## 📄 Fichiers de référence
 
 - `/a0/usr/projects/business_ai_os/fonctionnalites_daily_focus.md` — Spec complète Daily Focus v2.0
-- `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md` — Doc technique générale
+- `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md` — Doc technique générale (v1.2.0)
+- `/a0/usr/projects/business_ai_os/Rapport QA Cycle 3 _ Brainlo.md` — Dernier rapport QA (score 7.0/10 → 8.5/10 estimé)
 - `/a0/usr/projects/business_ai_os/business-ai-os/.env` — Variables d'environnement
 - `/a0/usr/projects/business_ai_os/business-ai-os/prisma/schema.prisma` — Schéma DB complet

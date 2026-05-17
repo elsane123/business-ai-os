@@ -91,6 +91,18 @@ export async function GET() {
     const session = await getSession()
     if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
 
+    // BUG-16 fix: enforce plan check on GET too
+    const userPlan = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { plan: true },
+    })
+    if (userPlan?.plan === 'FREE') {
+      return NextResponse.json(
+        { error: 'Fonctionnalité Solo Pro requise', upgradeRequired: true },
+        { status: 403 }
+      )
+    }
+
     const record = await prisma.dailyFocus.findUnique({
       where: { userId_date: { userId: session.userId, date: todayMidnight() } },
     })

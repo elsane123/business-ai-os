@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ post }, { status: 201 })
+    return NextResponse.json({ post }, { status: 200 })
   } catch (error) {
     console.error('[content/generate POST]', error)
     return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })

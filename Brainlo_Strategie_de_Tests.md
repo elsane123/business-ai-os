@@ -1,7 +1,7 @@
-# 🧪 Business AI OS — Stratégie de Tests Complète
+# 🧪 Brainlo — Stratégie de Tests Complète
 
 > **Version** : 1.0 | **Date** : 10 mai 2026 | **URL** : http://51.159.164.33:50082
-> **Compte demo** : `demo@businessaios.com` / `Demo1234!`
+> **Compte demo** : `demo@brainlo.ai` / `Demo1234!`
 
 ---
 
@@ -26,7 +26,7 @@
 |---|---|---|---|
 | 1.1 | Boot screen | Charger `/onboarding` | Animation orbe IA 2.7s → formulaire étape 1 |
 | 1.2 | Inscription complète | Remplir 4 étapes → soumettre | Redirect `/focus`, wiki créé dans `wiki-data/{userId}/` |
-| 1.3 | Email déjà utilisé | Soumettre `demo@businessaios.com` | Redirect `/login?email=demo@...&fromRegister=true` avec banner bleu |
+| 1.3 | Email déjà utilisé | Soumettre `demo@brainlo.ai` | Redirect `/login?email=demo@...&fromRegister=true` avec banner bleu |
 | 1.4 | Champs vides | Soumettre sans nom | Erreur de validation, formulaire bloque |
 | 1.5 | Wiki initialisé | Vérifier après inscription | `BRAIN.md`, `index.md`, `log.md` + 4 dossiers créés |
 
@@ -73,7 +73,7 @@ curl -X POST http://51.159.164.33:50082/api/auth/register \
 ```bash
 TOKEN=$(curl -s -X POST http://51.159.164.33:50082/api/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"email":"demo@businessaios.com","password":"Demo1234!"}' \
+  -d '{"email":"demo@brainlo.ai","password":"Demo1234!"}' \
   | python3 -c 'import sys,json; print(json.load(sys.stdin)["token"])')
 
 curl -X POST http://51.159.164.33:50082/api/focus \

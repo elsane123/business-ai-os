@@ -292,7 +292,7 @@ function StepWelcome({ onDone }: { onDone: () => void }) {
         <div style={{ marginTop: 32, width: 280, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden', margin: '32px auto 0' }}>
           <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4)', backgroundSize: '200% 100%', animation: 'gradient-shift 2s ease infinite', borderRadius: 99, boxShadow: '0 0 12px rgba(99,102,241,0.8)', transition: 'width 0.05s linear' }} />
         </div>
-        <p style={{ marginTop: 16, fontSize: '0.7rem', color: 'rgba(100,116,139,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Business AI OS · v2.0</p>
+        <p style={{ marginTop: 16, fontSize: '0.7rem', color: 'rgba(100,116,139,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Brainlo · v2.0</p>
       </div>
     </div>
   )
@@ -561,14 +561,11 @@ function StepActivation({ formData }: { formData: FormData }) {
         const data = await res.json()
         if (res.status === 409) { router.push('/login?msg=email_exists&email=' + encodeURIComponent(formData.email)); return }
         if (!res.ok) { setError(data.error ?? 'Erreur lors de la création du compte'); return }
-        const token: string = data.token ?? ''
-        if (token) {
-          localStorage.setItem('token', token)
-          document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
-        }
+        // ── BUG-06 fix: token removed from body — httpOnly cookie set by server
+        // Browser includes the httpOnly cookie automatically on subsequent requests
         await fetch('/api/wiki/ingest', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             eventType: 'onboarding_complete',
             data: {
@@ -674,7 +671,7 @@ export default function OnboardingPage() {
       {step > 0 && (
         <div style={{ position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 50, display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'radial-gradient(circle at 35% 35%, #a5b4fc 0%, #6366f1 40%, #8b5cf6 100%)', boxShadow: '0 0 12px rgba(99,102,241,0.6)' }} />
-          <span style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.08em', background: 'linear-gradient(135deg, #a5b4fc, #8b5cf6, #67e8f9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Business AI OS</span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.08em', background: 'linear-gradient(135deg, #a5b4fc, #8b5cf6, #67e8f9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Brainlo</span>
         </div>
       )}
 

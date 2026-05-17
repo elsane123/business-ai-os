@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import ParticleCanvas from '@/components/animations/ParticleCanvas'
 import HeroOrb from '@/components/animations/HeroOrb'
+import BrainloLogo from '@/components/ui/BrainloLogo'
 
 const STATS = [
   { icon: '⚡', value: '5 min', label: 'Temps de setup' },
@@ -62,13 +63,7 @@ export default function LandingPage() {
         borderBottom: '1px solid rgba(99,102,241,0.14)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: 64,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 34, height: 34, borderRadius: 10,
-              background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 17, boxShadow: '0 0 14px rgba(99,102,241,0.5)', flexShrink: 0 }}>🧠</div>
-            <span style={{ fontWeight: 700, fontSize: 17, color: '#fff', letterSpacing: '-0.02em' }}>Business AI OS</span>
-          </div>
+          <BrainloLogo size={34} showText={true} textSize="17px" />
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             <Link href="/login" style={{ color: '#94a3b8', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>Se connecter</Link>
             <Link href="/assessment" style={{ color: '#94a3b8', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>Diagnostic IA</Link>
@@ -82,7 +77,7 @@ export default function LandingPage() {
 
       {/* ═══ HERO ═══ */}
       <section
-        aria-label="Présentation Business AI OS"
+        aria-label="Présentation Brainlo"
         style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', paddingTop: 120, paddingBottom: 80 }}>
@@ -258,7 +253,7 @@ export default function LandingPage() {
 
       {/* ═══ FOOTER ═══ */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '32px 24px', textAlign: 'center', color: '#374151', fontSize: 13 }}>
-        <span>© 2026 Business AI OS · Made with ❤️ · </span>
+        <span>© 2026 Brainlo · Made with ❤️ · </span>
         <Link href="/privacy" style={{ color: '#374151', textDecoration: 'underline' }}>Politique de confidentialité</Link>
       </footer>
 

@@ -117,7 +117,7 @@ async def _call_openrouter(system: str, user: str) -> str:
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
                 "Content-Type": "application/json",
                 "HTTP-Referer": os.getenv("NEXT_PUBLIC_APP_URL", "http://localhost:3000"),
-                "X-Title": "Business AI OS",
+                "X-Title": "Brainlo",
             },
             json={
                 "model": MODEL,

@@ -3,10 +3,10 @@ import Script from 'next/script'
 import './globals.css'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://businessaios.com'),
+  metadataBase: new URL('https://brainlo.ai'),
   title: {
-    default: 'Business AI OS — L\'OS IA pour solopreneurs et PME',
-    template: '%s | Business AI OS',
+    default: 'Brainlo — L\'OS IA pour solopreneurs et PME',
+    template: '%s | Brainlo',
   },
   description:
     'Gérez votre business avec des agents IA dédiés : Daily Focus quotidien, trésorerie temps réel, pipeline clients, posts LinkedIn. Gratuit pour commencer. Setup en 5 minutes.',
@@ -22,18 +22,18 @@ export const metadata: Metadata = {
     'runway calculator freelance',
     'automatisation entrepreneur',
   ],
-  authors: [{ name: 'Business AI OS' }],
-  creator: 'Business AI OS',
-  publisher: 'Business AI OS',
+  authors: [{ name: 'Brainlo' }],
+  creator: 'Brainlo',
+  publisher: 'Brainlo',
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
-    url: 'https://businessaios.com',
-    siteName: 'Business AI OS',
-    title: 'Business AI OS — Ton équipe dirigeante IA à 29€/mois',
+    url: 'https://brainlo.ai',
+    siteName: 'Brainlo',
+    title: 'Brainlo — Ton équipe dirigeante IA à 29€/mois',
     description:
       'CFO, CMO, CRO IA pour solopreneurs et PME. Daily Focus quotidien, trésorerie temps réel, pipeline IA. Gratuit pour commencer.',
     images: [
@@ -41,17 +41,17 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Business AI OS — Dashboard agents IA',
+        alt: 'Brainlo — Dashboard agents IA',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Business AI OS — L\'OS IA pour solopreneurs',
+    title: 'Brainlo — L\'OS IA pour solopreneurs',
     description:
       'Agents IA dédiés : CFO, CMO, CRO. Daily Focus quotidien. Trésorerie temps réel. Gratuit pour commencer.',
     images: ['/og-image.png'],
-    creator: '@businessaios',
+    creator: '@brainlo_ai',
   },
   robots: {
     index: true,
@@ -76,10 +76,10 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'Business AI OS',
+  name: 'Brainlo',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
-  url: 'https://businessaios.com',
+  url: 'https://brainlo.ai',
   description:
     'Système d\'exploitation business piloté par l\'IA. Agents IA dédiés (CFO, CMO, CRO) pour solopreneurs et PME. Daily Focus quotidien, trésorerie temps réel, pipeline clients intelligent.',
   inLanguage: 'fr-FR',
@@ -124,7 +124,7 @@ const jsonLd = {
     'Business Brain — chat IA sur vos données réelles',
     'LLM Wiki persistante — contexte business qui s\'améliore',
   ],
-  screenshot: 'https://businessaios.com/og-image.png',
+  screenshot: 'https://brainlo.ai/og-image.png',
   softwareVersion: '1.0',
   datePublished: '2026-01-01',
 }

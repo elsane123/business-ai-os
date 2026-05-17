@@ -1,4 +1,4 @@
-# 🧪 Plan de Test — Business AI OS
+# 🧪 Plan de Test — Brainlo
 ## Persona : Le Solopreneur Actif (Solo Pro 29€/mois)
 
 > **Objectif** : Valider que chaque fonctionnalité Solo Pro fonctionne de bout en bout pour un freelance/consultant établi avec 3 000–10 000€/mois de CA.
@@ -10,7 +10,7 @@
 | Item | Valeur |
 |---|---|
 | **URL App** | http://51.159.164.33:50082 |
-| **Compte PRO (existant)** | `demo@businessaios.com` / `Demo1234!` |
+| **Compte PRO (existant)** | `demo@brainlo.ai` / `Demo1234!` |
 | **Compte FREE (test upgrade)** | Créer via `/onboarding` |
 | **Python API** | http://51.159.164.33:8000 |
 
@@ -48,7 +48,7 @@
 | **URL** | `/login` |
 
 **Étapes :**
-1. Saisir `demo@businessaios.com` / `Demo1234!`
+1. Saisir `demo@brainlo.ai` / `Demo1234!`
 2. Cliquer "Se connecter"
 
 **Résultat attendu :**
@@ -58,7 +58,7 @@
 ```bash
 curl -s -X POST http://51.159.164.33:50082/api/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"email":"demo@businessaios.com","password":"Demo1234!"}' \
+  -d '{"email":"demo@brainlo.ai","password":"Demo1234!"}' \
   -c /tmp/cookies.txt | jq .
 # Attendu : {"user":{...}, "token":"eyJ..."} HTTP 200
 ```
@@ -75,10 +75,10 @@ curl -s -X POST http://51.159.164.33:50082/api/auth/login \
 
 ### TC-AUTH-04 — Doublon email
 
-**Étapes :** Créer un compte avec `demo@businessaios.com` (déjà existant)
+**Étapes :** Créer un compte avec `demo@brainlo.ai` (déjà existant)
 
 **Résultat attendu :**
-- ✅ Redirection vers `/login?email=demo@businessaios.com`
+- ✅ Redirection vers `/login?email=demo@brainlo.ai`
 - ✅ Banner "Ce compte existe déjà" + email pré-rempli
 
 ---
@@ -104,7 +104,7 @@ curl -s -X POST http://51.159.164.33:50082/api/auth/login \
 ```bash
 TOKEN=$(curl -s -X POST http://51.159.164.33:50082/api/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"email":"demo@businessaios.com","password":"Demo1234!"}' | jq -r '.token')
+  -d '{"email":"demo@brainlo.ai","password":"Demo1234!"}' | jq -r '.token')
 
 curl -s -X POST http://51.159.164.33:50082/api/focus \
   -H "Authorization: Bearer $TOKEN" | jq .
@@ -424,8 +424,8 @@ curl -s -X POST http://51.159.164.33:50082/api/content/generate \
 - ✅ `BRAIN.md` contient les données d'onboarding (secteur, CA cible, charges)
 
 ```bash
-ls -la /a0/usr/projects/business_ai_os/business-ai-os/wiki-data/{USER_ID}/
-cat /a0/usr/projects/business_ai_os/business-ai-os/wiki-data/{USER_ID}/BRAIN.md
+ls -la /a0/usr/projects/business_ai_os/brainlo/wiki-data/{USER_ID}/
+cat /a0/usr/projects/business_ai_os/brainlo/wiki-data/{USER_ID}/BRAIN.md
 ```
 
 ---
@@ -623,4 +623,4 @@ curl -s -X POST http://51.159.164.33:50082/api/stripe/portal \
 
 ---
 
-*Document généré par Business AI OS Agent — Mai 2026*
+*Document généré par Brainlo Agent — Mai 2026*

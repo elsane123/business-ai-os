@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Business AI OS — L\'OS IA pour solopreneurs et PME'
+export const alt = 'Brainlo — L\'OS IA pour solopreneurs et PME'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -52,7 +52,7 @@ export default async function Image() {
             🧠
           </div>
           <span style={{ fontWeight: 800, fontSize: 42, color: '#ffffff', letterSpacing: '-1px' }}>
-            Business AI OS
+            Brainlo
           </span>
         </div>
         {/* Headline */}
@@ -110,7 +110,7 @@ export default async function Image() {
             fontWeight: 500,
           }}
         >
-          businessaios.com
+          brainlo.ai
         </div>
       </div>
     ),

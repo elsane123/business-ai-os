@@ -1,4 +1,4 @@
-"""Pydantic schemas for Business AI OS FastAPI service."""
+"""Pydantic schemas for Brainlo FastAPI service."""
 from pydantic import BaseModel, Field
 from typing import Optional, Any
 from datetime import datetime
@@ -128,7 +128,7 @@ class TaskInput(BaseModel):
     id: str
     title: str
     description: str | None = None
-    category: str  # CASH | CLIENTS | VISIBILITY | ADMIN
+    category: Optional[str] = None  # CASH | CLIENTS | VISIBILITY | ADMIN
     status: str    # TODO | IN_PROGRESS
     estimated_minutes: int | None = None
     due_date: str | None = None
@@ -154,3 +154,16 @@ class TaskPriorityResult(BaseModel):
 
 class TaskPrioritizeResponse(BaseModel):
     results: list[TaskPriorityResult]
+
+
+class WikiLintRequest(BaseModel):
+    user_id: str
+    wiki_base_path: str
+
+
+class WikiLintResponse(BaseModel):
+    success: bool
+    pages_checked: int
+    pages_cleaned: int
+    bytes_freed: int
+    issues: list[str] = []

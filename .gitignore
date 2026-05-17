@@ -33,3 +33,14 @@ business-ai-os/python/agents/__pycache__/
 # OS
 .DS_Store
 *.swp
+
+# Exclusions explicites business-ai-os sensibles
+business-ai-os/.next/
+business-ai-os/wiki-data/
+business-ai-os/tsconfig.tsbuildinfo
+business-ai-os/prisma/dev.db
+business-ai-os/prisma/dev.db.backup
+business-ai-os/.env
+business-ai-os/python/venv/
+business-ai-os/python/__pycache__/
+business-ai-os/python/agents/__pycache__/

@@ -2,9 +2,9 @@
 title: "Daily Focus : la méthode pour arrêter de subir sa journée en tant qu'entrepreneur"
 slug: "/blog/daily-focus-entrepreneur"
 meta_title: "Daily Focus entrepreneur : 3 actions IA chaque matin pour piloter son business"
-meta_description: "Le Daily Focus IA de Business AI OS génère chaque matin vos 3 actions prioritaires basées sur vos données réelles. Arrêtez de subir et commencez à piloter."
+meta_description: "Le Daily Focus IA de Brainlo génère chaque matin vos 3 actions prioritaires basées sur vos données réelles. Arrêtez de subir et commencez à piloter."
 keywords: ["daily focus entrepreneur", "priorités quotidiennes solopreneur", "organisation journée freelance", "productivité entrepreneur ia", "actions prioritaires business"]
-author: "Business AI OS"
+author: "Brainlo"
 date: "2026-01-22"
 category: "Productivité"
 reading_time: "7 min"
@@ -65,7 +65,7 @@ Quelle que soit la longueur de votre liste de tâches, le Daily Focus n'en retie
 
 ## À quoi ressemble un Daily Focus concret
 
-Voici un exemple réel de Daily Focus généré par Business AI OS pour un consultant freelance :
+Voici un exemple réel de Daily Focus généré par Brainlo pour un consultant freelance :
 
 ```
 📍 Focus du jour — Vendredi 9 mai 2026
@@ -132,9 +132,9 @@ Et elle produit une recommandation objectivement optimale pour **maximiser votre
 
 **Limites :** chronophage, sujet aux biais humains, nécessite une discipline quotidienne sur la durée.
 
-### Option 2 : Business AI OS Daily Focus (gratuit à partir de Solo Pro — 29€/mois)
+### Option 2 : Brainlo Daily Focus (gratuit à partir de Solo Pro — 29€/mois)
 
-**[Business AI OS](https://businessaios.com)** automatise entièrement ce processus. Chaque matin à 8h, vous recevez un email (et une notification push si vous le souhaitez) avec vos 3 actions du jour, calculées automatiquement depuis vos données réelles.
+**[Brainlo](https://brainlo.ai)** automatise entièrement ce processus. Chaque matin à 8h, vous recevez un email (et une notification push si vous le souhaitez) avec vos 3 actions du jour, calculées automatiquement depuis vos données réelles.
 
 **Ce que vous n'avez plus à faire :**
 - Regarder votre compte bancaire pour calculer votre runway
@@ -149,11 +149,11 @@ Et elle produit une recommandation objectivement optimale pour **maximiser votre
 
 > *«&nbsp;Le Daily Focus a changé ma relation avec ma journée de travail. Je ne me demande plus par où commencer. Je sais.&nbsp;»*
 
-[→ Activer mon Daily Focus gratuit pendant 14 jours](https://businessaios.com/onboarding)
+[→ Activer mon Daily Focus gratuit pendant 14 jours](https://brainlo.ai/onboarding)
 
 ---
 
-## Les résultats mesurés sur les utilisateurs Business AI OS
+## Les résultats mesurés sur les utilisateurs Brainlo
 
 Après 3 mois d'utilisation du Daily Focus IA, nos utilisateurs reportent en moyenne :
 
@@ -168,7 +168,7 @@ La conséquence financière concrète : en moyenne, les utilisateurs Solo Pro id
 
 ## La LLM Wiki : pourquoi le Daily Focus devient plus pertinent chaque semaine
 
-Contrairement aux outils classiques qui génèrent des recommandations génériques, le Daily Focus de Business AI OS s'améliore avec le temps grâce à la **LLM Wiki** — une mémoire persistante de votre business.
+Contrairement aux outils classiques qui génèrent des recommandations génériques, le Daily Focus de Brainlo s'améliore avec le temps grâce à la **LLM Wiki** — une mémoire persistante de votre business.
 
 À chaque action que vous effectuez dans l'application :
 - Un prospect relancé → la wiki note ce qui a fonctionné
@@ -188,6 +188,6 @@ Lire votre Daily Focus le matin prend 2 minutes. Exécuter les 3 actions prend e
 
 Mulitpliez ça sur 200 jours de travail dans l'année, et vous obtenez un business qui avance de manière structurée plutôt que de subir l'urgence du moment.
 
-C'est exactement ce que Business AI OS a été conçu pour faire : **transformer le chaos du solopreneur en clarté quotidienne**.
+C'est exactement ce que Brainlo a été conçu pour faire : **transformer le chaos du solopreneur en clarté quotidienne**.
 
-[→ Commencer gratuitement — Pas de carte bleue requise](https://businessaios.com/onboarding)
+[→ Commencer gratuitement — Pas de carte bleue requise](https://brainlo.ai/onboarding)

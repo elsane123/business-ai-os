@@ -21,10 +21,15 @@ export async function POST() {
     })
 
     if (!user?.stripeCustomerId) {
-      return NextResponse.json(
-        { error: 'Aucun abonnement Stripe trouvé. Veuillez d\'abord souscrire.' },
-        { status: 400 }
-      )
+      // Fallback: redirect to checkout if no Stripe customer yet
+      console.log('[stripe/portal] No stripeCustomerId — redirecting to checkout')
+      const { createCheckoutSession } = await import('@/lib/stripe')
+      const user2 = await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { email: true },
+      })
+      const checkoutSession = await createCheckoutSession(session.userId, user2?.email ?? session.email)
+      return NextResponse.json({ url: checkoutSession.url, redirectedToCheckout: true })
     }
 
     const { createPortalSession } = await import('@/lib/stripe')

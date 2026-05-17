@@ -1,4 +1,4 @@
-# Business AI OS — Manuel Utilisateur & Scénarios Vidéo Démo
+# Brainlo — Manuel Utilisateur & Scénarios Vidéo Démo
 
 > **Usage** : Ce document est le script de référence pour l'enregistrement des vidéos de démonstration de chaque fonctionnalité.
 > Chaque section correspond à une vidéo autonome. Durée cible : **2–4 minutes** par vidéo.
@@ -10,7 +10,7 @@
 ### Setup recommandé
 - **Résolution** : 1920×1080 minimum
 - **URL de démo** : `http://51.159.164.33:50082`
-- **Compte de démo** : Créer un compte `demo@businessaios.com` avec données pré-remplies
+- **Compte de démo** : Créer un compte `demo@brainlo.ai` avec données pré-remplies
 - **Profil démo** : Consultant freelance, secteur Tech, objectif 5 000€/mois
 - **Navigateur** : Chrome, zoom 100%, barre d'outils masquée
 - **Narration** : Voix off ou commentaires en direct
@@ -44,6 +44,9 @@
 | 11 | [Calendrier Cal.com](#video-11--calendrier-calcom) | 2 min |
 | 12 | [Assessment — Outil d'Évaluation](#video-12--assessment--outil-dévaluation) | 3 min |
 | 13 | [Tour Complet du Dashboard](#video-13--tour-complet-du-dashboard) | 4 min |
+| 14 | [Email Daily Focus Automatique](#video-14--email-daily-focus-automatique) | 2 min |
+| 15 | [Rapport Mensuel Auto](#video-15--rapport-mensuel-auto) | 3 min |
+| 16 | [Sécurité & Gestion de Compte](#video-16--sécurité--gestion-de-compte) | 2 min |
 
 ---
 
@@ -53,7 +56,7 @@
 Montrer la simplicité de prise en main : de zéro à un OS business configuré en moins de 3 minutes.
 
 ### 📣 Accroche (narration)
-> *"Vous démarrez votre activité ou vous êtes lassé de jongler entre 10 outils ? Avec Business AI OS, vous êtes opérationnel en 3 minutes. Voici comment."*
+> *"Vous démarrez votre activité ou vous êtes lassé de jongler entre 10 outils ? Avec Brainlo, vous êtes opérationnel en 3 minutes. Voici comment."*
 
 ### 🖥️ Actions à l'écran
 
@@ -102,7 +105,7 @@ Montrer la simplicité de prise en main : de zéro à un OS business configuré 
 Montrer comment l'IA génère les 3 actions prioritaires du jour basées sur les vraies données de l'entrepreneur.
 
 ### 📣 Accroche (narration)
-> *"Chaque matin, vous perdez du temps à vous demander quoi faire en premier. Business AI OS analyse votre situation en temps réel et vous dit exactement quoi faire aujourd'hui — et pourquoi."*
+> *"Chaque matin, vous perdez du temps à vous demander quoi faire en premier. Brainlo analyse votre situation en temps réel et vous dit exactement quoi faire aujourd'hui — et pourquoi."*
 
 ### 🖥️ Actions à l'écran
 
@@ -155,7 +158,7 @@ Montrer comment l'IA génère les 3 actions prioritaires du jour basées sur les
 Montrer la saisie de transactions, la vision du runway financier et la saisie en langage naturel.
 
 ### 📣 Accroche (narration)
-> *"Combien de mois pouvez-vous tenir si vous n'avez plus aucun client ? La plupart des freelances ne le savent pas. Business AI OS vous donne la réponse en temps réel — et vous dit quand agir avant qu'il soit trop tard."*
+> *"Combien de mois pouvez-vous tenir si vous n'avez plus aucun client ? La plupart des freelances ne le savent pas. Brainlo vous donne la réponse en temps réel — et vous dit quand agir avant qu'il soit trop tard."*
 
 ### 🖥️ Actions à l'écran
 
@@ -216,7 +219,7 @@ Montrer la saisie de transactions, la vision du runway financier et la saisie en
 Montrer la gestion Kanban des prospects + l'enrichissement automatique via SIRET et LinkedIn.
 
 ### 📣 Accroche (narration)
-> *"Vous avez des prospects partout — dans votre tête, vos emails, votre carnet. Business AI OS centralise tout et enrichit automatiquement chaque fiche. En 30 secondes, vous savez tout sur votre prospect."*
+> *"Vous avez des prospects partout — dans votre tête, vos emails, votre carnet. Brainlo centralise tout et enrichit automatiquement chaque fiche. En 30 secondes, vous savez tout sur votre prospect."*
 
 ### 🖥️ Actions à l'écran
 
@@ -277,7 +280,7 @@ Montrer la gestion Kanban des prospects + l'enrichissement automatique via SIRET
 Montrer la génération automatique de messages de relance personnalisés.
 
 ### 📣 Accroche (narration)
-> *"Relancer un prospect, c'est délicat. Trop tôt, vous êtes lourd. Trop tard, il est parti chez un concurrent. Business AI OS génère le message parfait au bon moment — basé sur tout ce qu'il sait de votre prospect."*
+> *"Relancer un prospect, c'est délicat. Trop tôt, vous êtes lourd. Trop tard, il est parti chez un concurrent. Brainlo génère le message parfait au bon moment — basé sur tout ce qu'il sait de votre prospect."*
 
 ### 🖥️ Actions à l'écran
 
@@ -323,7 +326,7 @@ Montrer la génération automatique de messages de relance personnalisés.
 Montrer la création d'un devis depuis un brief naturel, puis sa conversion en facture PDF.
 
 ### 📣 Accroche (narration)
-> *"Créer un devis prend encore 30 minutes à la plupart des freelances. Avec Business AI OS, dictez votre mission en une phrase — votre devis est prêt en 30 secondes, prêt à être envoyé."*
+> *"Créer un devis prend encore 30 minutes à la plupart des freelances. Avec Brainlo, dictez votre mission en une phrase — votre devis est prêt en 30 secondes, prêt à être envoyé."*
 
 ### 🖥️ Actions à l'écran
 
@@ -382,7 +385,7 @@ Montrer la création d'un devis depuis un brief naturel, puis sa conversion en f
 Montrer la création de tâches depuis un brief naturel, la priorisation IA et les tâches récurrentes.
 
 ### 📣 Accroche (narration)
-> *"Une to-do list ne suffit plus. Business AI OS transforme vos tâches en un plan d'action priorisé par l'IA — en analysant vos deals, votre trésorerie et vos objectifs. Vous savez toujours quoi faire en premier."*
+> *"Une to-do list ne suffit plus. Brainlo transforme vos tâches en un plan d'action priorisé par l'IA — en analysant vos deals, votre trésorerie et vos objectifs. Vous savez toujours quoi faire en premier."*
 
 ### 🖥️ Actions à l'écran
 
@@ -443,7 +446,7 @@ Montrer la création de tâches depuis un brief naturel, la priorisation IA et l
 Montrer la génération de posts LinkedIn contextualisés et la gestion du calendrier éditorial.
 
 ### 📣 Accroche (narration)
-> *"Publier régulièrement sur LinkedIn prend des heures. Business AI OS génère des posts qui parlent de votre expertise — avec votre voix, vos exemples réels, votre secteur. En 30 secondes."*
+> *"Publier régulièrement sur LinkedIn prend des heures. Brainlo génère des posts qui parlent de votre expertise — avec votre voix, vos exemples réels, votre secteur. En 30 secondes."*
 
 ### 🖥️ Actions à l'écran
 
@@ -559,7 +562,7 @@ Montrer le chat IA qui connaît toute l'entreprise de l'utilisateur et répond a
 Montrer l'upload de documents et la recherche sémantique dans la base de connaissances.
 
 ### 📣 Accroche (narration)
-> *"Vos propositions commerciales, vos contrats-types, vos études de cas — tout ça dort dans vos dossiers. Business AI OS les ingère et les rend interrogeables en langage naturel."*
+> *"Vos propositions commerciales, vos contrats-types, vos études de cas — tout ça dort dans vos dossiers. Brainlo les ingère et les rend interrogeables en langage naturel."*
 
 ### 🖥️ Actions à l'écran
 
@@ -603,7 +606,7 @@ Montrer l'upload de documents et la recherche sémantique dans la base de connai
 Montrer l'intégration Cal.com avec la création automatique d'événements et la liaison aux prospects.
 
 ### 📣 Accroche (narration)
-> *"Un client prend RDV sur Cal.com. En quelques secondes, Business AI OS crée l'événement, l'associe au bon prospect et met à jour le wiki. Zéro action manuelle."*
+> *"Un client prend RDV sur Cal.com. En quelques secondes, Brainlo crée l'événement, l'associe au bon prospect et met à jour le wiki. Zéro action manuelle."*
 
 ### 🖥️ Actions à l'écran
 
@@ -650,7 +653,7 @@ e webhook URL
 Montrer l'outil d'évaluation public (lead magnet) qui génère une synthèse IA personnalisée et capture des leads qualifiés.
 
 ### 📣 Accroche (narration)
-> *"Vous voulez savoir si Business AI OS est fait pour vous ? Répondez à 5 minutes de questions — et recevez un diagnostic personnalisé de votre maturité digitale, avec une estimation de ce que vous pourriez gagner chaque mois."*
+> *"Vous voulez savoir si Brainlo est fait pour vous ? Répondez à 5 minutes de questions — et recevez un diagnostic personnalisé de votre maturité digitale, avec une estimation de ce que vous pourriez gagner chaque mois."*
 
 ### 🖥️ Actions à l'écran
 
@@ -686,7 +689,7 @@ Montrer l'outil d'évaluation public (lead magnet) qui génère une synthèse IA
 
 **Étape 6 — Call-to-action** `(2:30–3:00)`
 - Bouton **"Commencer gratuitement"** en bas du rapport
-- 💬 *"Le rapport identifie les points à améliorer. Le CTA naturel : essayer Business AI OS pour les résoudre."*
+- 💬 *"Le rapport identifie les points à améliorer. Le CTA naturel : essayer Brainlo pour les résoudre."*
 
 ### ✅ Points clés à souligner
 - Outil public : pas de compte nécessaire → parfait comme lead magnet
@@ -702,7 +705,7 @@ Montrer l'outil d'évaluation public (lead magnet) qui génère une synthèse IA
 Vidéo de présentation générale : survol de tous les modules en 4 minutes pour donner une vision d'ensemble convaincante.
 
 ### 📣 Accroche (narration)
-> *"Business AI OS, c'est 8 modules IA interconnectés dans un seul dashboard. Voici votre futur OS business — de la trésorerie au contenu LinkedIn, en passant par le CRM et les factures. Tour complet en 4 minutes."*
+> *"Brainlo, c'est 8 modules IA interconnectés dans un seul dashboard. Voici votre futur OS business — de la trésorerie au contenu LinkedIn, en passant par le CRM et les factures. Tour complet en 4 minutes."*
 
 ### 🖥️ Actions à l'écran
 
@@ -759,7 +762,7 @@ Vidéo de présentation générale : survol de tous les modules en 4 minutes pou
 - Revenir sur le dashboard principal
 - 💬 *"8 modules. 1 seul outil. Tout est connecté. Vos données de trésorerie alimentent vos priorités. Vos deals alimentent vos relances. Vos RDV Cal.com alimentent votre focus.*
 
-*Business AI OS est en accès gratuit. Commencez maintenant — votre OS business vous attend."*
+*Brainlo est en accès gratuit. Commencez maintenant — votre OS business vous attend."*
 - Zoom sur le bouton **"Commencer gratuitement"**
 
 ### ✅ Points clés à souligner
@@ -769,6 +772,129 @@ Vidéo de présentation générale : survol de tous les modules en 4 minutes pou
 - De zéro à opérationnel en 3 minutes
 
 ---
+
+
+---
+
+## VIDEO 14 — Email Daily Focus Automatique
+
+### 🎯 Objectif
+Montrer que Brainlo travaille pour vous même quand vous dormez : chaque matin à 8h, vos 3 priorités du jour arrivent directement dans votre boîte mail.
+
+### 📣 Accroche (narration)
+> *"Et si votre assistant business vous préparait déjà votre journée avant même que vous ne preniez votre café ? Avec Brainlo Solo Pro, c'est ce qui se passe chaque matin à 8h."*
+
+### 🖥️ Actions à l'écran
+
+**Partie 1 — L'email reçu** `(0:00–0:30)`
+- Ouvrir la boîte mail et montrer l'email reçu : sujet *"⚡ Votre Focus Brainlo du [date]"*
+- Mettre en avant les 3 actions prioritaires listées dans l'email
+- 💬 *"Chaque matin à 8h, Brainlo analyse ma situation réelle — trésorerie, pipeline, tâches — et me génère mes 3 priorités du jour par email."*
+
+**Partie 2 — Contenu de l'email** `(0:30–1:15)`
+- Zoomer sur les 3 actions avec leur durée estimée
+- 💬 *"Aujourd'hui : relancer 2 prospects qui traînent, facturer un client dont la mission est terminée, et publier un post LinkedIn préparé hier. Tout est contextualisé à MON business."*
+- Cliquer sur le bouton **"Voir mon Focus complet"** dans l'email
+
+**Partie 3 — Retour sur le dashboard** `(1:15–1:45)`
+- Le dashboard Focus s'ouvre avec les actions détaillées
+- Montrer que l'email et le dashboard sont parfaitement synchronisés
+- 💬 *"Je clique, j'atterris directement sur mon dashboard avec toutes mes actions. Plus d'excuse pour ne pas savoir par où commencer."*
+
+**Partie 4 — Configuration** `(1:45–2:00)`
+- 💬 *"Cette fonctionnalité est automatique, zéro configuration. Elle s'active dès que vous passez en Solo Pro."*
+
+### ✅ Points clés à souligner
+- Email personnalisé basé sur vos vraies données (pas des suggestions génériques)
+- Envoyé automatiquement chaque matin à 8h UTC (10h Paris)
+- Lien direct vers le dashboard pour agir immédiatement
+- Disponible uniquement en plan **Solo Pro**
+
+---
+
+## VIDEO 15 — Rapport Mensuel Auto
+
+### 🎯 Objectif
+Montrer comment Brainlo génère automatiquement un bilan complet de votre activité chaque mois — et vous l'envoie par email sans que vous ayez rien à faire.
+
+### 📣 Accroche (narration)
+> *"Combien vous avez gagné le mois dernier ? Combien de prospects avez-vous convertis ? Combien de jours avez-vous été vraiment productif ? Brainlo vous le dit automatiquement, sans Excel, sans effort."*
+
+### 🖥️ Actions à l'écran
+
+**Partie 1 — Accéder au rapport** `(0:00–0:30)`
+- Aller sur le dashboard Trésorerie
+- Cliquer sur **"Rapport mensuel"** ou appeler `GET /api/reports/monthly`
+- 💬 *"Mon bilan mensuel est disponible en un clic. Brainlo agrège toutes mes données automatiquement."*
+
+**Partie 2 — Les KPIs Finance** `(0:30–1:15)`
+- Montrer les 3 blocs : CA (vert), Charges (rouge), Net (bleu)
+- Montrer la barre de progression objectif CA
+- Montrer le top 5 des dépenses
+- 💬 *"En un coup d'œil : j'ai fait 8 400€ ce mois, 2 100€ de charges, soit 6 300€ net. J'ai atteint 84% de mon objectif mensuel."*
+
+**Partie 3 — Pipeline & Tâches** `(1:15–2:00)`
+- Montrer la section pipeline : prospects actifs, deals gagnés, revenus signés
+- Montrer le taux de conversion et la valeur pipeline totale
+- Montrer le taux de complétion des tâches
+- 💬 *"2 deals gagnés ce mois pour 4 800€. 6 prospects encore actifs en pipeline. Et j'ai complété 80% de mes tâches."*
+
+**Partie 4 — Focus Streak** `(2:00–2:30)`
+- Montrer le taux d'engagement Focus : X jours actifs / 30 jours
+- 💬 *"J'ai généré mon Focus 22 jours sur 30 — 73% d'engagement. C'est ma régularité business mesurée objectivement."*
+
+**Partie 5 — Email automatique** `(2:30–3:00)`
+- Montrer l'email reçu le 1er du mois avec le bilan
+- 💬 *"Le 1er de chaque mois à 9h, je reçois automatiquement ce bilan dans ma boîte mail. Plus besoin de construire des rapports manuellement."*
+
+### ✅ Points clés à souligner
+- Rapport généré automatiquement le 1er de chaque mois
+- Données réelles : trésorerie, pipeline, tâches, focus
+- Email HTML professionnel avec visualisations
+- Disponible également en consultation directe dans le dashboard
+- Fonctionnalité **Solo Pro**
+
+---
+
+## VIDEO 16 — Sécurité & Gestion de Compte
+
+### 🎯 Objectif
+Montrer les fonctionnalités de gestion de compte : modification du profil, réinitialisation de mot de passe, et sécurité des données.
+
+### 📣 Accroche (narration)
+> *"Votre business, vos données. Brainlo prend la sécurité de votre compte très au sérieux. Voici comment gérer votre profil et protéger votre accès."*
+
+### 🖥️ Actions à l'écran
+
+**Partie 1 — Profil & Informations légales** `(0:00–0:45)`
+- Aller dans **Paramètres** (sidebar)
+- Montrer le formulaire de profil complet : nom, entreprise, SIRET, adresse, ville, TVA
+- Modifier un champ et cliquer **Sauvegarder**
+- 💬 *"Mon profil est complet : coordonnées légales, numéro SIRET, taux TVA. Ces informations alimentent automatiquement mes devis et factures."*
+
+**Partie 2 — Changer de mot de passe** `(0:45–1:15)`
+- Dans Paramètres, section Sécurité
+- Entrer l'ancien mot de passe + nouveau mot de passe fort
+- 💬 *"Je peux changer mon mot de passe à tout moment. Brainlo exige un mot de passe fort : 8 caractères minimum, une majuscule, un chiffre."*
+
+**Partie 3 — Mot de passe oublié** `(1:15–1:45)`
+- Se déconnecter
+- Sur la page login, cliquer **"Mot de passe oublié"**
+- Entrer son email
+- 💬 *"J'ai oublié mon mot de passe ? Je reçois un lien de réinitialisation sécurisé par email, valable 1 heure."*
+- Montrer l'email reçu avec le lien de réinitialisation
+
+**Partie 4 — Protection anti-brute force** `(1:45–2:00)`
+- Essayer volontairement 5 fois avec un mauvais mot de passe
+- Montrer le message de blocage : *"Trop de tentatives. Réessayez dans 15 minutes."*
+- 💬 *"Brainlo protège automatiquement votre compte contre les tentatives d'intrusion."*
+
+### ✅ Points clés à souligner
+- Profil complet avec informations légales pour la facturation
+- Changement de mot de passe sécurisé (validation forte)
+- Flux de réinitialisation par email avec token sécurisé (TTL 1h)
+- Protection anti-brute force automatique (5 tentatives / 15 min)
+- Données chiffrées, jamais exposées côté client
 
 ## 🎬 Checklist de production
 
@@ -791,7 +917,7 @@ Vidéo de présentation générale : survol de tous les modules en 4 minutes pou
 ### Après le tournage
 - [ ] Couper les silences et temps morts
 - [ ] Ajouter les sous-titres (accessibilité + LinkedIn mute)
-- [ ] Ajouter le logo Business AI OS en watermark
+- [ ] Ajouter le logo Brainlo en watermark
 - [ ] Ajouter l'intro et l'outro avec musique
 - [ ] Exporter en MP4 H.264, 1080p, 8 Mbps
 - [ ] Miniature personnalisée pour chaque vidéo
@@ -813,10 +939,13 @@ Vidéo de présentation générale : survol de tous les modules en 4 minutes pou
 | ✨ 11 | Assessment (V12) | Lead magnet séparé |
 | ✨ 12 | Knowledge Base (V10) | Feature avancée |
 | ✨ 13 | Calendrier (V11) | Feature complémentaire |
+| 🆕 14 | Email Daily Focus (V14) | Fonctionnalité PRO différenciante |
+| 🆕 15 | Rapport Mensuel (V15) | Démo valeur Solo Pro |
+| 🆕 16 | Sécurité & Gestion Compte (V16) | Confiance et réassurance |
 
 ---
 
-> 📹 **Document créé par Agent Zero — Business AI OS**
-> Dernière mise à jour : 2026-05-15
+> 📹 **Document créé par Agent Zero — Brainlo v1.2.0**
+> Dernière mise à jour : 2026-05-17
 > Fichier : `/a0/usr/projects/business_ai_os/MANUEL_UTILISATEUR_DEMO.md`
-> **13 vidéos | ~42 scénarios détaillés | ~900 lignes**
+> **16 vidéos | ~55 scénarios détaillés | ~1000 lignes**

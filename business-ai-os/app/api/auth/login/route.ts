@@ -1,9 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import { comparePassword, signToken } from '@/lib/auth'
+import { loginRateLimiter, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
+    // ── BUG-05: Rate limiting — 5 attempts per 15 min per IP ─────────────────
+    const ip = getClientIp(request)
+    const rl = loginRateLimiter.check(ip)
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: `Trop de tentatives. Réessayez dans ${Math.ceil(rl.retryAfter / 60)} minute(s).` },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rl.retryAfter),
+            'X-RateLimit-Limit': '5',
+            'X-RateLimit-Remaining': '0',
+          },
+        }
+      )
+    }
+
     const body = await request.json()
     const { email, password } = body
 
@@ -34,22 +52,21 @@ export async function POST(request: NextRequest) {
 
     const token = await signToken({ userId: user.id, email: user.email, plan: user.plan })
 
+    // ── BUG-06: JWT removed from response body — only set in httpOnly cookie ──
     const response = NextResponse.json(
       {
         success: true,
-        token,
         user: { id: user.id, name: user.name, email: user.email, plan: user.plan },
       },
       { status: 200 }
     )
 
-    // Set auth cookie directly on response
     response.cookies.set('auth_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/'
+      path: '/',
     })
 
     return response

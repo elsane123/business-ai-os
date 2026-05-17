@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { ingestWikiEvent } from '@/lib/wiki/ingest'
+import { sanitizeText, sanitizeEmail, sanitizeUrl, sanitizePhone } from '@/lib/sanitize'
 
 export async function GET() {
   try {
@@ -43,25 +44,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Le nom est requis' }, { status: 400 })
     }
 
+    // ── BUG-07: Sanitize all user-supplied text fields against stored XSS ────
     const prospect = await prisma.prospect.create({
       data: {
         userId: session.userId,
-        name,
-        company: company || '',
-        email: email || '',
-        phone: phone || '',
+        name: sanitizeText(name, 200),
+        company: sanitizeText(company, 200),
+        email: sanitizeEmail(email),
+        phone: sanitizePhone(phone),
         value: parseFloat(value || '0') || 0,
         status: status || 'IDENTIFIED',
-        notes: notes || '',
+        notes: sanitizeText(notes, 5000),
         // Enrichissement
-        siret: siret || null,
-        linkedinUrl: linkedinUrl || null,
-        position: position || null,
-        enrichCity: enrichCity || null,
-        enrichAddress: enrichAddress || null,
-        enrichZip: enrichZip || null,
-        employeeRange: employeeRange || null,
-        nafCode: nafCode || null,
+        siret: siret ? sanitizeText(siret, 20) : null,
+        linkedinUrl: sanitizeUrl(linkedinUrl),
+        position: position ? sanitizeText(position, 200) : null,
+        enrichCity: enrichCity ? sanitizeText(enrichCity, 100) : null,
+        enrichAddress: enrichAddress ? sanitizeText(enrichAddress, 300) : null,
+        enrichZip: enrichZip ? sanitizeText(enrichZip, 20) : null,
+        employeeRange: employeeRange ? sanitizeText(employeeRange, 50) : null,
+        nafCode: nafCode ? sanitizeText(nafCode, 20) : null,
       },
     })
 
@@ -106,15 +108,16 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Prospect introuvable' }, { status: 404 })
     }
 
+    // ── BUG-07: Sanitize user-supplied fields against stored XSS ───────────
     const updateData: Record<string, unknown> = {}
     if (status !== undefined) updateData.status = status
-    if (notes !== undefined) updateData.notes = notes
+    if (notes !== undefined) updateData.notes = sanitizeText(notes, 5000)
     if (lastContactDate !== undefined) updateData.lastContactDate = new Date(lastContactDate)
     if (value !== undefined) updateData.value = parseFloat(value) || 0
-    if (name !== undefined) updateData.name = name
-    if (company !== undefined) updateData.company = company
-    if (email !== undefined) updateData.email = email
-    if (phone !== undefined) updateData.phone = phone
+    if (name !== undefined) updateData.name = sanitizeText(name, 200)
+    if (company !== undefined) updateData.company = sanitizeText(company, 200)
+    if (email !== undefined) updateData.email = sanitizeEmail(email)
+    if (phone !== undefined) updateData.phone = sanitizePhone(phone)
 
     const prospect = await prisma.prospect.update({
       where: { id },

@@ -54,8 +54,11 @@ export async function POST(req: NextRequest) {
 
     // Appel microservice Python
     const pythonUrl = process.env.PYTHON_AGENT_URL || 'http://localhost:8000'
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 25000) // 25s timeout
     const response = await fetch(`${pythonUrl}/tasks/prioritize`, {
       method: 'POST',
+      signal: controller.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         user_id: userId,
@@ -97,25 +100,35 @@ export async function POST(req: NextRequest) {
       })
     })
 
+    clearTimeout(timeout) // cancel timeout once response received
+
     if (!response.ok) {
-      throw new Error(`Python agent error: ${response.status}`)
+      const errBody = await response.text().catch(() => '')
+      throw new Error(`Python agent error: ${response.status} ${errBody}`)
     }
 
-    const { results } = await response.json()
+    const body = await response.json()
+    const results: { task_id: string; score: number; priority: string; reason: string }[] =
+      Array.isArray(body?.results) ? body.results : []
 
-    // Mettre à jour les scores en base
-    await Promise.all(
-      results.map((r: { task_id: string; score: number; priority: string; reason: string }) =>
-        prisma.task.update({
-          where: { id: r.task_id },
-          data: {
-            aiPriorityScore: r.score,
-            priority: r.priority,
-            aiReason: r.reason
-          }
-        })
+    // Mettre à jour les scores en base (only if results returned)
+    if (results.length > 0) {
+      await Promise.all(
+        results.map((r) =>
+          prisma.task.update({
+            where: { id: r.task_id },
+            data: {
+              aiPriorityScore: r.score ?? null,
+              priority: r.priority ?? 'MEDIUM',
+              aiReason: r.reason ?? null,
+            }
+          }).catch((e) => {
+            // Log but don't fail if one task update fails (e.g. task deleted mid-request)
+            console.warn(`[tasks/prioritize] Failed to update task ${r.task_id}:`, e.message)
+          })
+        )
       )
-    )
+    }
 
     // Relire les tâches mises à jour
     const updatedTasks = await prisma.task.findMany({

@@ -12,8 +12,10 @@ export interface QuoteLine {
 }
 
 function calcTotals(lines: QuoteLine[]) {
-  const subtotalHT = lines.reduce((s, l) => s + l.qty * l.unitPrice, 0)
-  const totalVAT = lines.reduce((s, l) => s + l.qty * l.unitPrice * (l.vatRate / 100), 0)
+  // Normalize: accept both `qty` and `quantity` from frontend
+  const normalized = lines.map(l => ({ ...l, qty: l.qty ?? (l as Record<string,unknown>).quantity as number ?? 0 }))
+  const subtotalHT = normalized.reduce((s, l) => s + l.qty * l.unitPrice, 0)
+  const totalVAT = normalized.reduce((s, l) => s + l.qty * l.unitPrice * (l.vatRate / 100), 0)
   const totalTTC = subtotalHT + totalVAT
   return { subtotalHT, totalVAT, totalTTC }
 }

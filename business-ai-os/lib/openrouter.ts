@@ -24,7 +24,7 @@ export async function chatCompletion(
       'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
-      'X-Title': 'Business AI OS',
+      'X-Title': 'Brainlo',
     },
     body: JSON.stringify({
       model: options.model ?? DEFAULT_MODEL,
@@ -53,7 +53,7 @@ export async function streamCompletion(
       'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
-      'X-Title': 'Business AI OS',
+      'X-Title': 'Brainlo',
     },
     body: JSON.stringify({
       model: options.model ?? DEFAULT_MODEL,

@@ -10,7 +10,17 @@ export async function GET() {
     }
     const user = await prisma.user.findUnique({
       where: { id: session.userId },
-      select: { id: true, name: true, email: true, plan: true, businessName: true, sector: true, monthlyGoal: true, fixedCharges: true }
+      select: {
+        id: true, name: true, email: true, plan: true,
+        businessName: true, sector: true, monthlyGoal: true, fixedCharges: true,
+        // Extended profile fields (BUG-F04 fix)
+        legalName: true, address: true, zipCode: true, city: true,
+        siret: true, legalForm: true, vatNumber: true,
+        paymentTerms: true, invoiceFooter: true, logoUrl: true,
+        activityType: true, urssafRate: true, urssafPeriodicity: true, tvaThreshold: true,
+        quoteCounter: true, invoiceCounter: true,
+        calcomBookingUrl: true, linkedinUrl: true,
+      }
     })
     if (!user) return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 })
     return NextResponse.json({ user })

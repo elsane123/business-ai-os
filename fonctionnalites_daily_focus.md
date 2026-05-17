@@ -1,4 +1,4 @@
-# 🎯 Fonctionnalités Daily Focus — Business AI OS
+# 🎯 Fonctionnalités Daily Focus — Brainlo
 
 > Document de référence complet — Version 2.0 — Mai 2026
 
@@ -6,7 +6,7 @@
 
 ## 📋 Vue d'ensemble
 
-Le **Daily Focus** est la feature core de Business AI OS (Solo Pro). Chaque matin, l'IA génère 3 actions prioritaires personnalisées basées sur les données réelles de l'entrepreneur. Le module évolue avec 5 couches d'intelligence qui se renforcent mutuellement.
+Le **Daily Focus** est la feature core de Brainlo (Solo Pro). Chaque matin, l'IA génère 3 actions prioritaires personnalisées basées sur les données réelles de l'entrepreneur. Le module évolue avec 5 couches d'intelligence qui se renforcent mutuellement.
 
 ---
 
@@ -474,5 +474,5 @@ Réponse : {
 
 ---
 
-*Document généré automatiquement par Agent Zero — Business AI OS v2.0*  
+*Document généré automatiquement par Agent Zero — Brainlo v2.0*  
 *Dernière mise à jour : Mai 2026*

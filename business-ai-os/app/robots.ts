@@ -15,7 +15,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://businessaios.com/sitemap.xml',
-    host: 'https://businessaios.com',
+    sitemap: 'https://brainlo.ai/sitemap.xml',
+    host: 'https://brainlo.ai',
   }
 }

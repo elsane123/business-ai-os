@@ -3,13 +3,47 @@ import * as path from 'path'
 
 const WIKI_BASE = process.env.WIKI_BASE_PATH ?? './wiki-data'
 
+// ─── Security: Path Traversal Protection ────────────────────────────────────
+
+/** Validates that a userId is safe (cuid/alphanumeric format only, no path separators) */
+function isValidUserId(userId: string): boolean {
+  return /^[a-z0-9]{10,40}$/.test(userId)
+}
+
+/** Validates that a pagePath does not contain traversal sequences */
+function isValidPagePath(pagePath: string): boolean {
+  // Reject absolute paths, null bytes, and traversal sequences
+  if (!pagePath || pagePath.includes('..') || path.isAbsolute(pagePath) || pagePath.includes('\0')) {
+    return false
+  }
+  return true
+}
+
+/**
+ * Safely resolves a wiki file path and verifies it stays within the user's wiki directory.
+ * Throws an error if the resolved path escapes the sandbox.
+ */
+function safeResolvePath(userId: string, filePath: string): string {
+  const resolved = path.resolve(filePath)
+  const userBase = path.resolve(path.join(WIKI_BASE, userId))
+  if (!resolved.startsWith(userBase + path.sep) && resolved !== userBase) {
+    throw new Error(`Path traversal detected: ${filePath}`)
+  }
+  return resolved
+}
+
 export function getUserWikiPath(userId: string): string {
+  if (!isValidUserId(userId)) throw new Error(`Invalid userId: ${userId}`)
   return path.join(WIKI_BASE, userId)
 }
 
 export function getWikiFilePath(userId: string, pagePath: string): string {
+  if (!isValidUserId(userId)) throw new Error(`Invalid userId: ${userId}`)
+  if (!isValidPagePath(pagePath)) throw new Error(`Invalid pagePath: ${pagePath}`)
   const ext = pagePath.endsWith('.md') ? '' : '.md'
-  return path.join(WIKI_BASE, userId, pagePath + ext)
+  const filePath = path.join(WIKI_BASE, userId, pagePath + ext)
+  safeResolvePath(userId, filePath)
+  return filePath
 }
 
 export function readWikiPage(userId: string, pagePath: string): string | null {

@@ -4,7 +4,7 @@ slug: "/blog/gerer-tresorerie-solopreneur"
 meta_title: "Trésorerie solopreneur : guide complet pour ne jamais être à court de cash"
 meta_description: "Découvrez comment gérer votre trésorerie en tant que solopreneur : calcul du runway, suivi des entrées/sorties, alertes impayés. Guide pratique 2026 + outil gratuit."
 keywords: ["trésorerie solopreneur", "gérer trésorerie freelance", "runway calculator freelance", "suivi cash indépendant", "gestion financière solopreneur"]
-author: "Business AI OS"
+author: "Brainlo"
 date: "2026-01-15"
 category: "Finance"
 reading_time: "8 min"
@@ -153,9 +153,9 @@ Bonnes solutions pour la comptabilité officielle — déclarations, TVA, bilan.
 
 **Pour qui :** solopreneur qui a besoin d'aide pour sa comptabilité officielle.
 
-### Option 3 : Business AI OS (gratuit pour commencer)
+### Option 3 : Brainlo (gratuit pour commencer)
 
-**[Business AI OS](https://businessaios.com)** est conçu spécifiquement pour les solopreneurs qui veulent piloter leur business en temps réel avec l'IA.
+**[Brainlo](https://brainlo.ai)** est conçu spécifiquement pour les solopreneurs qui veulent piloter leur business en temps réel avec l'IA.
 
 Le module trésorerie inclut :
 - **Solde temps réel** avec barre d'objectif mensuel
@@ -165,9 +165,9 @@ Le module trésorerie inclut :
 - **Suggestion de relance** générée par l'IA selon l'historique client
 - **Daily Focus** : chaque matin, 3 actions prioritaires dont une toujours financière si nécessaire
 
-> *«&nbsp;Avant Business AI OS, je regardais mon compte en banque avec l'angoisse. Maintenant je sais exactement où j'en suis et ce que je dois faire aujourd'hui.&nbsp;»*
+> *«&nbsp;Avant Brainlo, je regardais mon compte en banque avec l'angoisse. Maintenant je sais exactement où j'en suis et ce que je dois faire aujourd'hui.&nbsp;»*
 
-[→ Commencer gratuitement, setup en 5 minutes](https://businessaios.com/onboarding)
+[→ Commencer gratuitement, setup en 5 minutes](https://brainlo.ai/onboarding)
 
 ---
 

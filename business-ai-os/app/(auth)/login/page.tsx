@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { Brain, Loader2, Info } from 'lucide-react'
+import { Loader2, Info } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import BrainloLogo from '@/components/ui/BrainloLogo'
 
 function LoginForm() {
   const router = useRouter()
@@ -37,8 +38,8 @@ function LoginForm() {
     <div className="min-h-screen bg-[#030712] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 mb-4">
-            <Brain className="w-7 h-7 text-white" />
+          <div className="flex justify-center mb-4">
+            <BrainloLogo size={48} showText={false} />
           </div>
           <h1 className="text-2xl font-bold text-white">Connexion</h1>
           <p className="text-gray-400 mt-1 text-sm">Accédez à votre cerveau business</p>

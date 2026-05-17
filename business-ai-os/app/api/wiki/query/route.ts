@@ -20,7 +20,11 @@ export async function POST(req: NextRequest) {
       const pythonRes = await fetch('http://localhost:8000/wiki/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: session.userId, query }),
+        body: JSON.stringify({
+          user_id: session.userId,
+          query,
+          wiki_base_path: process.env.WIKI_BASE_PATH ?? './wiki-data',
+        }),
       })
       if (pythonRes.ok) {
         const pythonData = await pythonRes.json()

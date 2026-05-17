@@ -96,6 +96,7 @@ export default function FocusPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [generateError, setGenerateError] = useState<string | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
   const [upgradeToast, setUpgradeToast] = useState(false)
@@ -151,17 +152,33 @@ export default function FocusPage() {
   // ── Generate focus ────────────────────────────────────────────────────────────
   const handleGenerate = async () => {
     setLoading(true)
+    setGenerateError(null)
     try {
       const res = await fetch('/api/focus', { method: 'POST' })
       if (res.ok) {
         const data = await res.json()
-        if (data.focus) setFocus(data.focus)
+        if (data.focus) {
+          setFocus(data.focus)
+        } else {
+          // Focus returned null — service IA indisponible
+          setGenerateError('La génération a échoué. Le service IA est peut-être temporairement indisponible. Réessayez dans quelques instants.')
+          setTimeout(() => setGenerateError(null), 8000)
+        }
       } else {
         const data = await res.json().catch(() => ({}))
-        if (data.upgradeRequired) setShowUpgradeModal(true)
+        if (data.upgradeRequired) {
+          setShowUpgradeModal(true)
+        } else {
+          setGenerateError(data.error ?? 'Erreur lors de la génération du focus. Veuillez réessayer.')
+          setTimeout(() => setGenerateError(null), 8000)
+        }
       }
-    } catch { /* silent */ }
-    finally { setLoading(false) }
+    } catch {
+      setGenerateError('Impossible de contacter le serveur. Vérifiez votre connexion.')
+      setTimeout(() => setGenerateError(null), 8000)
+    } finally {
+      setLoading(false)
+    }
   }
 
   // ── Update action status (optimistic) ────────────────────────────────────────
@@ -212,6 +229,18 @@ export default function FocusPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+
+      {/* ── Toast erreur génération Focus ──────────────────────────────────── */}
+      {generateError && (
+        <div className="fixed top-6 right-6 z-50 flex items-start gap-3 bg-red-900/90 text-white px-5 py-4 rounded-xl shadow-2xl border border-red-700/50 max-w-sm">
+          <span className="text-xl flex-shrink-0">⚠️</span>
+          <div className="flex-1">
+            <p className="font-semibold text-sm">Erreur de génération</p>
+            <p className="text-white/80 text-xs mt-0.5">{generateError}</p>
+          </div>
+          <button onClick={() => setGenerateError(null)} className="text-white/60 hover:text-white text-lg leading-none ml-2">×</button>
+        </div>
+      )}
 
       {/* ── Toast Bienvenue Solo Pro ─────────────────────────────────────── */}
       {upgradeToast && (

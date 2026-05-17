@@ -1,6 +1,6 @@
-# Business AI OS — Spécifications Techniques & Documentation
+# Brainlo — Spécifications Techniques & Documentation
 
-> Version : 1.0.0 | Date : 2026-05-15 | Statut : **MVP en production**
+> Version : 1.2.0 | Date : 2026-05-17 | Statut : **MVP en production — Post-QA**
 
 ---
 
@@ -20,6 +20,9 @@
 12. [Guide de Démarrage Développeur](#12-guide-de-démarrage-développeur)
 13. [Décisions d'Architecture](#13-décisions-darchitecture)
 14. [Conventions de Code](#14-conventions-de-code)
+15. [Sécurité — Bibliothèques & Patterns](#15-sécurité--bibliothèques--patterns)
+16. [Scheduler & Cron Jobs](#16-scheduler--cron-jobs)
+17. [Changelog Technique](#17-changelog-technique)
 
 ---
 
@@ -29,7 +32,7 @@
 
 > *Un système d'exploitation d'entreprise piloté par l'IA. Un dashboard central où chaque fonction métier est gérée par un agent IA dédié. L'entrepreneur arrive, définit son entreprise, et les agents s'activent automatiquement sur ses priorités.*
 
-**Business AI OS** est un SaaS B2B proposant une suite d'agents IA interconnectés pour solopreneurs et PME (1–50 personnes). Contrairement aux outils verticaux (Notion pour les notes, Stripe pour les paiements, HubSpot pour le CRM), Business AI OS centralise toutes les fonctions métier dans un seul OS, où les agents partagent le contexte en temps réel.
+**Brainlo** est un SaaS B2B proposant une suite d'agents IA interconnectés pour solopreneurs et PME (1–50 personnes). Contrairement aux outils verticaux (Notion pour les notes, Stripe pour les paiements, HubSpot pour le CRM), Brainlo centralise toutes les fonctions métier dans un seul OS, où les agents partagent le contexte en temps réel.
 
 ### Cible
 
@@ -1034,7 +1037,7 @@ postgresql >= 15 (ou SQLite pour dev local)
 
 ```bash
 # 1. Cloner et naviguer
-cd /a0/usr/projects/business_ai_os/business-ai-os
+cd /a0/usr/projects/business_ai_os/brainlo
 
 # 2. Dépendances Node.js
 npm install
@@ -1600,7 +1603,251 @@ curl -X POST http://localhost:50082/api/wiki/query \
 
 ---
 
-> 📄 **Document généré automatiquement par Agent Zero**  
-> Dernière mise à jour : 2026-05-15  
+---
+
+## 15. Sécurité — Bibliothèques & Patterns
+
+### `lib/rate-limit.ts` — Limitation de taux
+
+Implémentation en mémoire (sans dépendance externe) pour protéger les endpoints sensibles.
+
+```typescript
+// Utilisation dans une route
+import { checkRateLimit } from '@/lib/rate-limit'
+
+const result = checkRateLimit(ip, { maxRequests: 5, windowMs: 15 * 60 * 1000 })
+if (!result.allowed) {
+  return NextResponse.json(
+    { error: `Trop de tentatives. Réessayez dans ${result.retryAfterMinutes} minute(s).` },
+    { status: 429, headers: { 'Retry-After': String(result.retryAfterSeconds) } }
+  )
+}
+```
+
+**Appliqué sur** : `POST /api/auth/login` (5 tentatives / 15 min / IP)  
+**Mécanisme** : Fenêtre glissante par IP, purge automatique toutes les 5 min (anti-leak mémoire)
+
+---
+
+### `lib/sanitize.ts` — Sanitisation des entrées
+
+Protection contre les attaques XSS stockées. Appliqué sur tous les champs texte libres.
+
+```typescript
+import { sanitizeText, sanitizeEmail, sanitizeUrl, sanitizePhone } from '@/lib/sanitize'
+
+// Dans un POST handler
+const name = sanitizeText(body.name, 100)       // strip HTML + encode entities + trim
+const email = sanitizeEmail(body.email)          // strip tags + lowercase + max 254
+const website = sanitizeUrl(body.website)        // accepte seulement http:// et https://
+const phone = sanitizePhone(body.phone)          // filtre chars non numériques
+```
+
+**Appliqué sur** : `POST/PATCH /api/pipeline/prospects` (notes, company, name)
+
+---
+
+### `lib/reset-tokens.ts` — Tokens de réinitialisation
+
+Stockage en mémoire des tokens one-time pour le flux reset-password.
+
+```typescript
+// Générer un token (valable 1h)
+const token = createResetToken(userId)  // retourne string hex 64 chars
+
+// Valider et consommer (one-time)
+const userId = validateAndConsumeToken(token)  // retourne userId ou null
+```
+
+**TTL** : 1 heure | **Usage** : `POST /api/auth/forgot-password` → `POST /api/auth/reset-password`
+
+---
+
+### Middleware de protection des routes
+
+Fichier : `middleware.ts`
+
+**Routes protégées** (redirect vers `/login` si non authentifié) :
+```
+/focus, /tasks, /pipeline, /cash, /content, /chat,
+/settings, /knowledge-base, /calendar, /profile, /invoices, /quotes, /agents
+```
+
+---
+
+### Headers de sécurité HTTP
+
+Configurés dans `next.config.js` :
+
+| Header | Valeur | Protection |
+|---|---|---|
+| `Content-Security-Policy` | `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://...` | XSS / injection |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains` | HTTPS forcé (prod uniquement) |
+| `X-Frame-Options` | `DENY` | Clickjacking |
+| `X-Content-Type-Options` | `nosniff` | MIME sniffing |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Fuite URL |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` | API browser |
+
+---
+
+### Authentification JWT
+
+- Token stocké **uniquement** dans le cookie `auth_token` (httpOnly, SameSite=lax)
+- Le token n'est **jamais** retourné dans le body de réponse (login/register)
+- Les API routes valident via `getSession(req)` depuis `lib/auth.ts`
+
+---
+
+## 16. Scheduler & Cron Jobs
+
+### Configuration
+
+Les jobs cron utilisent `curl` vers les endpoints Next.js protégés par `x-cron-secret`.
+
+**Variable d'environnement** : `CRON_SECRET` (hex 64 chars)
+
+### Jobs installés
+
+```bash
+# Voir avec: crontab -l | grep Brainlo
+
+# Daily Focus email — tous les jours à 8h UTC (10h Paris)
+0 8 * * * curl -s -X POST -H 'x-cron-secret: $CRON_SECRET' http://localhost:50082/api/cron/daily-focus
+
+# Rapport mensuel — le 1er de chaque mois à 9h UTC
+0 9 1 * * curl -s -X POST -H 'x-cron-secret: $CRON_SECRET' http://localhost:50082/api/cron/monthly-report
+
+# Wiki lint — chaque lundi à 9h UTC
+0 9 * * 1 curl -s -X POST -H 'x-cron-secret: $CRON_SECRET' http://localhost:50082/api/cron/wiki-lint
+```
+
+### Endpoints Cron
+
+#### `POST /api/cron/daily-focus`
+
+**Auth** : Header `x-cron-secret`  
+**Logique** :
+1. Récupère tous les users `plan=PRO`
+2. Pour chaque user : vérifie si focus déjà généré → utilise existant OU génère via Python `/focus/generate`
+3. Envoie email HTML via Resend (`sendDailyFocusEmail`)
+4. Fallback : 3 actions génériques si Python API indisponible
+
+```json
+// Response 200
+{"success":true, "date":"2026-05-17", "totalPro":5, "sent":5, "skipped":0, "errors":0,
+ "users":["user1@...","user2@..."]}
+```
+
+#### `POST /api/cron/monthly-report`
+
+**Auth** : Header `x-cron-secret`  
+**Logique** : Génère et envoie le bilan du mois précédent à tous les users PRO  
+**Données** : CA/charges/net, pipeline, tâches, focus streak
+
+#### `POST /api/cron/wiki-lint`
+
+**Auth** : Header `x-cron-secret`  
+**Logique** : Appelle Python `/wiki/lint` pour chaque utilisateur  
+**Actions** : Supprime pages vides, tronque log.md >200 lignes, déduplique, met à jour BRAIN.md
+
+```json
+// Response 200
+{"success":true, "totalUsers":17, "processed":17, "errors":0,
+ "totalCleaned":3, "totalBytesFreed":2133}
+```
+
+### API Rapport Mensuel
+
+#### `GET /api/reports/monthly?month=2026-05`
+
+**Auth** : Cookie session  
+**Response** :
+```json
+{
+  "month": "avril 2026",
+  "finance": {"ca": 8400, "charges": 2100, "net": 6300, "goalProgress": 84},
+  "pipeline": {"activeProspects": 6, "wonThisMonth": 2, "wonRevenue": 4800, "conversionRate": 33},
+  "tasks": {"completed": 8, "total": 10, "completionRate": 80},
+  "focus": {"activeDays": 22, "daysInMonth": 30, "engagementRate": 73}
+}
+```
+
+#### `POST /api/reports/monthly`
+
+**Auth** : Cookie session  
+**Effet** : Génère le rapport du mois précédent et l'envoie par email à l'utilisateur connecté
+
+### Logs
+
+```
+/a0/usr/projects/business_ai_os/cron-daily-focus.log
+/a0/usr/projects/business_ai_os/cron-monthly-report.log
+/a0/usr/projects/business_ai_os/cron-wiki-lint.log
+```
+
+---
+
+## 17. Changelog Technique
+
+### v1.2.0 — 2026-05-17 (Post-QA Sprint + Quick Wins)
+
+#### Nouvelles fonctionnalités
+
+| Feature | Fichier | Description |
+|---|---|---|
+| Daily Focus Email | `app/api/cron/daily-focus/route.ts` | Email quotidien 8h UTC pour tous les users PRO |
+| Rapport Mensuel Auto | `app/api/reports/monthly/route.ts` | Bilan mensuel JSON + envoi email automatique |
+| Wiki Lint Hebdomadaire | `app/api/cron/wiki-lint/route.ts` + `python/agents/wiki_lint.py` | Nettoyage wiki chaque lundi |
+| Endpoint rapport mensuel utilisateur | `GET/POST /api/reports/monthly` | Accessible depuis le dashboard |
+
+#### Nouvelles routes API
+
+| Méthode | Route | Sprint |
+|---|---|---|
+| PATCH, DELETE | `/api/pipeline/prospects/[id]` | Sprint 1 |
+| DELETE, PATCH | `/api/cash/transactions/[id]` | Sprint 2 |
+| GET | `/api/agents/catalog` | Sprint 3 |
+| POST | `/api/auth/forgot-password` | Sprint 2 |
+| PATCH | `/api/auth/change-password` | Sprint 2 |
+| GET, POST | `/api/reports/monthly` | QW-2 |
+| POST | `/api/cron/daily-focus` | QW-1 |
+| POST | `/api/cron/monthly-report` | QW-2 |
+| POST | `/api/cron/wiki-lint` | QW-3 |
+
+#### Nouvelles bibliothèques
+
+| Fichier | Rôle |
+|---|---|
+| `lib/rate-limit.ts` | Rate limiting en mémoire (anti brute-force) |
+| `lib/sanitize.ts` | Sanitisation XSS des entrées utilisateur |
+| `lib/reset-tokens.ts` | Tokens one-time pour reset-password |
+
+#### Corrections de bugs (QA Cycles 1-3)
+
+| Bug | Fix |
+|---|---|
+| Python API DOWN (PM2 misconfiguration) | Restart via `start-python.sh` + fix interpreter |
+| JWT exposé dans response body | Supprimé de login/register response |
+| Pages /tasks + /settings non protégées | Middleware étendu (7 nouvelles routes) |
+| Mot de passe faible accepté | Validation forte (min 8, majuscule, chiffre) |
+| XSS stocké dans notes prospect | Sanitisation via `lib/sanitize.ts` |
+| wiki/query HTTP 422 | Payload Python corrigé |
+| Stripe checkout HTTP 500 | `apiVersion: '2023-10-16'` + `NEXT_PUBLIC_APP_URL` |
+| Champs profil non persistés à l'inscription | `register/route.ts` → 10 champs étendus |
+| GET /api/focus non bloqué pour FREE | Vérification plan ajoutée |
+| CSP/HSTS manquants | Headers dans `next.config.js` |
+
+#### Variables d'environnement ajoutées
+
+| Variable | Description |
+|---|---|
+| `CRON_SECRET` | Secret partagé pour authentifier les appels cron |
+| `PYTHON_API_URL` | URL du microservice Python (défaut: `http://localhost:8000`) |
+| `STRIPE_TEST_MODE` | Désactivé (`false`) pour le mode production live |
+
+---
+
+> 📄 **Document maintenu par Agent Zero — Post-QA**  
+> Dernière mise à jour : 2026-05-17  
 > Fichier : `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md`  
-> Taille approximative : ~1600 lignes | ~42 000 caractères
+> Version : 1.2.0 | ~1900 lignes

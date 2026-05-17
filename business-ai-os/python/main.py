@@ -1,4 +1,4 @@
-"""Business AI OS — FastAPI microservice for AI agents."""
+"""Brainlo — FastAPI microservice for AI agents."""
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +12,7 @@ from models.schemas import (
     WikiIngestRequest, WikiIngestResponse,
     WikiQueryRequest, WikiQueryResponse,
 )
-from models.schemas import TaskPrioritizeRequest, TaskPrioritizeResponse
+from models.schemas import TaskPrioritizeRequest, TaskPrioritizeResponse, WikiLintRequest, WikiLintResponse
 from agents.daily_focus import generate_daily_focus
 from agents.relance_gen import generate_relance
 from agents.linkedin_gen import generate_linkedin_post
@@ -20,12 +20,13 @@ from agents.kb_extract import extract_document
 from agents.wiki_ingest import ingest_wiki_event
 from agents.wiki_query import query_wiki
 from agents.task_prioritizer import prioritize_tasks
+from agents.wiki_lint import lint_wiki
 
 load_dotenv()
 
 app = FastAPI(
-    title="Business AI OS — Agent Service",
-    description="Microservice Python pour les agents IA du Business AI OS",
+    title="Brainlo — Agent Service",
+    description="Microservice Python pour les agents IA du Brainlo",
     version="0.1.0",
 )
 
@@ -107,6 +108,15 @@ async def tasks_prioritize(req: TaskPrioritizeRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+@app.post("/wiki/lint", response_model=WikiLintResponse)
+async def wiki_lint(req: WikiLintRequest):
+    """Weekly lint of the user's wiki: remove empty pages, truncate logs, deduplicate."""
+    try:
+        return await lint_wiki(req)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

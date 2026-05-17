@@ -30,7 +30,7 @@ function Navbar() {
             background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 17, boxShadow: '0 0 14px rgba(99,102,241,0.4)', flexShrink: 0 }}>🧠</div>
-          <span style={{ fontWeight: 700, fontSize: 17, color: '#0f172a', letterSpacing: '-0.02em' }}>Business AI OS</span>
+          <span style={{ fontWeight: 700, fontSize: 17, color: '#0f172a', letterSpacing: '-0.02em' }}>Brainlo</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link href="/" style={{ color: '#64748b', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>← Accueil</Link>

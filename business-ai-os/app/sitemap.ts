@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://businessaios.com'
+  const base = 'https://brainlo.ai'
   const now = new Date()
 
   return [
@@ -18,9 +18,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${base}/onboarding`,
+      url: `${base}/blog`,
       lastModified: now,
-      changeFrequency: 'monthly',
+      changeFrequency: 'weekly',
       priority: 0.8,
     },
     {

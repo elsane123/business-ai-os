@@ -5,7 +5,10 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? 'dev-secret-please-change-in-production'
 )
 
-const PROTECTED_PATHS = ['/focus', '/cash', '/pipeline', '/content', '/chat']
+const PROTECTED_PATHS = [
+  '/focus', '/cash', '/pipeline', '/content', '/chat',
+  '/tasks', '/settings', '/knowledge-base', '/calendar', '/profile', '/invoices', '/agents',
+]
 const AUTH_PATHS = ['/login', '/onboarding']
 
 export async function middleware(request: NextRequest) {
@@ -48,6 +51,13 @@ export const config = {
     '/pipeline/:path*',
     '/content/:path*',
     '/chat/:path*',
+    '/tasks/:path*',
+    '/settings/:path*',
+    '/knowledge-base/:path*',
+    '/calendar/:path*',
+    '/profile/:path*',
+    '/invoices/:path*',
+    '/agents/:path*',
     '/login',
     '/onboarding',
   ],

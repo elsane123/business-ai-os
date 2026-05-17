@@ -1,4 +1,4 @@
-"""Agent de priorisation des tâches Business AI OS.
+"""Agent de priorisation des tâches Brainlo.
 
 Analyse les tâches actives et leur attribue un score 0-100
 en fonction du contexte business (cash, prospects, échéances).
