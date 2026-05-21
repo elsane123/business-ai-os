@@ -11,12 +11,13 @@ export async function generateStaticParams() {
 
 // Génère les métadonnées SEO dynamiques par article
 export async function generateMetadata(
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
-  const article = await getArticleBySlug(params.slug)
+  const { slug } = await params
+  const article = await getArticleBySlug(slug)
   if (!article) return { title: 'Article introuvable' }
 
-  const url = `https://brainlo.ai/blog/${params.slug}`
+  const url = `https://brainlo.ai/blog/${slug}`
 
   return {
     title: article.meta_title,
@@ -79,8 +80,9 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   Marketing:    { bg: 'rgba(244,114,182,0.12)', text: '#f472b6' },
 }
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = await getArticleBySlug(params.slug)
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const article = await getArticleBySlug(slug)
   if (!article) notFound()
 
   const cat = CATEGORY_COLORS[article.category] || { bg: 'rgba(99,102,241,0.1)', text: '#818cf8' }
@@ -90,7 +92,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
   return (
     <div style={{ background: '#0a0a14', color: '#f1f5f9', fontFamily: 'Inter, system-ui, sans-serif', minHeight: '100vh' }}>
-      <ArticleJsonLd article={article} slug={params.slug} />
+      <ArticleJsonLd article={article} slug={slug} />
 
       {/* ═══ NAVBAR ═══ */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,

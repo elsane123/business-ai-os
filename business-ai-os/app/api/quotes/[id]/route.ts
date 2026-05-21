@@ -5,13 +5,14 @@ import { getSession } from '@/lib/auth'
 // GET /api/quotes/[id] — récupérer un devis par ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const user = await getSession()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const quote = await prisma.quote.findFirst({
-    where: { id: params.id, userId: user.userId },
+    where: { id, userId: user.userId },
     include: { prospect: { select: { id: true, name: true, company: true, email: true } } }
   })
 
@@ -22,8 +23,9 @@ export async function GET(
 // PATCH /api/quotes/[id] — mettre à jour un devis (statut, lignes, etc.)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const user = await getSession()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -32,7 +34,7 @@ export async function PATCH(
 
   // Vérifier que le devis appartient à l'utilisateur
   const existing = await prisma.quote.findFirst({
-    where: { id: params.id, userId: user.userId }
+    where: { id, userId: user.userId }
   })
   if (!existing) return NextResponse.json({ error: 'Devis introuvable' }, { status: 404 })
 
@@ -74,7 +76,7 @@ export async function PATCH(
   }
 
   const updated = await prisma.quote.update({
-    where: { id: params.id },
+    where: { id },
     data: updateData,
     include: { prospect: { select: { id: true, name: true, company: true } } }
   })
@@ -85,13 +87,14 @@ export async function PATCH(
 // DELETE /api/quotes/[id] — supprimer un devis (uniquement DRAFT)
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const user = await getSession()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const existing = await prisma.quote.findFirst({
-    where: { id: params.id, userId: user.userId }
+    where: { id, userId: user.userId }
   })
   if (!existing) return NextResponse.json({ error: 'Devis introuvable' }, { status: 404 })
   if (existing.status !== 'DRAFT') {
@@ -101,6 +104,6 @@ export async function DELETE(
     )
   }
 
-  await prisma.quote.delete({ where: { id: params.id } })
+  await prisma.quote.delete({ where: { id } })
   return NextResponse.json({ success: true, message: 'Devis supprimé' })
 }

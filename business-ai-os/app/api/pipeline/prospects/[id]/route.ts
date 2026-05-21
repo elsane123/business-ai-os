@@ -4,7 +4,7 @@ import { getSession } from '@/lib/auth'
 import { ingestWikiEvent } from '@/lib/wiki/ingest'
 import { sanitizeText, sanitizeEmail, sanitizePhone } from '@/lib/sanitize'
 
-type RouteContext = { params: { id: string } }
+type RouteContext = { params: Promise<{ id: string }> }
 
 // ── GET /api/pipeline/prospects/:id ──────────────────────────────────────────
 export async function GET(
@@ -12,12 +12,13 @@ export async function GET(
   { params }: RouteContext
 ) {
   try {
+    const { id } = await params
     const session = await getSession()
     if (!session) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
     const prospect = await prisma.prospect.findFirst({
-      where: { id: params.id, userId: session.userId },
+      where: { id, userId: session.userId },
     })
     if (!prospect) {
       return NextResponse.json({ error: 'Prospect introuvable' }, { status: 404 })
@@ -40,7 +41,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
-    const id = params.id
+    const { id } = await params
     if (!id) {
       return NextResponse.json({ error: 'ID requis' }, { status: 400 })
     }
@@ -112,7 +113,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
-    const id = params.id
+    const { id } = await params
     if (!id) {
       return NextResponse.json({ error: 'ID requis' }, { status: 400 })
     }

@@ -4,7 +4,7 @@ import prisma from '@/lib/db'
 import { AGENTS_CATALOG, canActivateAgent } from '@/lib/agents-catalog'
 
 interface RouteParams {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 // POST — Activer un agent
@@ -16,7 +16,7 @@ export async function POST(_req: Request, { params }: RouteParams) {
     }
 
     const userId = session.userId
-    const agentId = params.id
+    const { id: agentId } = await params
 
     // Vérifier que l'agent existe
     const agent = AGENTS_CATALOG.find((a) => a.id === agentId)
@@ -67,7 +67,7 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
     }
 
     const userId = session.userId
-    const agentId = params.id
+    const { id: agentId } = await params
 
     await prisma.agentActivation.deleteMany({
       where: { userId, agentId },

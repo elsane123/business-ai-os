@@ -5,14 +5,15 @@ import { getSession } from '@/lib/auth'
 // PATCH /api/tasks/[id] — met à jour une tâche
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const user = await getSession()
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     const task = await prisma.task.findFirst({
-      where: { id: params.id, userId: user.userId }
+      where: { id, userId: user.userId }
     })
     if (!task) return NextResponse.json({ error: 'Tâche introuvable' }, { status: 404 })
 
@@ -70,7 +71,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.task.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         linkedProspect: {
@@ -89,18 +90,19 @@ export async function PATCH(
 // DELETE /api/tasks/[id] — supprime une tâche
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const user = await getSession()
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     const task = await prisma.task.findFirst({
-      where: { id: params.id, userId: user.userId }
+      where: { id, userId: user.userId }
     })
     if (!task) return NextResponse.json({ error: 'Tâche introuvable' }, { status: 404 })
 
-    await prisma.task.delete({ where: { id: params.id } })
+    await prisma.task.delete({ where: { id } })
 
     return NextResponse.json({ success: true })
   } catch (error) {

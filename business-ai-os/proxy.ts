@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { jwtVerify } from 'jose'
 
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  throw new Error('[FATAL] JWT_SECRET environment variable must be set in production')
+}
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? 'dev-secret-please-change-in-production'
 )
@@ -11,7 +14,7 @@ const PROTECTED_PATHS = [
 ]
 const AUTH_PATHS = ['/login', '/onboarding']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const token = request.cookies.get('auth_token')?.value
 

@@ -6,7 +6,7 @@ import { searchWiki } from '@/lib/wiki/query'
 import { chatCompletion } from '@/lib/openrouter'
 
 interface RouteParams {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 // GET — Historique de conversation
@@ -18,7 +18,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
     }
 
     const userId = session.userId
-    const agentId = params.id
+    const { id: agentId } = await params
 
     const messages = await prisma.agentChatMessage.findMany({
       where: { userId, agentId },
@@ -42,7 +42,7 @@ export async function POST(req: Request, { params }: RouteParams) {
     }
 
     const userId = session.userId
-    const agentId = params.id
+    const { id: agentId } = await params
 
     // Vérifier que l'agent est activé
     const activation = await prisma.agentActivation.findUnique({
@@ -119,7 +119,7 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
     }
 
     const userId = session.userId
-    const agentId = params.id
+    const { id: agentId } = await params
 
     await prisma.agentChatMessage.deleteMany({ where: { userId, agentId } })
 

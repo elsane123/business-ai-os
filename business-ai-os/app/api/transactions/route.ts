@@ -5,8 +5,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GET as CashGET, POST as CashPOST } from '@/app/api/cash/transactions/route'
 
-export async function GET(request: NextRequest) {
-  return CashGET(request)
+export async function GET() {
+  return CashGET()
 }
 
 export async function POST(request: NextRequest) {

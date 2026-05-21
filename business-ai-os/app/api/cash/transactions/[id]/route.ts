@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
-type RouteContext = { params: { id: string } }
+type RouteContext = { params: Promise<{ id: string }> }
 
 // DELETE /api/cash/transactions/:id
 export async function DELETE(
@@ -14,7 +14,7 @@ export async function DELETE(
     if (!session) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
-    const { id } = params
+    const { id } = await params
     if (!id) return NextResponse.json({ error: 'ID requis' }, { status: 400 })
 
     const tx = await prisma.transaction.findFirst({
@@ -40,7 +40,7 @@ export async function PATCH(
     if (!session) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
-    const { id } = params
+    const { id } = await params
     if (!id) return NextResponse.json({ error: 'ID requis' }, { status: 400 })
 
     const tx = await prisma.transaction.findFirst({

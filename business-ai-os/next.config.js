@@ -1,13 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // ─── Dev Origins ───
+  allowedDevOrigins: ['51.159.164.33'],
+
   // ─── Compression & Performance ───
   compress: true,
   poweredByHeader: false,
-
-  // ─── Experimental ───
-  experimental: {
-    serverActions: { allowedOrigins: ['localhost:3000', 'brainlo.ai'] },
-  },
 
   // ─── Variables d'environnement ───
   env: {
@@ -21,15 +19,17 @@ const nextConfig = {
     const securityHeaders = [
       { key: 'X-Content-Type-Options',    value: 'nosniff' },
       { key: 'X-Frame-Options',           value: 'SAMEORIGIN' },
-      { key: 'X-XSS-Protection',          value: '1; mode=block' },
+      { key: 'X-XSS-Protection',          value: '0' }, // Déprécié — remplacé par CSP
       { key: 'Referrer-Policy',           value: 'strict-origin-when-cross-origin' },
       { key: 'Permissions-Policy',        value: 'camera=(), microphone=(), geolocation=()' },
+      { key: 'Cross-Origin-Opener-Policy',   value: 'same-origin-allow-popups' }, // allow-popups pour Stripe
+      { key: 'Cross-Origin-Resource-Policy', value: 'same-site' },
       {
         key: 'Content-Security-Policy',
         value: [
           "default-src 'self'",
-          // BUG-CSP-01 fix: removed 'unsafe-eval' (was only needed for old bundlers, Next.js 14 doesn't require it)
-          "script-src 'self' 'unsafe-inline' https://js.stripe.com",
+          // Next.js 16 dev mode (Turbopack) requires 'unsafe-eval' for debugging features
+          `script-src 'self' 'unsafe-inline'${isProduction ? '' : " 'unsafe-eval'"} https://js.stripe.com`,
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: blob: https:",
@@ -40,8 +40,8 @@ const nextConfig = {
           "form-action 'self'",
         ].join('; '),
       },
-      // HSTS: only activate once HTTPS is confirmed working
-      ...(isProduction && process.env.HTTPS_ENABLED === 'true' ? [{
+      // HSTS: active en production dès que NODE_ENV=production
+      ...(isProduction ? [{
         key: 'Strict-Transport-Security',
         value: 'max-age=63072000; includeSubDomains; preload',
       }] : []),
@@ -77,6 +77,7 @@ const nextConfig = {
       { source: '/signup',  destination: '/onboarding', permanent: true },
       { source: '/register', destination: '/onboarding', permanent: false },
       { source: '/connexion', destination: '/login',  permanent: true },
+      { source: '/fonctionalitee.html', destination: '/fonctionnalites.html', permanent: true },
     ]
   },
 

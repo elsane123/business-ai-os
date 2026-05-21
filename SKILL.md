@@ -1,6 +1,6 @@
 # Brainlo — Skill Complet
 
-> Version : 1.2.0 | Post-QA Sprint | 2026-05-17
+> Version : 1.3.0 | Migration Next.js 16 + React 19 | 2026-05-22
 
 ## Démarrage rapide
 
@@ -31,7 +31,7 @@ npx prisma db push --skip-generate && npx prisma generate && pkill -f 'next dev'
 /a0/usr/projects/business_ai_os/business-ai-os/
 ```
 
-- **Frontend** : Next.js 14 App Router + TypeScript + Tailwind CSS
+- **Frontend** : Next.js 16 App Router + TypeScript + Tailwind CSS (React 19)
 - **Backend** : Next.js API Routes + Python FastAPI
 - **ORM** : Prisma + PostgreSQL (Neon)
 - **Auth** : JWT (jose) + cookie httpOnly
@@ -408,6 +408,23 @@ declaredAt
 ---
 
 ## 🚨 Points d'attention / Bugs connus
+
+### ⚡ Migration Next.js 16 + React 19 (2026-05-22)
+
+**Fichiers modifiés** :
+- `middleware.ts` → renommé en `proxy.ts` (convention Next.js 16), fonction `middleware()` → `proxy()`
+- `lib/auth.ts` → `cookies()` / `setAuthCookie()` / `clearAuthCookie()` maintenant async
+- `next.config.js` → `experimental.serverActions` supprimé + `allowedDevOrigins: ['51.159.164.33']` + CSP `unsafe-eval` en dev
+- Tous les route handlers `[id]` et `[slug]` → `params` devient `Promise<{...}>` + `await params`
+
+**Notes importantes** :
+- React 18.2.0 → **React 19.2.6** : vérifier compatibilité des nouvelles libs UI
+- lucide-react : mis à jour vers **1.16.0** (compatibilité React 19)
+- `allowedDevOrigins` obligatoire pour accès via IP publique en dev
+- `unsafe-eval` requis en mode dev pour Turbopack/React
+- postcss vulnérabilité moderate = dépendance interne Next.js, **ne pas faire `npm audit fix --force`**
+
+---
 
 1. **Prisma : toujours régénérer après schema change**
    ```bash

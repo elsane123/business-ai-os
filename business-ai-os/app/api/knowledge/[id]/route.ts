@@ -7,7 +7,7 @@ import { existsSync } from 'fs'
 
 const WIKI_BASE = process.env.WIKI_BASE_PATH || join(process.cwd(), 'wiki-data')
 
-type RouteContext = { params: { id: string } }
+type RouteContext = { params: Promise<{ id: string }> }
 
 // GET /api/knowledge/:id — récupérer un document
 export async function GET(
@@ -15,11 +15,12 @@ export async function GET(
   { params }: RouteContext
 ) {
   try {
+    const { id } = await params
     const user = await getSession()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const doc = await prisma.knowledgeDocument.findFirst({
-      where: { id: params.id, userId: user.userId },
+      where: { id, userId: user.userId },
     })
 
     if (!doc) return NextResponse.json({ error: 'Document introuvable' }, { status: 404 })
@@ -37,12 +38,13 @@ export async function DELETE(
   { params }: RouteContext
 ) {
   try {
+    const { id } = await params
     const user = await getSession()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     // Vérifier que le document appartient à l'utilisateur
     const doc = await prisma.knowledgeDocument.findFirst({
-      where: { id: params.id, userId: user.userId },
+      where: { id, userId: user.userId },
     })
 
     if (!doc) return NextResponse.json({ error: 'Document introuvable' }, { status: 404 })
@@ -58,7 +60,7 @@ export async function DELETE(
     }
 
     // Supprimer le fichier de contenu extrait si présent
-    const contentPath = join(WIKI_BASE, user.userId, 'knowledge', `${params.id}.md`)
+    const contentPath = join(WIKI_BASE, user.userId, 'knowledge', `${id}.md`)
     if (existsSync(contentPath)) {
       try {
         await unlink(contentPath)
@@ -69,10 +71,10 @@ export async function DELETE(
 
     // Supprimer l'entrée en base de données
     await prisma.knowledgeDocument.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
-    return NextResponse.json({ success: true, deleted: params.id })
+    return NextResponse.json({ success: true, deleted: id })
   } catch (error) {
     console.error('[knowledge/[id] DELETE]', error)
     return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
