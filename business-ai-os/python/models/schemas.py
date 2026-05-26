@@ -167,3 +167,50 @@ class WikiLintResponse(BaseModel):
     pages_cleaned: int
     bytes_freed: int
     issues: list[str] = []
+
+
+# ── Factur-X ──────────────────────────────────────────────────────────────────
+
+class FacturXLine(BaseModel):
+    title: str
+    description: Optional[str] = None
+    qty: float
+    unitPrice: float
+    vatRate: float
+    unit: Optional[str] = None
+
+class FacturXProspect(BaseModel):
+    name: str
+    company: Optional[str] = None
+    email: Optional[str] = None
+
+class FacturXInvoice(BaseModel):
+    id: str
+    number: str
+    status: str
+    lines: list[FacturXLine]
+    subtotalHT: float
+    totalVAT: float
+    totalTTC: float
+    createdAt: str
+    dueDate: Optional[str] = None
+    paidAt: Optional[str] = None
+    notes: Optional[str] = None
+    prospect: Optional[FacturXProspect] = None
+
+class FacturXSeller(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    businessName: Optional[str] = None
+    legalName: Optional[str] = None
+    address: Optional[str] = None
+    zipCode: Optional[str] = None
+    city: Optional[str] = None
+    siret: Optional[str] = None
+    legalForm: Optional[str] = None
+    vatNumber: Optional[str] = None
+    invoiceFooter: Optional[str] = None
+
+class FacturXRequest(BaseModel):
+    invoice: FacturXInvoice
+    seller: FacturXSeller

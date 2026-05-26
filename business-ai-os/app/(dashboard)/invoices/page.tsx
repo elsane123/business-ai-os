@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -78,12 +78,28 @@ const fmtDate = (d?: string) => d ? new Date(d).toLocaleDateString('fr-FR') : '�
 
 // ─── Line Editor Component ────────────────────────────────────────────────────
 function LineEditor({ lines, onChange }: { lines: QuoteLine[]; onChange: (l: QuoteLine[]) => void }) {
+  const [rawPrices, setRawPrices] = useState<string[]>(() => lines.map(l => l.unitPrice ? String(l.unitPrice) : ''))
+
   const update = (i: number, field: keyof QuoteLine, value: string | number) => {
     const next = lines.map((l, idx) => idx === i ? { ...l, [field]: value } : l)
     onChange(next)
   }
-  const addLine = () => onChange([...lines, { ...EMPTY_LINE }])
-  const removeLine = (i: number) => onChange(lines.filter((_, idx) => idx !== i))
+  const addLine = () => {
+    onChange([...lines, { ...EMPTY_LINE }])
+    setRawPrices(prev => [...prev, ''])
+  }
+  const removeLine = (i: number) => {
+    onChange(lines.filter((_, idx) => idx !== i))
+    setRawPrices(prev => prev.filter((_, idx) => idx !== i))
+  }
+
+  const handlePriceChange = (i: number, raw: string) => {
+    const next = [...rawPrices]
+    next[i] = raw
+    setRawPrices(next)
+    const parsed = parseFloat(raw.replace(',', '.')) || 0
+    update(i, 'unitPrice', parsed)
+  }
 
   const subtotalHT = lines.reduce((s, l) => s + l.qty * l.unitPrice, 0)
   const totalVAT = lines.reduce((s, l) => s + l.qty * l.unitPrice * (l.vatRate / 100), 0)
@@ -103,7 +119,7 @@ function LineEditor({ lines, onChange }: { lines: QuoteLine[]; onChange: (l: Quo
         <div key={i} className="grid grid-cols-12 gap-2 items-center bg-[#1a1a2e] rounded-lg p-2">
           <input className="col-span-4 bg-transparent text-white text-sm outline-none border-b border-[#2a2a42] focus:border-[#4f46e5] px-1 py-0.5" placeholder="Titre de la prestation" value={line.title} onChange={e => update(i, 'title', e.target.value)} />
           <input type="number" min="0.01" step="0.01" className="col-span-2 bg-transparent text-white text-sm outline-none border-b border-[#2a2a42] focus:border-[#4f46e5] px-1 py-0.5" value={line.qty} onChange={e => update(i, 'qty', parseFloat(e.target.value) || 0)} />
-          <input type="number" min="0" step="0.01" className="col-span-2 bg-transparent text-white text-sm outline-none border-b border-[#2a2a42] focus:border-[#4f46e5] px-1 py-0.5" placeholder="0.00" value={line.unitPrice} onChange={e => update(i, 'unitPrice', parseFloat(e.target.value) || 0)} />
+          <input type="text" inputMode="decimal" className="col-span-2 bg-transparent text-white text-sm outline-none border-b border-[#2a2a42] focus:border-[#4f46e5] px-1 py-0.5" placeholder="0.00" value={rawPrices[i] ?? (line.unitPrice || '')} onChange={e => handlePriceChange(i, e.target.value)} />
           <select className="col-span-2 bg-[#1a1a2e] text-white text-sm outline-none border-b border-[#2a2a42] focus:border-[#4f46e5] px-1 py-0.5" value={line.vatRate} onChange={e => update(i, 'vatRate', parseInt(e.target.value))}>
             {VAT_RATES.map(r => <option key={r} value={r}>{r === 0 ? 'Exonéré' : `${r}%`}</option>)}
           </select>
@@ -225,6 +241,10 @@ export default function InvoicesPage() {
   const [clientCity, setClientCity] = useState('')
   const [clientSiret, setClientSiret] = useState('')
   const [clientEmail, setClientEmail] = useState('')
+  const [enrichResults, setEnrichResults] = useState<{name:string;siret:string;city:string;postalCode:string;address:string}[]>([])
+  const [enrichLoading, setEnrichLoading] = useState(false)
+  const [showEnrichDropdown, setShowEnrichDropdown] = useState(false)
+  const enrichTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [editingQuoteId, setEditingQuoteId] = useState<string | null>(null)
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
@@ -237,6 +257,36 @@ export default function InvoicesPage() {
   const [saving, setSaving] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [showBriefModal, setShowBriefModal] = useState(false)
+
+  const handleClientNameSearch = (value: string) => {
+    setClientName(value)
+    setShowEnrichDropdown(false)
+    if (enrichTimeoutRef.current) clearTimeout(enrichTimeoutRef.current)
+    if (value.length < 2) { setEnrichResults([]); return }
+    enrichTimeoutRef.current = setTimeout(async () => {
+      setEnrichLoading(true)
+      try {
+        const res = await fetch(`/api/pipeline/enrich?q=${encodeURIComponent(value)}`)
+        if (res.ok) {
+          const data = await res.json()
+          setEnrichResults(data.results || [])
+          setShowEnrichDropdown((data.results || []).length > 0)
+        }
+      } catch { /* ignore */ } finally {
+        setEnrichLoading(false)
+      }
+    }, 500)
+  }
+
+  const applyClientEnrichment = (r: {name:string;siret:string;city:string;postalCode:string;address:string}) => {
+    setClientName(r.name)
+    setClientSiret(r.siret)
+    setClientCity(r.city)
+    setClientZip(r.postalCode)
+    setClientAddress(r.address)
+    setShowEnrichDropdown(false)
+    setEnrichResults([])
+  }
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -335,8 +385,11 @@ export default function InvoicesPage() {
     setShowModal(true)
   }
 
+  const [createError, setCreateError] = useState('')
+
   const handleCreate = async () => {
     setSaving(true)
+    setCreateError('')
     const url = modalType === 'quote' ? '/api/quotes' : '/api/invoices'
     const clientInfo = { name: clientName, address: clientAddress, zipCode: clientZip, city: clientCity, siret: clientSiret, email: clientEmail }
     const method = editingQuoteId ? 'PATCH' : 'POST'
@@ -347,6 +400,9 @@ export default function InvoicesPage() {
     if (res.ok) {
       setShowModal(false)
       loadData()
+    } else {
+      const data = await res.json().catch(() => ({}))
+      setCreateError(data.error || `Erreur ${res.status}`)
     }
     setSaving(false)
   }
@@ -423,7 +479,7 @@ export default function InvoicesPage() {
       </div>
 
       <div className="flex gap-1 mb-4 bg-[#151524] border border-[#2a2a42] rounded-lg p-1 w-fit">
-        <button onClick={() => setTab('quotes')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === 'quotes' ? 'bg-indigo-600 text-white' : 'text-[#6b7280] hover:text-white'}`}>📋 Devis ({quotes.length})</button>
+        <button onClick={() => setTab('quotes')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === 'quotes' ? 'bg-indigo-600 text-white' : 'text-[#6b7280] hover:text-white'}`}>📋 Devis ({quotes.filter(q => !q.invoiceId).length})</button>
         <button onClick={() => setTab('invoices')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === 'invoices' ? 'bg-indigo-600 text-white' : 'text-[#6b7280] hover:text-white'}`}>🧾 Factures ({invoices.length})</button>
       </div>
 
@@ -439,7 +495,7 @@ export default function InvoicesPage() {
               <button onClick={() => openModal('quote')} className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">+ Nouveau devis</button>
             </div>
           )}
-          {quotes.map(quote => (
+          {quotes.filter(q => !q.invoiceId).map(quote => (
             <div key={quote.id} className="bg-[#151524] border border-[#2a2a42] rounded-xl p-4 hover:border-indigo-500/30 transition-colors">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
@@ -464,7 +520,7 @@ export default function InvoicesPage() {
                     </>}
                     {quote.status === 'ACCEPTED' && !quote.invoiceId && <button disabled={actionLoading === quote.id} onClick={() => convertToInvoice(quote.id)} className="text-xs px-2 py-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 rounded font-medium">→ Facturer</button>}
                     {quote.status === 'DRAFT' && <button disabled={actionLoading === quote.id} onClick={() => deleteDoc(quote.id, 'quote')} className="text-xs px-2 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded">Sup.</button>}
-                    {quote.status === 'DRAFT' && <button onClick={() => openEditModal(quote)} className="text-xs px-2 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded">✏️ Modifier</button>}
+                    {!['ACCEPTED', 'DECLINED'].includes(quote.status) && <button onClick={() => openEditModal(quote)} className="text-xs px-2 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded">✏️ Modifier</button>}
                     <button onClick={() => window.open(`/print/quote/${quote.id}`, '_blank')} className="text-xs px-2 py-1 bg-gray-500/10 hover:bg-gray-500/20 text-gray-400 rounded">🖨️ PDF</button>
                   </div>
                 </div>
@@ -510,6 +566,7 @@ export default function InvoicesPage() {
                     {['SENT','OVERDUE'].includes(invoice.status) && <button disabled={actionLoading === invoice.id} onClick={() => updateInvoiceStatus(invoice.id, 'PAID')} className="text-xs px-2 py-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded font-medium">✓ Payée</button>}
                     {invoice.status === 'DRAFT' && <button disabled={actionLoading === invoice.id} onClick={() => deleteDoc(invoice.id, 'invoice')} className="text-xs px-2 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded">Sup.</button>}
                     <button onClick={() => window.open(`/print/invoice/${invoice.id}`, '_blank')} className="text-xs px-2 py-1 bg-gray-500/10 hover:bg-gray-500/20 text-gray-400 rounded">🖨️ PDF</button>
+                    <a href={`/api/invoices/${invoice.id}/facturx`} download className="text-xs px-2 py-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 rounded inline-flex items-center gap-1">⬇️ Factur-X</a>
                   </div>
                 </div>
               </div>
@@ -529,9 +586,26 @@ export default function InvoicesPage() {
               <div className="mb-4 p-3 bg-[#1a1a2e] rounded-xl border border-[#2a2a42]">
                 <p className="text-xs text-[#6b7280] mb-3 font-medium uppercase tracking-wide">Informations client</p>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="col-span-2">
-                    <input value={clientName} onChange={e => setClientName(e.target.value)} className="w-full bg-transparent text-white text-sm outline-none border-b border-[#2a2a42] focus:border-[#4f46e5] px-1 py-1" placeholder="Nom du client ou société *" />
-                  </div>
+                   <div className="col-span-2 relative">
+                     <div className="flex items-center gap-2">
+                       <input value={clientName} onChange={e => handleClientNameSearch(e.target.value)} onBlur={() => setTimeout(() => setShowEnrichDropdown(false), 200)} className="w-full bg-transparent text-white text-sm outline-none border-b border-[#2a2a42] focus:border-[#4f46e5] px-1 py-1" placeholder="Nom du client ou société *" />
+                       {enrichLoading && <span className="text-[10px] text-indigo-400 animate-pulse">⏳</span>}
+                       {clientSiret && !enrichLoading && <span className="text-[10px] text-green-400">✓ SIRET</span>}
+                     </div>
+                     {showEnrichDropdown && enrichResults.length > 0 && (
+                       <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-[#1a1a2e] border border-[#2a2a42] rounded-lg shadow-2xl overflow-hidden">
+                         {enrichResults.map((r, i) => (
+                           <button key={i} type="button" onMouseDown={() => applyClientEnrichment(r)} className="w-full text-left px-3 py-2 hover:bg-[#2a2a42] transition-colors border-b border-[#2a2a42] last:border-0">
+                             <div className="text-sm text-white font-medium truncate">{r.name}</div>
+                             <div className="flex gap-2 mt-0.5">
+                               {r.city && <span className="text-[10px] text-[#818cf8]">📍 {r.city}</span>}
+                               {r.siret && <span className="text-[10px] text-gray-400">SIRET {r.siret.slice(0,9)}...</span>}
+                             </div>
+                           </button>
+                         ))}
+                       </div>
+                     )}
+                   </div>
                   <div className="col-span-2">
                     <input value={clientAddress} onChange={e => setClientAddress(e.target.value)} className="w-full bg-transparent text-white text-sm outline-none border-b border-[#2a2a42] focus:border-[#4f46e5] px-1 py-1" placeholder="Adresse" />
                   </div>
@@ -564,6 +638,11 @@ export default function InvoicesPage() {
               <label className="text-xs text-[#6b7280] mb-1 block">Notes (optionnel)</label>
               <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className="w-full bg-[#1a1a2e] border border-[#2a2a42] text-white rounded-lg px-3 py-2 text-sm resize-none" placeholder="Conditions particulières, mentions..." />
             </div>
+            {createError && (
+              <div className="mt-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-400">
+                ⚠️ {createError}
+              </div>
+            )}
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setShowModal(false)} className="px-4 py-2 text-[#6b7280] hover:text-white text-sm transition-colors">Annuler</button>
               <button onClick={handleCreate} disabled={saving || lines.every(l => !l.title)} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors">

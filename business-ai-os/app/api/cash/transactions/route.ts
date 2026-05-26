@@ -45,6 +45,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Montant invalide' }, { status: 400 })
     }
 
+    const tvaRate = body.tvaRate !== undefined ? parseFloat(body.tvaRate) : 0
+
     const transaction = await prisma.transaction.create({
       data: {
         userId: session.userId,
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
         category,
         description: description || '',
         date: new Date(date),
+        tvaRate: isNaN(tvaRate) ? 0 : tvaRate,
       },
     })
 

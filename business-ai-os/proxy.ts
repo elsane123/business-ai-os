@@ -12,7 +12,7 @@ const PROTECTED_PATHS = [
   '/focus', '/cash', '/pipeline', '/content', '/chat',
   '/tasks', '/settings', '/knowledge-base', '/calendar', '/profile', '/invoices', '/agents',
 ]
-const AUTH_PATHS = ['/login', '/onboarding']
+const AUTH_PATHS = ['/login']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -62,6 +62,5 @@ export const config = {
     '/invoices/:path*',
     '/agents/:path*',
     '/login',
-    '/onboarding',
   ],
 }

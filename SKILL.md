@@ -1,22 +1,24 @@
 # Brainlo — Skill Complet
 
-> Version : 1.3.0 | Migration Next.js 16 + React 19 | 2026-05-22
+> Version : 1.4.0 | Onboarding simplifié + UX Activation + WCAG + E2E | 2026-05-26
 
 ## Démarrage rapide
 
 Avant toute tâche, charger ce skill pour avoir le contexte complet du projet.
 
 ```bash
-# Démarrer le serveur Next.js
-cd /a0/usr/projects/business_ai_os/business-ai-os
-nohup npm run dev -- -p 50082 > /a0/usr/projects/business_ai_os/nextjs.out.log 2>&1 &
+# ⚡ Démarrer le serveur Next.js (MODE PRODUCTION)
+cd /a0/usr/projects/business_ai_os
+nohup npm start --prefix business-ai-os -- -p 50082 > nextjs.out.log 2>&1 & echo $! > nextjs.pid
 # Démarrer le serveur Python
 nohup bash /a0/usr/projects/business_ai_os/start-python.sh > /a0/usr/projects/business_ai_os/python.out.log 2>&1 &
 # Vérifier que les deux serveurs sont UP
-curl -s http://localhost:50082/api/health 2>/dev/null || echo 'Next.js starting...'
+curl -s -o /dev/null -w '%{http_code}' http://localhost:50082/onboarding
 curl -s http://localhost:8000/health
-# Après modifications Prisma
-npx prisma db push --skip-generate && npx prisma generate && pkill -f 'next dev' && [restart]
+# Après modifications Prisma (rebuild requis en prod)
+npx prisma db push && npx prisma generate && cd /a0/usr/projects/business_ai_os/business-ai-os && npm run build && pkill -f 'next-server' && nohup npm start -- -p 50082 > ../nextjs.out.log 2>&1 &
+# Après modifications code (rebuild requis en prod)
+cd /a0/usr/projects/business_ai_os/business-ai-os && npm run build && pkill -f 'next-server' && nohup npm start -- -p 50082 > ../nextjs.out.log 2>&1 &
 ```
 
 **URLs** : http://51.159.164.33:50082 (frontend) · http://localhost:8000 (Python API)
@@ -69,7 +71,10 @@ brainlo/
 ├── app/
 │   ├── (auth)/
 │   │   ├── login/page.tsx
-│   │   └── onboarding/page.tsx          # Wizard 7 étapes enrichi
+│   │   ├── onboarding/page.tsx          # 3 étapes simplifiées + WHY callouts
+│   │   ├── error.tsx                    # Error boundary auth
+│   ├── error.tsx                        # Error boundary pages publiques
+│   ├── global-error.tsx                 # Error boundary root (crash total)
 │   ├── (dashboard)/
 │   │   ├── focus/page.tsx               # Daily Focus v2 (Score+Streak+Historique)
 │   │   ├── cash/page.tsx                # Trésorerie + Runway + URSSAF + TVA
@@ -79,8 +84,13 @@ brainlo/
 │   │   ├── invoices/page.tsx            # Devis + Factures
 │   │   ├── tasks/page.tsx               # Tâches
 │   │   ├── knowledge-base/page.tsx      # Base de connaissances
-│   │   └── settings/page.tsx            # Profil + Paramètres fiscaux
+│   │   ├── settings/page.tsx            # Profil + Paramètres fiscaux + Enrichir profil
+│   │   ├── layout.tsx                   # Dashboard layout (skip-nav, checklist, sidebar)
+│   │   └── error.tsx                    # Error boundary dashboard
 │   └── api/
+│       ├── user/
+│       │   ├── onboarding/route.ts      # GET progression checklist / POST marquer étape
+│       │   └── enrichment/route.ts      # GET/PATCH profil enrichi + score complétion
 │       ├── focus/
 │       │   ├── route.ts                 # GET/POST/PATCH actions + wiki ingest
 │       │   ├── streak/route.ts          # Calcul série + heatmap 14j
@@ -129,9 +139,24 @@ brainlo/
 │   │   ├── ChatBrain.tsx
 │   │   ├── CashWidget.tsx
 │   │   ├── PipelineKanban.tsx
-│   │   └── CalendarWidget.tsx
-│   ├── layout/ (Sidebar, MobileNav, Header)
-│   └── ui/ (Button, Card, Badge, Input, UpgradeBanner)
+│   │   ├── CalendarWidget.tsx
+│   │   └── OnboardingChecklist.tsx      # Checklist 9 étapes + auto-détection + progressbar
+│   ├── layout/
+│   │   ├── Sidebar.tsx                  # aria-current, aria-label, badges PRO
+│   │   ├── MobileNav.tsx
+│   │   └── Header.tsx
+│   └── ui/
+│       ├── Button.tsx, Card.tsx, Badge.tsx, Input.tsx
+│       ├── UpgradeBanner.tsx            # Bandeau upgrade FREE→PRO
+│       ├── ProBadge.tsx                 # Badge PRO + tooltip upgrade (sidebar)
+│       └── ErrorBoundary.tsx            # Composant classe React réutilisable
+├── e2e/                                 # Tests Playwright E2E
+│   ├── global.setup.ts                  # Auth setup → .playwright/auth.json
+│   ├── auth.spec.ts                     # Login valid/invalid, forgot-password
+│   ├── dashboard.spec.ts                # Checklist, PRO badges, navigation
+│   ├── pipeline.spec.ts                 # Prospects CRUD
+│   ├── tasks.spec.ts                    # Tâches CRUD
+│   └── settings.spec.ts                 # Settings, anchres #enrich #calcom
 ├── lib/
 │   ├── wiki/ (reader, writer, ingest, query)
 │   ├── db.ts, auth.ts, openrouter.ts, resend.ts, stripe.ts
@@ -170,6 +195,9 @@ activityType    // SERVICE_BNC | SERVICE_BIC | COMMERCE | LIBERAL
 urssafRate      // taux en % (ex: 22.0)
 urssafPeriodicity // MONTHLY | QUARTERLY  
 tvaThreshold    // seuil franchise TVA (ex: 36800)
+// Activation & enrichissement profil (v1.4.0)
+onboardingProgress Json? // {completed: ["account","sector",...], dismissedAt?: ISO}
+profileEnrichment  Json? // {offers:{...}, icp:{...}, location:{...}, brief:"..."}
 ```
 
 ### Prospect (champs enrichissement)
@@ -314,20 +342,18 @@ declaredAt
 
 ---
 
-### 📋 Onboarding v2.0 (7 étapes)
+### 📋 Onboarding v3.0 (3 étapes simplifiées)
 
-**Page** : `app/(auth)/onboarding/page.tsx`
+**Page** : `app/(auth)/onboarding/page.tsx` (449 lignes)
 
-| Étape | Contenu |
-|---|---|
-| 0 | Boot screen animé |
-| 1 | Identité : nom, email, mot de passe, entreprise |
-| 2 | Activité : secteur, objectif CA, charges, description |
-| 3 | Offres : type, description, panier moyen, durée |
-| 4 | Stratégie & ICP : client idéal, problème résolu, concurrents |
-| 5 | Localisation : ville, pays, zone de prospection, langues |
-| 6 | Documentation : coller brief/pitch ou importer .txt/.md |
-| 7 | Activation : création compte + ingest wiki + redirection |
+| Étape | Contenu | WHY callout |
+|---|---|---|
+| 0 | Boot screen animé | — |
+| 1 | Compte : nom, email, mot de passe, entreprise | 🔐 Sécurise · 🧠 Agents IA · 📋 Devis · ⚡ Focus |
+| 2 | Profil rapide : secteur (chips), CA mensuel (optionnel), description (optionnel) | 🤖 Calibre agents · 💡 Daily Focus · 📣 LinkedIn · 👥 Relances |
+| 3 | Activation : création compte + ingest wiki + redirection | — |
+
+**Champs déplacés** vers `Settings > Enrichir mon profil` : Offres, ICP/Stratégie, Localisation, Brief.
 
 **Wiki générée automatiquement à l'inscription** :
 - `BRAIN.md` — profil complet entreprise
@@ -335,6 +361,44 @@ declaredAt
 - `content/competitors.md` — concurrents + différenciateur
 - `business/messages.md` — proposition de valeur + templates
 - `business/documentation.md` — brief/pitch collé
+
+---
+
+### 🚀 UX Activation — Onboarding Checklist & PRO Badges (v1.4.0)
+
+**Checklist 9 étapes** : `components/dashboard/OnboardingChecklist.tsx`
+
+| ID | Étape | Auto-détection | PRO |
+|---|---|---|---|
+| `account` | Créer votre compte | Toujours coché | Non |
+| `sector` | Renseigner votre secteur | `user.sector` non vide | Non |
+| `prospect` | Ajouter votre 1er prospect | Compte prospects > 0 | Non |
+| `task` | Créer votre première tâche | Compte tâches > 0 | Non |
+| `focus` | Générer votre Daily Focus | Entrée focus aujourd'hui | Non |
+| `chat` | Essayer le Chat IA | Manuel | Oui |
+| `agents` | Explorer les Agents IA | Manuel | Oui |
+| `enrich` | Enrichir votre profil | `profileEnrichment` non vide | Non |
+| `calcom` | Connecter Cal.com | `calcomBookingUrl` renseigné | Non |
+
+- Visible 30 premiers jours, masquable (localStorage)
+- Skip-nav, `aria-expanded`, `role="progressbar"` (WCAG)
+- API : `GET /api/user/onboarding` (auto-détection + manuel) / `POST` (marquer étape)
+
+**Badges PRO sidebar** : `components/ui/ProBadge.tsx`
+- Sur : LinkedIn, Chat, Agents IA, Base de connaissance
+- Tooltip upgrade au survol → CTA "Passer à Solo Pro — 29€/mois"
+- Mode réduit : point violet discret
+
+**Settings > Enrichir mon profil** : `app/(dashboard)/settings/page.tsx` (sections `id="enrich"` et `id="calcom"`)
+
+| Section | Score | Débloque |
+|---|---|---|
+| 📦 Offres & Pricing | 25% | Devis IA, Relances pricing |
+| 🎯 ICP & Stratégie | 50% | Agents relance, Posts LinkedIn ciblés |
+| 🌍 Localisation & Marché | 75% | Prospection géolocalisée |
+| 📄 Brief Commercial | 100% | Chat IA contextualisé, Brain enrichi |
+
+- API : `GET/PATCH /api/user/enrichment` (score calculé côté serveur)
 
 
 ---
@@ -398,12 +462,43 @@ declaredAt
 - JWT retiré du response body (login + register) → cookie httpOnly exclusif
 - XSS sanitisation sur toutes les entrées pipeline/prospects
 - Middleware étendu à 13 routes protégées
-- CSP + HSTS headers dans `next.config.js`
+- CSP + HSTS headers dans `next.config.js` (HSTS actif automatiquement quand `NODE_ENV=production`)
 - Rate limiting brute-force sur `POST /api/auth/login`
 
 **Variables d'environnement ajoutées** :
 - `CRON_SECRET` — Secret partagé pour authentifier les cron jobs
 - `PYTHON_API_URL` — URL du microservice Python (défaut: `http://localhost:8000`)
+
+---
+
+### 🧪 Qualité — Error Boundaries, Tests E2E Playwright, WCAG (v1.4.0)
+
+**Error Boundaries (5 fichiers)** :
+- `app/global-error.tsx` — crash total root layout (inclut `<html>` et `<body>`)
+- `app/error.tsx` — pages publiques (landing, blog)
+- `app/(dashboard)/error.tsx` — toutes les pages dashboard
+- `app/(auth)/error.tsx` — pages auth (login, onboarding)
+- `components/ui/ErrorBoundary.tsx` — composant classe React réutilisable (`<ErrorBoundary fallback={...}>`)
+
+**Tests E2E Playwright** (dossier `e2e/`, 24 tests, 96% pass rate) :
+```bash
+npm run test:e2e           # Lancer tous les tests
+npm run test:e2e:report    # Ouvrir le rapport HTML
+```
+- `e2e/global.setup.ts` — Auth setup, sauvegarde session dans `.playwright/auth.json`
+- `e2e/auth.spec.ts` — Login valide/invalide, forgot-password, route protégée
+- `e2e/dashboard.spec.ts` — Checklist, % progression, badges PRO, navigation sidebar
+- `e2e/pipeline.spec.ts` — Chargement, bouton nouveau prospect, création
+- `e2e/tasks.spec.ts` — Chargement, bouton nouvelle tâche, création
+- `e2e/settings.spec.ts` — Sections, ancres #enrich et #calcom, score profil
+
+**Accessibilité WCAG 2.1 AA** (score estimé 78/100) :
+- `globals.css` — `.skip-nav`, `.sr-only`, `focus-visible`, `prefers-reduced-motion`
+- `layout.tsx` — `<a href="#main-content" className="skip-nav">` + `<main id="main-content" tabIndex={-1}>`
+- `Sidebar.tsx` — `<nav aria-label="Navigation principale">` + `aria-current="page"` sur lien actif
+- `OnboardingChecklist.tsx` — `<button aria-expanded>` (remplacement div), `role="progressbar"`, `aria-live`
+- `login/page.tsx` — `htmlFor`/`id` sur tous les champs + `autoComplete`
+- `onboarding/page.tsx` — composant `Field` génère `id` auto depuis le label
 
 ---
 
@@ -460,13 +555,21 @@ declaredAt
 
 ## 📋 Roadmap — Prochaines fonctionnalités
 
+### Phase 0 — UX Activation & Qualité (v1.4.0) ✅
+- [x] **Onboarding 3 étapes** — ✅ Livré : formulaire simplifié + WHY callouts
+- [x] **Checklist dashboard** — ✅ Livré : 9 étapes, auto-détection, ARIA, 30 jours
+- [x] **Badges PRO sidebar** — ✅ Livré : 4 items + tooltip upgrade
+- [x] **Settings > Enrichir mon profil** — ✅ Livré : score 0-100%, 4 jalons, API enrichment
+- [x] **Error Boundaries** — ✅ Livré : 5 fichiers, toutes les routes couvertes
+- [x] **Tests E2E Playwright** — ✅ Livré : 24 tests, 96% pass rate
+- [x] **WCAG 2.1 AA** — ✅ Livré : skip-nav, aria-current, aria-live, focus-visible, htmlFor/id
+
 ### Phase 1 — Quick wins
 - [x] **Notification email Daily Focus** — ✅ Livré : email 8h UTC tous les users PRO via `POST /api/cron/daily-focus`
 - [x] **Rapport mensuel PDF** — ✅ Livré : `/api/reports/monthly` + email HTML + cron 1er du mois
 - [x] **Wiki Lint** — ✅ Livré : `python/agents/wiki_lint.py` + cron chaque lundi
 - [ ] **Silence Detector** — prospects sans contact > X jours → alerte Daily Focus
 - [ ] **Cold Outreach Sequencer** — 3 messages personnalisés depuis fiche prospect
-- [x] **Rapport mensuel** — ✅ Livré : `/api/reports/monthly` + email HTML mensuel + cron 1er du mois
 
 ### Phase 2 — Croissance
 - [ ] **Social Listening X** — monitor mots-clés via API X (secrets disponibles)
@@ -499,8 +602,11 @@ declaredAt
 
 ## 📄 Fichiers de référence
 
+- `/a0/usr/projects/business_ai_os/TODO.md` — **Roadmap et tâches restantes** (14 items, mis à jour v1.4.0)
 - `/a0/usr/projects/business_ai_os/fonctionnalites_daily_focus.md` — Spec complète Daily Focus v2.0
 - `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md` — Doc technique générale (v1.2.0)
-- `/a0/usr/projects/business_ai_os/Rapport QA Cycle 3 _ Brainlo.md` — Dernier rapport QA (score 7.0/10 → 8.5/10 estimé)
+- `/a0/usr/projects/business_ai_os/Rapport de Tests Fonctionnels _ Brainlo.md` — Rapport QA fonctionnel (21/22 tests)
 - `/a0/usr/projects/business_ai_os/business-ai-os/.env` — Variables d'environnement
 - `/a0/usr/projects/business_ai_os/business-ai-os/prisma/schema.prisma` — Schéma DB complet
+- `/a0/usr/projects/business_ai_os/business-ai-os/playwright.config.ts` — Configuration E2E Playwright
+- `/a0/usr/projects/business_ai_os/business-ai-os/next.config.js` — Headers HTTP, CSP, HSTS, cache

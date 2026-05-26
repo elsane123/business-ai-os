@@ -1,6 +1,7 @@
 import Sidebar from '@/components/layout/Sidebar'
 import { MobileNav } from '@/components/layout/MobileNav'
 import UpgradeBanner from '@/components/ui/UpgradeBanner'
+import OnboardingChecklist from '@/components/dashboard/OnboardingChecklist'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 
@@ -36,10 +37,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex min-h-screen bg-[#0f0f1a]">
-      <Sidebar userEmail={userEmail} userInitials={userInitials} />
+      {/* Skip navigation — WCAG 2.4.1 */}
+      <a href="#main-content" className="skip-nav">
+        Aller au contenu principal
+      </a>
+      <Sidebar userEmail={userEmail} userInitials={userInitials} plan={plan} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <UpgradeBanner plan={plan} />
-        <main className="flex-1 overflow-auto pb-20 md:pb-0">
+        <OnboardingChecklist plan={plan} />
+        <main id="main-content" className="flex-1 overflow-auto pb-20 md:pb-0" tabIndex={-1}>
           {children}
         </main>
       </div>

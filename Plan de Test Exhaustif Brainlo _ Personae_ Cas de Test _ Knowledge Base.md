@@ -70,7 +70,7 @@ La stratégie repose sur **5 niveaux de test** :
 | Champ | Valeur |
 |-------|--------|
 | **Nom** | Sophie Martin |
-| **Email** | `sophie@designstudio.fr` |
+| **Email** | `elsane.tiberini@gmail.com` *(adresse réelle — tests email)* |
 | **Mot de passe** | `SophieTest2026!` |
 | **Entreprise** | Design Studio SM |
 | **SIRET** | 81234567800012 |
@@ -94,7 +94,7 @@ La stratégie repose sur **5 niveaux de test** :
 | Champ | Valeur |
 |-------|--------|
 | **Nom** | Marc Lefebvre |
-| **Email** | `marc@conseiltech.fr` |
+| **Email** | `sales@quotium.com` *(adresse réelle — tests email)* |
 | **Mot de passe** | `MarcTest2026!` |
 | **Entreprise** | ConseilTech SARL |
 | **SIRET** | 52345678900034 |
@@ -118,7 +118,7 @@ La stratégie repose sur **5 niveaux de test** :
 | Champ | Valeur |
 |-------|--------|
 | **Nom** | Julie Moreau |
-| **Email** | `julie@agencecreative.com` |
+| **Email** | `elsane@yahoo.fr` *(adresse réelle — tests email)* |
 | **Mot de passe** | `JulieTest2026!` |
 | **Entreprise** | Julie Creative |
 | **SIRET** | 91234567800056 |

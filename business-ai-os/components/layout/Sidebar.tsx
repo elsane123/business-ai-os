@@ -3,29 +3,31 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import BrainloLogo from '@/components/ui/BrainloLogo'
+import ProBadge from '@/components/ui/ProBadge'
 
 const navItems = [
-  { icon: '🎯', label: 'Diagnostic IA', href: '/assessment' },
-  { icon: '⚡', label: 'Focus', href: '/focus' },
-  { icon: '📋', label: 'Tâches', href: '/tasks' },
-  { icon: '👥', label: 'Pipeline', href: '/pipeline' },
-  { icon: '📄', label: 'Devis & Factures', href: '/invoices' },
-  { icon: '💰', label: 'Cash', href: '/cash' },
-  { icon: '📣', label: 'LinkedIn', href: '/content' },
-  { icon: '🧠', label: 'Chat', href: '/chat' },
-  { icon: '🤖', label: 'Agents IA', href: '/agents' },
-  { icon: '📚', label: 'Base de connaissance', href: '/knowledge-base' },
-  { icon: '⚙️', label: 'Paramètres', href: '/settings' },
+  { icon: '⚡', label: 'Focus',                href: '/focus',          isPro: false },
+  { icon: '📋', label: 'Tâches',               href: '/tasks',          isPro: false },
+  { icon: '👥', label: 'Pipeline',             href: '/pipeline',       isPro: false },
+  { icon: '📄', label: 'Devis & Factures',     href: '/invoices',       isPro: false },
+  { icon: '💰', label: 'Cash',                 href: '/cash',           isPro: false },
+  { icon: '📣', label: 'LinkedIn',             href: '/content',        isPro: true  },
+  { icon: '🧠', label: 'Chat',                 href: '/chat',           isPro: true  },
+  { icon: '🤖', label: 'Agents IA',            href: '/agents',         isPro: true  },
+  { icon: '📚', label: 'Base de connaissance', href: '/knowledge-base', isPro: true  },
+  { icon: '⚙️', label: 'Paramètres',           href: '/settings',       isPro: false },
 ]
 
 interface SidebarProps {
   userEmail?: string
   userInitials?: string
+  plan?: string
 }
 
 export default function Sidebar({
   userEmail = 'user@example.com',
   userInitials = 'U',
+  plan = 'FREE',
 }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
@@ -74,13 +76,15 @@ export default function Sidebar({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto" aria-label="Navigation principale">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           return (
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive ? 'page' : undefined}
+              aria-label={collapsed ? item.label : undefined}
               className={[
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
                 isActive
@@ -92,7 +96,10 @@ export default function Sidebar({
             >
               <span className="text-base flex-shrink-0">{item.icon}</span>
               {!collapsed && (
-                <span className="truncate">{item.label}</span>
+                <span className="truncate flex-1">{item.label}</span>
+              )}
+              {item.isPro && plan === 'FREE' && (
+                <ProBadge collapsed={collapsed} />
               )}
             </Link>
           )

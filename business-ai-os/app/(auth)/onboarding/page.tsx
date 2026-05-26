@@ -6,47 +6,17 @@ import { useRouter } from 'next/navigation'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FormData {
-  // Step 1 — Identity
-  name: string
-  email: string
-  password: string
-  businessName: string
-  // Step 2 — Business Profile
-  sector: string
-  monthlyGoal: string
-  fixedCharges: string
-  description: string
-  // Step 3 — Produits & Offres
-  offerType: string
-  offerDescription: string
-  priceRange: string
-  typicalDuration: string
-  // Step 4 — Stratégie & ICP
-  targetClient: string
-  clientPainPoint: string
-  valueProposition: string
-  competitors: string
-  differentiator: string
-  // Step 5 — Localisation & Marché
-  city: string
-  country: string
-  targetGeography: string
-  workLanguages: string
-  // Step 6 — Documentation commerciale
-  briefContent: string
+  name: string; email: string; password: string; confirmPassword: string; businessName: string
+  sector: string; monthlyGoal: string; description: string
+  fixedCharges: string; offerType: string; offerDescription: string; priceRange: string
+  typicalDuration: string; targetClient: string; clientPainPoint: string
+  valueProposition: string; competitors: string; differentiator: string
+  city: string; country: string; targetGeography: string; workLanguages: string; briefContent: string
 }
 
 interface Particle {
-  id: number
-  left: string
-  top: string
-  size: string
-  duration: string
-  delay: string
-  opacity: number
+  id: number; left: string; top: string; size: string; duration: string; delay: string; opacity: number
 }
-
-// ─── Constants ────────────────────────────────────────────────────────────────
 
 const SECTORS = [
   { id: 'consulting', label: 'Consulting',  emoji: '🧠' },
@@ -55,42 +25,6 @@ const SECTORS = [
   { id: 'services',  label: 'Services',     emoji: '⚙️' },
   { id: 'creative',  label: 'Créatif',      emoji: '🎨' },
   { id: 'other',     label: 'Autre',        emoji: '✨' },
-]
-
-const OFFER_TYPES = [
-  { id: 'mission',   label: 'Mission / Projet', emoji: '🎯' },
-  { id: 'retainer',  label: 'Forfait mensuel',   emoji: '📅' },
-  { id: 'product',   label: 'Produit / SaaS',   emoji: '📦' },
-  { id: 'formation', label: 'Formation',         emoji: '🎓' },
-  { id: 'mixed',     label: 'Mixte',             emoji: '🔀' },
-]
-
-const PRICE_RANGES = [
-  { id: '<1k',    label: '< 1 000€' },
-  { id: '1k-5k',  label: '1 000 – 5 000€' },
-  { id: '5k-15k', label: '5 000 – 15 000€' },
-  { id: '15k+',   label: '15 000€ +' },
-]
-
-const DURATIONS = [
-  { id: 'day',    label: '1 journée' },
-  { id: 'week',   label: '1 semaine' },
-  { id: 'month',  label: '1 mois' },
-  { id: 'months', label: '3 mois +' },
-]
-
-const GEOGRAPHIES = [
-  { id: 'local',         label: 'Local / Région' },
-  { id: 'national',      label: 'France entière' },
-  { id: 'europe',        label: 'Europe' },
-  { id: 'international', label: 'International' },
-]
-
-const LANGUAGES = [
-  { id: 'fr',    label: '🇫🇷 Français' },
-  { id: 'en',    label: '🇬🇧 Anglais' },
-  { id: 'fr+en', label: '🇫🇷🇬🇧 Bilingue' },
-  { id: 'other', label: 'Autre' },
 ]
 
 const ACTIVATION_MESSAGES = [
@@ -103,9 +37,8 @@ const ACTIVATION_MESSAGES = [
   'Votre OS est prêt.',
 ]
 
-const TOTAL_STEPS = 7 // 0 = welcome, 1-6 = form, 7 = activation
+const TOTAL_STEPS = 3
 
-// Deterministic particles
 const PARTICLES: Particle[] = Array.from({ length: 26 }, (_, i) => ({
   id: i,
   left:     `${(i * 37 + 7)  % 97}%`,
@@ -116,37 +49,29 @@ const PARTICLES: Particle[] = Array.from({ length: 26 }, (_, i) => ({
   opacity:  0.2 + (i % 5) * 0.1,
 }))
 
-// ─── Hook: Typewriter ─────────────────────────────────────────────────────────
-
 function useTypewriter(text: string, speed = 40) {
   const [displayed, setDisplayed] = useState('')
-  const [done, setDone] = useState(false)
   useEffect(() => {
     setDisplayed('')
-    setDone(false)
     if (!text) return
     let i = 0
     const timer = setInterval(() => {
       i++
       setDisplayed(text.slice(0, i))
-      if (i >= text.length) { clearInterval(timer); setDone(true) }
+      if (i >= text.length) clearInterval(timer)
     }, speed)
     return () => clearInterval(timer)
   }, [text, speed])
-  return { displayed, done }
+  return displayed
 }
 
-// ─── Component: AI Orb ───────────────────────────────────────────────────────
-
 function AIOrb({ active = false, small = false }: { active?: boolean; small?: boolean }) {
-  const size      = small ? 80  : 160
-  const ringSize  = small ? 120 : 240
-  const outerSize = small ? 160 : 320
+  const size = small ? 80 : 160; const ring = small ? 120 : 240; const outer = small ? 160 : 320
   return (
-    <div style={{ position: 'relative', width: outerSize, height: outerSize, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <div style={{ position: 'absolute', width: outerSize, height: outerSize, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.08) 50%, transparent 70%)', animation: active ? 'orb-activate 2s ease-in-out infinite' : 'orb-pulse 3s ease-in-out infinite' }} />
-      <div style={{ position: 'absolute', width: ringSize, height: ringSize, borderRadius: '50%', border: '1px dashed rgba(99,102,241,0.45)', boxShadow: '0 0 12px rgba(99,102,241,0.3)', animation: 'spin-slow 8s linear infinite' }} />
-      <div style={{ position: 'absolute', width: ringSize * 0.72, height: ringSize * 0.72, borderRadius: '50%', border: '1px dashed rgba(6,182,212,0.4)', boxShadow: '0 0 10px rgba(6,182,212,0.2)', animation: 'spin-reverse 12s linear infinite' }} />
+    <div style={{ position: 'relative', width: outer, height: outer, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <div style={{ position: 'absolute', width: outer, height: outer, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.08) 50%, transparent 70%)', animation: active ? 'orb-activate 2s ease-in-out infinite' : 'orb-pulse 3s ease-in-out infinite' }} />
+      <div style={{ position: 'absolute', width: ring, height: ring, borderRadius: '50%', border: '1px dashed rgba(99,102,241,0.45)', boxShadow: '0 0 12px rgba(99,102,241,0.3)', animation: 'spin-slow 8s linear infinite' }} />
+      <div style={{ position: 'absolute', width: ring * 0.72, height: ring * 0.72, borderRadius: '50%', border: '1px dashed rgba(6,182,212,0.4)', animation: 'spin-reverse 12s linear infinite' }} />
       <div style={{ width: size, height: size, borderRadius: '50%', background: 'radial-gradient(circle at 35% 35%, #a5b4fc 0%, #6366f1 25%, #8b5cf6 55%, #06b6d4 100%)', boxShadow: '0 0 30px 8px rgba(99,102,241,0.55), 0 0 60px 20px rgba(139,92,246,0.3), inset 0 0 20px rgba(255,255,255,0.12)', animation: active ? 'orb-activate 2s ease-in-out infinite' : 'orb-pulse 3s ease-in-out infinite', position: 'relative' }}>
         <div style={{ position: 'absolute', width: size * 0.28, height: size * 0.28, top: size * 0.1, left: size * 0.18, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.65) 0%, transparent 70%)' }} />
       </div>
@@ -154,21 +79,17 @@ function AIOrb({ active = false, small = false }: { active?: boolean; small?: bo
   )
 }
 
-// ─── Component: Floating background particles ─────────────────────────────────
-
 function FloatingParticles() {
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
       {PARTICLES.map(p => (
         <div key={p.id} style={{ position: 'absolute', left: p.left, top: p.top, width: p.size, height: p.size, borderRadius: '50%', background: p.id % 3 === 0 ? 'rgba(99,102,241,0.9)' : p.id % 3 === 1 ? 'rgba(139,92,246,0.8)' : 'rgba(6,182,212,0.8)', opacity: p.opacity, animation: `float ${p.duration} ease-in-out ${p.delay} infinite` }} />
       ))}
-      <div style={{ position: 'absolute', top: '8%',    left: '4%',   width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)',  filter: 'blur(40px)' }} />
-      <div style={{ position: 'absolute', bottom: '12%', right: '6%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%)',   filter: 'blur(60px)' }} />
+      <div style={{ position: 'absolute', top: '8%', left: '4%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+      <div style={{ position: 'absolute', bottom: '12%', right: '6%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%)', filter: 'blur(60px)' }} />
     </div>
   )
 }
-
-// ─── Component: Top progress rail ─────────────────────────────────────────────
 
 function TopProgressBar({ step }: { step: number }) {
   const pct = step === 0 ? 3 : Math.round((step / TOTAL_STEPS) * 100)
@@ -179,10 +100,8 @@ function TopProgressBar({ step }: { step: number }) {
   )
 }
 
-// ─── Component: Typewriter line ───────────────────────────────────────────────
-
 function TypewriterLine({ text, speed = 38 }: { text: string; speed?: number }) {
-  const { displayed } = useTypewriter(text, speed)
+  const displayed = useTypewriter(text, speed)
   return (
     <span>
       {displayed}
@@ -191,16 +110,30 @@ function TypewriterLine({ text, speed = 38 }: { text: string; speed?: number }) 
   )
 }
 
-// ─── Shared UI helpers ────────────────────────────────────────────────────────
+function WhyCallout({ items }: { items: { icon: string; label: string }[] }) {
+  return (
+    <div style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.06))', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 14, padding: '14px 18px', marginBottom: 20 }}>
+      <p style={{ fontSize: '0.65rem', color: 'rgba(129,140,248,0.7)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 10 }}>✨ Ces infos permettent à Brainlo de :</p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px' }}>
+        {items.map((item, i) => (
+          <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'rgba(165,180,252,0.9)' }}>
+            <span>{item.icon}</span><span>{item.label}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 function Field({ label, type = 'text', value, onChange, placeholder, min, maxLength, hint }: {
   label: string; type?: string; value: string; onChange: (v: string) => void
   placeholder?: string; min?: number; maxLength?: number; hint?: string
 }) {
+  const id = label.toLowerCase().replace(/[^a-z0-9]/g, '-')
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-      <label style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)' }}>{label}</label>
-      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} minLength={min} maxLength={maxLength} className="input-ai" />
+      <label htmlFor={id} style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)' }}>{label}</label>
+      <input id={id} type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} minLength={min} maxLength={maxLength} className="input-ai" />
       {hint && <p style={{ fontSize: '0.65rem', color: 'rgba(100,116,139,0.7)', fontStyle: 'italic' }}>{hint}</p>}
     </div>
   )
@@ -214,16 +147,7 @@ function ChipGrid<T extends { id: string; label: string; emoji?: string }>({
       <p style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)', marginBottom: 10 }}>{label}</p>
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 8 }}>
         {items.map(item => (
-          <button key={item.id} onClick={() => onChange(item.id)}
-            style={{
-              padding: '10px 8px', borderRadius: 10,
-              border: value === item.id ? '1px solid rgba(99,102,241,0.7)' : '1px solid rgba(255,255,255,0.07)',
-              background: value === item.id ? 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.15))' : 'rgba(255,255,255,0.03)',
-              cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-              transition: 'all 0.2s ease',
-              boxShadow: value === item.id ? '0 0 16px rgba(99,102,241,0.25)' : 'none',
-            }}
-          >
+          <button key={item.id} onClick={() => onChange(item.id)} style={{ padding: '10px 8px', borderRadius: 10, border: value === item.id ? '1px solid rgba(99,102,241,0.7)' : '1px solid rgba(255,255,255,0.07)', background: value === item.id ? 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.15))' : 'rgba(255,255,255,0.03)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, transition: 'all 0.2s ease', boxShadow: value === item.id ? '0 0 16px rgba(99,102,241,0.25)' : 'none' }}>
             {item.emoji && <span style={{ fontSize: '1.2rem' }}>{item.emoji}</span>}
             <span style={{ fontSize: '0.68rem', color: value === item.id ? 'rgba(165,180,252,1)' : 'rgba(148,163,184,0.7)', fontWeight: 500, textAlign: 'center', lineHeight: 1.3 }}>{item.label}</span>
           </button>
@@ -233,14 +157,14 @@ function ChipGrid<T extends { id: string; label: string; emoji?: string }>({
   )
 }
 
-const BTN_PRIMARY = (enabled: boolean): React.CSSProperties => ({
+const BTN_PRIMARY = (on: boolean): React.CSSProperties => ({
   flex: 1, padding: '14px 24px',
-  background: enabled ? 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)' : 'rgba(255,255,255,0.05)',
-  backgroundSize: '200% 200%', animation: enabled ? 'gradient-shift 4s ease infinite' : 'none',
-  border: enabled ? 'none' : '1px solid rgba(255,255,255,0.08)', borderRadius: 12,
-  color: enabled ? 'white' : 'rgba(148,163,184,0.4)', fontSize: '0.9rem', fontWeight: 600,
-  letterSpacing: '0.04em', cursor: enabled ? 'pointer' : 'not-allowed', transition: 'all 0.3s ease',
-  boxShadow: enabled ? '0 0 30px rgba(99,102,241,0.35)' : 'none',
+  background: on ? 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)' : 'rgba(255,255,255,0.05)',
+  backgroundSize: '200% 200%', animation: on ? 'gradient-shift 4s ease infinite' : 'none',
+  border: on ? 'none' : '1px solid rgba(255,255,255,0.08)', borderRadius: 12,
+  color: on ? 'white' : 'rgba(148,163,184,0.4)', fontSize: '0.9rem', fontWeight: 600,
+  letterSpacing: '0.04em', cursor: on ? 'pointer' : 'not-allowed', transition: 'all 0.3s ease',
+  boxShadow: on ? '0 0 30px rgba(99,102,241,0.35)' : 'none',
 })
 
 const BTN_BACK: React.CSSProperties = {
@@ -249,26 +173,18 @@ const BTN_BACK: React.CSSProperties = {
   color: 'rgba(148,163,184,0.8)', fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s ease',
 }
 
-const BTN_SKIP: React.CSSProperties = {
-  flex: '0 0 auto', padding: '14px 16px', borderRadius: 12,
-  border: '1px solid rgba(255,255,255,0.06)', background: 'transparent',
-  color: 'rgba(100,116,139,0.6)', fontSize: '0.8rem', cursor: 'pointer',
-}
-
-function NavRow({ onBack, onNext, onSkip, canNext, nextLabel = 'Continuer →' }: {
-  onBack: () => void; onNext: () => void; onSkip?: () => void
-  canNext: boolean; nextLabel?: string
+function NavRow({ onBack, onNext, canNext, nextLabel = 'Continuer' }: {
+  onBack: () => void; onNext: () => void; canNext: boolean; nextLabel?: string
 }) {
   return (
-    <div style={{ display: 'flex', gap: 8, marginTop: 20, alignItems: 'center' }}>
-      <button onClick={onBack} style={BTN_BACK}>←</button>
+    <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
+      <button onClick={onBack} style={BTN_BACK}>&larr;</button>
       <button onClick={onNext} disabled={!canNext} style={BTN_PRIMARY(canNext)}>{nextLabel}</button>
-      {onSkip && <button onClick={onSkip} style={BTN_SKIP}>Passer</button>}
     </div>
   )
 }
 
-// ─── Step 0: Welcome ──────────────────────────────────────────────────────────
+// Step 0: Welcome
 
 function StepWelcome({ onDone }: { onDone: () => void }) {
   const [progress, setProgress] = useState(0)
@@ -292,252 +208,107 @@ function StepWelcome({ onDone }: { onDone: () => void }) {
         <div style={{ marginTop: 32, width: 280, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden', margin: '32px auto 0' }}>
           <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4)', backgroundSize: '200% 100%', animation: 'gradient-shift 2s ease infinite', borderRadius: 99, boxShadow: '0 0 12px rgba(99,102,241,0.8)', transition: 'width 0.05s linear' }} />
         </div>
-        <p style={{ marginTop: 16, fontSize: '0.7rem', color: 'rgba(100,116,139,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Brainlo · v2.0</p>
+        <p style={{ marginTop: 16, fontSize: '0.7rem', color: 'rgba(100,116,139,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Brainlo v2.0</p>
       </div>
     </div>
   )
 }
 
-// ─── Step 1: Identity ─────────────────────────────────────────────────────────
+// Step 1: Identity
 
-function StepIdentity({ formData, update, onNext }: {
-  formData: FormData; update: (f: keyof FormData, v: string) => void; onNext: () => void
+function StepIdentity({ formData, update, onNext, onBack }: {
+  formData: FormData; update: (f: keyof FormData, v: string) => void; onNext: () => void; onBack: () => void
 }) {
-  const isValidEmail = (email: string) => /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email.trim())
-  const canContinue = formData.name.trim().length > 0 && isValidEmail(formData.email) && formData.password.length >= 8 && formData.businessName.trim().length > 0
+  const isEmail = (e: string) => /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(e.trim())
+  const isStrong = (p: string) => /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/.test(p)
+  const ok = formData.name.trim().length > 0 && isEmail(formData.email) && formData.password.length >= 8 && isStrong(formData.password) && formData.confirmPassword === formData.password && formData.businessName.trim().length > 0
   return (
     <div style={{ animation: 'fade-slide-up 0.5s ease-out forwards', width: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 20 }}>
         <AIOrb small />
         <div style={{ paddingTop: 16 }}>
-          <p style={{ fontSize: '0.65rem', color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 8 }}>Business Brain</p>
+          <p style={{ fontSize: '0.65rem', color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 8 }}>Etape 1 sur 2</p>
           <p style={{ fontSize: '0.95rem', color: 'rgba(203,213,225,0.85)', fontWeight: 300, lineHeight: 1.6, maxWidth: 300 }}>
-            <TypewriterLine text="Bonjour. Je suis votre Business Brain. Commençons par faire connaissance." speed={22} />
+            <TypewriterLine text="Bonjour. Je suis votre Business Brain. Faisons connaissance." speed={22} />
           </p>
         </div>
       </div>
+      <WhyCallout items={[
+        { icon: '🔐', label: 'Securise votre espace Brainlo' },
+        { icon: '🧠', label: 'Personnalise vos agents IA' },
+        { icon: '📋', label: 'Pre-remplit vos devis et factures' },
+        { icon: '⚡', label: 'Active votre Daily Focus' },
+      ]} />
       <div className="glass-ai" style={{ borderRadius: 20, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <Field label="Prénom & Nom" value={formData.name} onChange={v => update('name', v)} placeholder="Jean Dupont" />
+          <Field label="Prenom et Nom" value={formData.name} onChange={v => update('name', v)} placeholder="Jean Dupont" />
           <Field label="Entreprise" value={formData.businessName} onChange={v => update('businessName', v)} placeholder="Acme SAS" />
         </div>
         <Field label="Email professionnel" type="email" value={formData.email} onChange={v => update('email', v)} placeholder="jean@entreprise.com" />
-        {formData.email.length > 0 && !isValidEmail(formData.email) && (
-          <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Veuillez saisir une adresse email valide (ex: jean@entreprise.com)</p>
+        {formData.email.length > 0 && !isEmail(formData.email) && (
+          <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Adresse email invalide</p>
         )}
-        <Field label="Mot de passe" type="password" value={formData.password} onChange={v => update('password', v)} placeholder="8 caractères minimum" min={8} />
+        <Field label="Mot de passe" type="password" value={formData.password} onChange={v => update('password', v)} placeholder="8 caracteres minimum" min={8} />
         {formData.password.length > 0 && formData.password.length < 8 && (
-          <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Le mot de passe doit contenir au moins 8 caractères</p>
+          <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Au moins 8 caracteres requis</p>
+        )}
+        {formData.password.length >= 8 && !isStrong(formData.password) && (
+          <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Ajoutez majuscule, minuscule et chiffre</p>
+        )}
+        <Field label="Confirmer le mot de passe" type="password" value={formData.confirmPassword} onChange={v => update('confirmPassword', v)} placeholder="Repetez votre mot de passe" min={8} />
+        {formData.confirmPassword.length > 0 && formData.confirmPassword !== formData.password && (
+          <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Les mots de passe ne correspondent pas</p>
         )}
       </div>
-      <button onClick={onNext} disabled={!canContinue} style={{ ...BTN_PRIMARY(canContinue), marginTop: 20, width: '100%', display: 'block' }}>
-        Continuer →
-      </button>
+      <NavRow onBack={onBack} onNext={onNext} canNext={ok} nextLabel="Continuer" />
     </div>
   )
 }
 
-// ─── Step 2: Business Profile ─────────────────────────────────────────────────
+// Step 2: Profil rapide
 
-function StepBusiness({ formData, update, onNext, onBack }: {
+function StepProfile({ formData, update, onNext, onBack }: {
   formData: FormData; update: (f: keyof FormData, v: string) => void
   onNext: () => void; onBack: () => void
 }) {
-  const canContinue = formData.sector.length > 0 && formData.description.trim().length > 0
+  const canContinue = formData.sector.length > 0
   return (
     <div style={{ animation: 'fade-slide-up 0.5s ease-out forwards', width: '100%' }}>
-      <div style={{ marginBottom: 24 }}>
-        <p style={{ fontSize: '0.65rem', color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 8 }}>Business Brain — Étape 2/6</p>
+      <div style={{ marginBottom: 20 }}>
+        <p style={{ fontSize: '0.65rem', color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 8 }}>Etape 2 sur 2</p>
         <p style={{ fontSize: '0.95rem', color: 'rgba(203,213,225,0.85)', fontWeight: 300, lineHeight: 1.6 }}>
-          <TypewriterLine text={"Décrivez votre activité. Ces données calibrent vos agents IA."} speed={24} />
+          <TypewriterLine text="Parlez-moi de votre activite. En 30 secondes." speed={26} />
         </p>
       </div>
+      <WhyCallout items={[
+        { icon: '🤖', label: 'Calibre vos agents IA' },
+        { icon: '💡', label: 'Personnalise votre Daily Focus' },
+        { icon: '📣', label: 'Adapte vos posts LinkedIn' },
+        { icon: '👥', label: 'Optimise vos relances clients' },
+      ]} />
       <div className="glass-ai" style={{ borderRadius: 20, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <ChipGrid label="Secteur" items={SECTORS} value={formData.sector} onChange={v => update('sector', v)} cols={3} />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <Field label="Objectif CA / mois" type="number" value={formData.monthlyGoal} onChange={v => update('monthlyGoal', v)} placeholder="10000" hint="Visez haut" />
-          <Field label="Charges fixes / mois" type="number" value={formData.fixedCharges} onChange={v => update('fixedCharges', v)} placeholder="3000" hint="Loyer, abonnements..." />
-        </div>
+        <ChipGrid label="Votre secteur" items={SECTORS} value={formData.sector} onChange={v => update('sector', v)} cols={3} />
+        <Field
+          label="Objectif de chiffre d'affaires mensuel (optionnel)"
+          type="number"
+          value={formData.monthlyGoal}
+          onChange={v => update('monthlyGoal', v)}
+          placeholder="10000"
+          hint="Permet a l'IA de calibrer votre pipeline et focus quotidien"
+        />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          <label style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)' }}>Ce que vous faites en 1 phrase</label>
-          <textarea value={formData.description} onChange={e => update('description', e.target.value)} placeholder="Ex: J'aide les PME B2B à automatiser leur prospection..." maxLength={200} rows={3} className="input-ai" style={{ resize: 'none', fontFamily: 'inherit', lineHeight: 1.5 }} />
-          <p style={{ fontSize: '0.65rem', color: 'rgba(100,116,139,0.6)', textAlign: 'right' }}>{formData.description.length}/200</p>
-        </div>
-      </div>
-      <NavRow onBack={onBack} onNext={onNext} canNext={canContinue} nextLabel="Continuer →" />
-    </div>
-  )
-}
-
-// ─── Step 3: Produits & Offres ────────────────────────────────────────────────
-
-function StepOffers({ formData, update, onNext, onBack }: {
-  formData: FormData; update: (f: keyof FormData, v: string) => void
-  onNext: () => void; onBack: () => void
-}) {
-  return (
-    <div style={{ animation: 'fade-slide-up 0.5s ease-out forwards', width: '100%' }}>
-      <div style={{ marginBottom: 24 }}>
-        <p style={{ fontSize: '0.65rem', color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 8 }}>Business Brain — Étape 3/6</p>
-        <p style={{ fontSize: '0.95rem', color: 'rgba(203,213,225,0.85)', fontWeight: 300, lineHeight: 1.6 }}>
-          <TypewriterLine text={"Parlons de vos offres. Je calibrerai votre pricing et pipeline."} speed={26} />
-        </p>
-      </div>
-      <div className="glass-ai" style={{ borderRadius: 20, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <ChipGrid label="Type d'offre" items={OFFER_TYPES} value={formData.offerType} onChange={v => update('offerType', v)} cols={3} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          <label style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)' }}>Décrivez votre offre principale</label>
-          <textarea value={formData.offerDescription} onChange={e => update('offerDescription', e.target.value)} placeholder="Ex: Accompagnement 3 mois pour structurer la stratégie commerciale..." maxLength={300} rows={3} className="input-ai" style={{ resize: 'none', fontFamily: 'inherit', lineHeight: 1.5 }} />
-        </div>
-        <div>
-          <p style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)', marginBottom: 10 }}>Panier moyen par client</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8 }}>
-            {PRICE_RANGES.map(r => (
-              <button key={r.id} onClick={() => update('priceRange', r.id)} style={{ padding: '10px 12px', borderRadius: 10, border: formData.priceRange === r.id ? '1px solid rgba(99,102,241,0.7)' : '1px solid rgba(255,255,255,0.07)', background: formData.priceRange === r.id ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', color: formData.priceRange === r.id ? 'rgba(165,180,252,1)' : 'rgba(148,163,184,0.7)', fontSize: '0.8rem', fontWeight: 500, transition: 'all 0.2s ease' }}>{r.label}</button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <p style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)', marginBottom: 10 }}>Durée de mission typique</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8 }}>
-            {DURATIONS.map(d => (
-              <button key={d.id} onClick={() => update('typicalDuration', d.id)} style={{ padding: '10px 8px', borderRadius: 10, border: formData.typicalDuration === d.id ? '1px solid rgba(99,102,241,0.7)' : '1px solid rgba(255,255,255,0.07)', background: formData.typicalDuration === d.id ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', color: formData.typicalDuration === d.id ? 'rgba(165,180,252,1)' : 'rgba(148,163,184,0.7)', fontSize: '0.72rem', fontWeight: 500, transition: 'all 0.2s ease' }}>{d.label}</button>
-            ))}
+          <label style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)' }}>Ce que vous faites en 1 phrase (optionnel)</label>
+          <textarea value={formData.description} onChange={e => update('description', e.target.value)} placeholder="Ex: J'accompagne les PME B2B a structurer leur strategie commerciale..." maxLength={200} rows={3} className="input-ai" style={{ resize: 'none', fontFamily: 'inherit', lineHeight: 1.5 }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontSize: '0.65rem', color: 'rgba(100,116,139,0.5)', fontStyle: 'italic' }}>Optionnel — vous pourrez completer depuis les parametres</p>
+            <p style={{ fontSize: '0.65rem', color: 'rgba(100,116,139,0.6)' }}>{formData.description.length}/200</p>
           </div>
         </div>
       </div>
-      <NavRow onBack={onBack} onNext={onNext} onSkip={onNext} canNext={true} nextLabel="Continuer →" />
+      <NavRow onBack={onBack} onNext={onNext} canNext={canContinue} nextLabel="Activer Brainlo" />
     </div>
   )
 }
-
-// ─── Step 4: Stratégie & ICP ──────────────────────────────────────────────────
-
-function StepStrategy({ formData, update, onNext, onBack }: {
-  formData: FormData; update: (f: keyof FormData, v: string) => void
-  onNext: () => void; onBack: () => void
-}) {
-  return (
-    <div style={{ animation: 'fade-slide-up 0.5s ease-out forwards', width: '100%' }}>
-      <div style={{ marginBottom: 24 }}>
-        <p style={{ fontSize: '0.65rem', color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 8 }}>Business Brain — Étape 4/6</p>
-        <p style={{ fontSize: '0.95rem', color: 'rgba(203,213,225,0.85)', fontWeight: 300, lineHeight: 1.6 }}>
-          <TypewriterLine text={"Qui est votre client idéal ? Ces infos guideront chaque relance."} speed={26} />
-        </p>
-      </div>
-      <div className="glass-ai" style={{ borderRadius: 20, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          <label style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)' }}>Profil client idéal (ICP)</label>
-          <textarea value={formData.targetClient} onChange={e => update('targetClient', e.target.value)} placeholder="Ex: Directeurs commerciaux PME tech 20-100 salariés, budget 5-15k..." maxLength={250} rows={3} className="input-ai" style={{ resize: 'none', fontFamily: 'inherit', lineHeight: 1.5 }} />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          <label style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)' }}>Problème principal que vous résolvez</label>
-          <textarea value={formData.clientPainPoint} onChange={e => update('clientPainPoint', e.target.value)} placeholder="Ex: Ils perdent des deals faute de relances structurées..." maxLength={200} rows={2} className="input-ai" style={{ resize: 'none', fontFamily: 'inherit', lineHeight: 1.5 }} />
-        </div>
-        <Field label="Proposition de valeur en 1 phrase" value={formData.valueProposition} onChange={v => update('valueProposition', v)} placeholder="Ex: Je transforme votre pipeline en machine à revenus prévisibles en 90 jours" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <Field label="Concurrents principaux" value={formData.competitors} onChange={v => update('competitors', v)} placeholder="Ex: Pipedrive, HubSpot" />
-          <Field label="Votre différenciateur" value={formData.differentiator} onChange={v => update('differentiator', v)} placeholder="Ex: Spécialisé SaaS B2B" />
-        </div>
-      </div>
-      <NavRow onBack={onBack} onNext={onNext} onSkip={onNext} canNext={true} nextLabel="Continuer →" />
-    </div>
-  )
-}
-
-// ─── Step 5: Localisation & Marché ───────────────────────────────────────────
-
-function StepLocation({ formData, update, onNext, onBack }: {
-  formData: FormData; update: (f: keyof FormData, v: string) => void
-  onNext: () => void; onBack: () => void
-}) {
-  return (
-    <div style={{ animation: 'fade-slide-up 0.5s ease-out forwards', width: '100%' }}>
-      <div style={{ marginBottom: 24 }}>
-        <p style={{ fontSize: '0.65rem', color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 8 }}>Business Brain — Étape 5/6</p>
-        <p style={{ fontSize: '0.95rem', color: 'rgba(203,213,225,0.85)', fontWeight: 300, lineHeight: 1.6 }}>
-          <TypewriterLine text={"Où êtes-vous et où prospectez-vous ?"} speed={26} />
-        </p>
-      </div>
-      <div className="glass-ai" style={{ borderRadius: 20, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <Field label="Ville" value={formData.city} onChange={v => update('city', v)} placeholder="Paris" />
-          <Field label="Pays" value={formData.country} onChange={v => update('country', v)} placeholder="France" />
-        </div>
-        <div>
-          <p style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)', marginBottom: 10 }}>Zone de prospection</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8 }}>
-            {GEOGRAPHIES.map(g => (
-              <button key={g.id} onClick={() => update('targetGeography', g.id)} style={{ padding: '10px 12px', borderRadius: 10, border: formData.targetGeography === g.id ? '1px solid rgba(99,102,241,0.7)' : '1px solid rgba(255,255,255,0.07)', background: formData.targetGeography === g.id ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', color: formData.targetGeography === g.id ? 'rgba(165,180,252,1)' : 'rgba(148,163,184,0.7)', fontSize: '0.8rem', fontWeight: 500, transition: 'all 0.2s ease' }}>{g.label}</button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <p style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)', marginBottom: 10 }}>Langues de travail</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8 }}>
-            {LANGUAGES.map(l => (
-              <button key={l.id} onClick={() => update('workLanguages', l.id)} style={{ padding: '10px 12px', borderRadius: 10, border: formData.workLanguages === l.id ? '1px solid rgba(99,102,241,0.7)' : '1px solid rgba(255,255,255,0.07)', background: formData.workLanguages === l.id ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', color: formData.workLanguages === l.id ? 'rgba(165,180,252,1)' : 'rgba(148,163,184,0.7)', fontSize: '0.8rem', fontWeight: 500, transition: 'all 0.2s ease' }}>{l.label}</button>
-            ))}
-          </div>
-        </div>
-      </div>
-      <NavRow onBack={onBack} onNext={onNext} onSkip={onNext} canNext={true} nextLabel="Continuer →" />
-    </div>
-  )
-}
-
-// ─── Step 6: Documentation commerciale ───────────────────────────────────────
-
-function StepDocumentation({ formData, update, onNext, onBack }: {
-  formData: FormData; update: (f: keyof FormData, v: string) => void
-  onNext: () => void; onBack: () => void
-}) {
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const text = await file.text().catch(() => '')
-    update('briefContent', (formData.briefContent ? formData.briefContent + '\n\n---\n\n' : '') + text.slice(0, 3000))
-  }
-  return (
-    <div style={{ animation: 'fade-slide-up 0.5s ease-out forwards', width: '100%' }}>
-      <div style={{ marginBottom: 24 }}>
-        <p style={{ fontSize: '0.65rem', color: 'rgba(99,102,241,0.8)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, marginBottom: 8 }}>Business Brain — Étape 6/6 — Optionnel</p>
-        <p style={{ fontSize: '0.95rem', color: 'rgba(203,213,225,0.85)', fontWeight: 300, lineHeight: 1.6 }}>
-          <TypewriterLine text={"Enrichissez votre Business Brain avec vos documents commerciaux."} speed={26} />
-        </p>
-      </div>
-      <div className="glass-ai" style={{ borderRadius: 20, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <label style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)' }}>Collez votre brief, pitch ou présentation</label>
-          <textarea value={formData.briefContent} onChange={e => update('briefContent', e.target.value)} placeholder="Collez ici votre pitch deck, brief commercial, cas client, description de vos offres..." maxLength={5000} rows={8} className="input-ai" style={{ resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, fontSize: '0.85rem' }} />
-          <p style={{ fontSize: '0.65rem', color: 'rgba(100,116,139,0.6)', textAlign: 'right' }}>{formData.briefContent.length}/5000</p>
-        </div>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
-          <label style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(129,140,248,0.85)', display: 'block', marginBottom: 10 }}>Ou importez un fichier texte (.txt, .md)</label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', border: '1px dashed rgba(99,102,241,0.3)', borderRadius: 10, cursor: 'pointer', background: 'rgba(99,102,241,0.04)' }}>
-            <span style={{ fontSize: '1.4rem' }}>📎</span>
-            <div>
-              <p style={{ fontSize: '0.82rem', color: 'rgba(165,180,252,0.9)', fontWeight: 500, margin: 0 }}>Importer un document</p>
-              <p style={{ fontSize: '0.68rem', color: 'rgba(100,116,139,0.7)', margin: 0 }}>TXT, MD — max 3 000 caractères extraits</p>
-            </div>
-            <input type="file" accept=".txt,.md" onChange={handleFile} style={{ display: 'none' }} />
-          </label>
-        </div>
-        <div style={{ background: 'rgba(99,102,241,0.06)', borderRadius: 10, padding: '12px 14px' }}>
-          <p style={{ fontSize: '0.7rem', color: 'rgba(129,140,248,0.7)', marginBottom: 6 }}>💡 Exemples de documents utiles :</p>
-          <ul style={{ margin: 0, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {['Pitch deck (texte)', 'Brief de vos offres', 'Témoignages clients', 'FAQ commerciale', 'Proposition de valeur détaillée'].map(ex => (
-              <li key={ex} style={{ fontSize: '0.72rem', color: 'rgba(148,163,184,0.7)' }}>{ex}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <NavRow onBack={onBack} onNext={onNext} onSkip={onNext} canNext={true} nextLabel="Activer mes agents IA →" />
-    </div>
-  )
-}
-
-// ─── Step 7: AI Activation ────────────────────────────────────────────────────
 
 function StepActivation({ formData }: { formData: FormData }) {
   const router = useRouter()
@@ -564,9 +335,7 @@ function StepActivation({ formData }: { formData: FormData }) {
         })
         const data = await res.json()
         if (res.status === 409) { router.push('/login?msg=email_exists&email=' + encodeURIComponent(formData.email)); return }
-        if (!res.ok) { setError(data.error ?? 'Erreur lors de la création du compte'); return }
-        // ── BUG-06 fix: token removed from body — httpOnly cookie set by server
-        // Browser includes the httpOnly cookie automatically on subsequent requests
+        if (!res.ok) { setError(data.error ?? 'Erreur lors de la creation du compte'); return }
         await fetch('/api/wiki/ingest', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -575,20 +344,12 @@ function StepActivation({ formData }: { formData: FormData }) {
             data: {
               businessName: formData.businessName, sector: formData.sector,
               monthlyGoal: formData.monthlyGoal ? Number(formData.monthlyGoal) : 0,
-              fixedCharges: formData.fixedCharges ? Number(formData.fixedCharges) : 0,
               description: formData.description,
-              offerType: formData.offerType, offerDescription: formData.offerDescription,
-              priceRange: formData.priceRange, typicalDuration: formData.typicalDuration,
-              targetClient: formData.targetClient, clientPainPoint: formData.clientPainPoint,
-              valueProposition: formData.valueProposition, competitors: formData.competitors,
-              differentiator: formData.differentiator, city: formData.city,
-              country: formData.country, targetGeography: formData.targetGeography,
-              workLanguages: formData.workLanguages, briefContent: formData.briefContent,
             },
           }),
         }).catch(() => null)
         setApiDone(true)
-      } catch { setError('Erreur réseau. Vérifiez votre connexion.') }
+      } catch { setError('Erreur reseau. Verifiez votre connexion.') }
     }
     run()
   }, [formData, router])
@@ -636,17 +397,18 @@ function StepActivation({ formData }: { formData: FormData }) {
     </div>
   )
 }
-// ─── Main Page Component ──────────────────────────────────────────────────────
+
+// Main Page
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<number>(0)
   const [formData, setFormData] = useState<FormData>({
-    name: '', email: '', password: '', businessName: '',
-    sector: '', monthlyGoal: '', fixedCharges: '', description: '',
-    offerType: '', offerDescription: '', priceRange: '', typicalDuration: '',
-    targetClient: '', clientPainPoint: '', valueProposition: '', competitors: '', differentiator: '',
-    city: '', country: '', targetGeography: '', workLanguages: '',
-    briefContent: '',
+    name: '', email: '', password: '', confirmPassword: '', businessName: '',
+    sector: '', monthlyGoal: '', description: '',
+    fixedCharges: '', offerType: '', offerDescription: '', priceRange: '',
+    typicalDuration: '', targetClient: '', clientPainPoint: '',
+    valueProposition: '', competitors: '', differentiator: '',
+    city: '', country: '', targetGeography: '', workLanguages: '', briefContent: '',
   })
 
   const update = useCallback(
@@ -662,16 +424,14 @@ export default function OnboardingPage() {
       <FloatingParticles />
       <TopProgressBar step={step} />
 
-      {/* Step dots */}
       {step > 0 && step < TOTAL_STEPS && (
         <div style={{ position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8, zIndex: 50 }}>
-          {[1, 2, 3, 4, 5, 6].map(s => (
+          {[1, 2].map(s => (
             <div key={s} style={{ width: s === step ? 24 : 8, height: 8, borderRadius: 99, background: s === step ? 'linear-gradient(90deg, #6366f1, #8b5cf6)' : s < step ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.1)', transition: 'all 0.4s ease', boxShadow: s === step ? '0 0 10px rgba(99,102,241,0.6)' : 'none' }} />
           ))}
         </div>
       )}
 
-      {/* Brand mark */}
       {step > 0 && (
         <div style={{ position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 50, display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'radial-gradient(circle at 35% 35%, #a5b4fc 0%, #6366f1 40%, #8b5cf6 100%)', boxShadow: '0 0 12px rgba(99,102,241,0.6)' }} />
@@ -679,16 +439,11 @@ export default function OnboardingPage() {
         </div>
       )}
 
-      {/* Main content */}
-      <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: step >= 4 ? 580 : 520, padding: step === 0 ? 0 : '80px 20px 60px' }}>
+      <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: 520, padding: step === 0 ? 0 : '80px 20px 60px' }}>
         {step === 0 && <StepWelcome onDone={() => setStep(1)} />}
-        {step === 1 && <StepIdentity formData={formData} update={update} onNext={goNext} />}
-        {step === 2 && <StepBusiness formData={formData} update={update} onNext={goNext} onBack={goBack} />}
-        {step === 3 && <StepOffers formData={formData} update={update} onNext={goNext} onBack={goBack} />}
-        {step === 4 && <StepStrategy formData={formData} update={update} onNext={goNext} onBack={goBack} />}
-        {step === 5 && <StepLocation formData={formData} update={update} onNext={goNext} onBack={goBack} />}
-        {step === 6 && <StepDocumentation formData={formData} update={update} onNext={goNext} onBack={goBack} />}
-        {step === 7 && <StepActivation formData={formData} />}
+        {step === 1 && <StepIdentity formData={formData} update={update} onNext={goNext} onBack={goBack} />}
+        {step === 2 && <StepProfile formData={formData} update={update} onNext={goNext} onBack={goBack} />}
+        {step === 3 && <StepActivation formData={formData} />}
       </div>
     </div>
   )

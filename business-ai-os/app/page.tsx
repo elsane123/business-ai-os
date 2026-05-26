@@ -57,7 +57,7 @@ export default function LandingPage() {
     <div style={{ background: '#0a0a14', color: '#f1f5f9', fontFamily: 'Inter, system-ui, sans-serif', minHeight: '100vh' }}>
 
       {/* ═══ NAVBAR ═══ */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+      <nav aria-label="Navigation principale" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         background: 'rgba(10,10,20,0.85)', backdropFilter: 'blur(18px)',
         WebkitBackdropFilter: 'blur(18px)',
         borderBottom: '1px solid rgba(99,102,241,0.14)' }}>
@@ -67,13 +67,15 @@ export default function LandingPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             <Link href="/login" style={{ color: '#94a3b8', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>Se connecter</Link>
             <Link href="/assessment" style={{ color: '#94a3b8', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>Diagnostic IA</Link>
-            <a href="/fonctionalitee.html" style={{ color: '#818cf8', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(129,140,248,0.35)', padding: '6px 14px', borderRadius: 8, transition: 'border-color 0.2s' }} className="hide-sm">🚀 Fonctionnalités</a>
+            <a href="/fonctionnalites.html" style={{ color: '#818cf8', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(129,140,248,0.35)', padding: '6px 14px', borderRadius: 8, transition: 'border-color 0.2s' }} className="hide-sm">🚀 Fonctionnalités</a>
             <Link href="/onboarding" style={{ background: 'linear-gradient(135deg,#4f46e5,#7c3aed)',
               color: '#fff', fontWeight: 600, fontSize: 14, padding: '9px 20px',
               borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 16px rgba(99,102,241,0.4)' }}>Commencer</Link>
           </div>
         </div>
       </nav>
+
+      <main id="main-content">
 
       {/* ═══ HERO ═══ */}
       <section
@@ -250,6 +252,8 @@ export default function LandingPage() {
           }}>🚀 Créer mon compte gratuit</Link>
         </div>
       </section>
+
+      </main>
 
       {/* ═══ FOOTER ═══ */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '32px 24px', textAlign: 'center', color: '#374151', fontSize: 13 }}>

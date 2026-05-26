@@ -50,6 +50,12 @@ model User {
   invoiceFooter String?  // Pied de page facture (RIB, mentions)
   quoteCounter  Int      @default(0) // Compteur numérotation devis
   invoiceCounter Int     @default(0) // Compteur numérotation facture
+  onboardingProgress String? @default("[]") // JSON array of completed step IDs
+  profileEnrichment  String? @default("{}")  // JSON object for deferred onboarding fields
+  // Admin
+  isAdmin            Boolean  @default(false)
+  isSuspended        Boolean  @default(false)
+  lastActiveAt       DateTime?
   // Statut fiscal auto-entrepreneur
   activityType  String?  @default("SERVICE_BNC") // SERVICE_BNC | SERVICE_BIC | COMMERCE | LIBERAL
   urssafRate    Float?   @default(22.0) // taux cotisations URSSAF en %
@@ -85,6 +91,7 @@ model Transaction {
   category    String
   description String?
   date        DateTime
+  tvaRate     Float?   @default(0)
   createdAt   DateTime @default(now())
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -418,4 +425,24 @@ model AgentChatMessage {
 
   @@index([userId, agentId])
   @@map("agent_chat_messages")
+}
+
+// ─── Usage IA ────────────────────────────────────────────────────────────────
+
+model AIUsage {
+  id           String   @id @default(cuid())
+  userId       String
+  model        String   // ex: anthropic/claude-3-haiku
+  feature      String   // ex: chat | daily-focus | agent | wiki
+  promptTokens Int      @default(0)
+  completionTokens Int  @default(0)
+  totalTokens  Int      @default(0)
+  estimatedCostUsd Float @default(0)
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@map("ai_usage")
 }

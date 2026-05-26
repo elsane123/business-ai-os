@@ -1,6 +1,6 @@
 # Brainlo — Spécifications Techniques & Documentation
 
-> Version : 1.3.0 | Date : 2026-05-17 | Statut : **MVP en production — Post-QA Cycle 8**
+> Version : 1.4.0 | Date : 2026-05-26 | Statut : **MVP en production — Facturation électronique Factur-X**
 
 ---
 
@@ -697,7 +697,25 @@ model AssessmentLead {
 ```json
 // Body (même structure que quote)
 { "prospectId": "...", "lines": [...], "dueDate": "2026-06-15", "notes": "Paiement 30j" }
+// Conversion depuis un devis accepté
+{ "fromQuoteId": "cuid..." }
+// ⚠️ Si clientInfo présent sans prospectId, un Prospect est créé automatiquement (status WON)
 ```
+
+#### `GET /api/invoices/[id]/facturx` *(Facturation électronique)*
+```json
+// Response 200 — PDF binaire Factur-X BASIC (application/pdf)
+// Content-Disposition: attachment; filename="FAC-2026-001-facturx.pdf"
+// Le PDF contient un fichier XML CII EN 16931 embarqué (factur-x.xml)
+
+// Response 404 — facture inexistante ou autre utilisateur
+{ "error": "Not found" }
+
+// Response 500 — erreur de génération Python
+{ "error": "Erreur génération Factur-X: ..." }
+```
+
+> **Prérequis pour XML valide** : l'utilisateur doit avoir renseigné SIRET et adresse complète dans son profil.
 
 ---
 
@@ -827,7 +845,48 @@ POST /wiki/query          → wiki_query.py
 POST /knowledge/extract   → kb_extract.py
 POST /content/linkedin    → linkedin_gen.py
 POST /pipeline/relance    → relance_gen.py
+POST /facturx/generate    → facturx_gen.py
 ```
+
+### Agent `facturx_gen.py`
+
+**Rôle** : Génère des PDF Factur-X hybrides (PDF + XML CII EN 16931 embarqué) pour la facturation électronique française et européenne.
+
+**Librairies** : `factur-x` (embed XML), `weasyprint` (HTML→PDF), `lxml` (génération XML)
+
+**Input** (`POST /facturx/generate`) :
+```json
+{
+  "invoice": {
+    "id": "cuid...",
+    "number": "FAC-2026-001",
+    "status": "SENT",
+    "lines": [ { "title": "Consulting", "qty": 2, "unitPrice": 500, "vatRate": 20 } ],
+    "subtotalHT": 1000, "totalVAT": 200, "totalTTC": 1200,
+    "createdAt": "2026-05-25T10:00:00Z",
+    "dueDate": "2026-06-24T10:00:00Z",
+    "prospect": { "name": "Jean Dupont", "company": "Acme SAS", "email": "jean@acme.fr" }
+  },
+  "seller": {
+    "legalName": "Marie Martin Consulting",
+    "siret": "12345678901234",
+    "vatNumber": "FR12345678901",
+    "address": "12 rue de la Paix", "zipCode": "75001", "city": "Paris"
+  }
+}
+```
+
+**Output** : PDF binaire (`application/pdf`) contenant :
+- Rendu visuel HTML (mise en page identique à la page print)
+- Fichier `factur-x.xml` embarqué dans le PDF (PDF/A-3)
+- XML conforme CII UN/CEFACT, profil `urn:factur-x.eu:1p0:basic`
+- TypeCode `380` (facture commerciale)
+
+**Profil Factur-X** : `BASIC` — contient les lignes de détail, taux TVA par ligne, totaux, infos vendeur/acheteur avec SIRET.
+
+**Performances** : génération en ~0.02 sec, PDF ~42 Ko.
+
+---
 
 ### Agent `daily_focus.py`
 
@@ -1977,7 +2036,56 @@ Les jobs cron utilisent `curl` vers les endpoints Next.js protégés par `x-cron
 
 ---
 
-> 📄 **Document maintenu par Agent Zero — Post-QA**  
-> Dernière mise à jour : 2026-05-17  
-> Fichier : `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md`  
-> Version : 1.3.0 | ~1980 lignes
+### v1.4.0 — 2026-05-26 (Facturation électronique Factur-X + UX Devis)
+
+#### Nouvelles fonctionnalités
+
+| Feature | Fichier(s) | Description |
+|---------|-----------|-------------|
+| **Factur-X PDF** | `python/agents/facturx_gen.py` | Génération PDF hybride Factur-X BASIC (PDF + XML CII EN 16931 embarqué) |
+| **Route Factur-X Python** | `python/main.py` | `POST /facturx/generate` — accepte JSON, retourne PDF binaire |
+| **Route Factur-X Next.js** | `app/api/invoices/[id]/facturx/route.ts` | `GET /api/invoices/[id]/facturx` — proxy sécurisé vers Python |
+| **Bouton Factur-X** | `app/(dashboard)/invoices/page.tsx` | Bouton de téléchargement sur chaque facture dans le dashboard |
+| **Autocomplete SIRET** | `app/(dashboard)/invoices/page.tsx` | Recherche société avec enrichissement SIRET dans formulaire devis |
+| **Conversion quote→prospect** | `app/api/invoices/route.ts` | Création automatique d'un Prospect (status WON) depuis clientInfo |
+
+#### Nouvelles routes API
+
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/api/invoices/[id]/facturx` | Télécharge le PDF Factur-X BASIC de la facture |
+| POST | `/facturx/generate` *(Python)* | Génère le PDF Factur-X depuis un payload JSON |
+
+#### Nouvelles bibliothèques Python
+
+| Package | Version | Rôle |
+|---------|---------|------|
+| `factur-x` | 4.2 | Embedding XML CII dans PDF (PDF/A-3) |
+| `pypdf` | 6.x | Dépendance factur-x |
+| `saxonche` | 12.x | Validation schematron XSD |
+
+#### Améliorations UX Devis & Factures
+
+| Feature | Description |
+|---------|-------------|
+| Prix HT saisie libre | Champ texte avec inputMode decimal, accepte virgule (1000,50) |
+| Modification devis SENT | Bouton Modifier disponible pour statuts DRAFT et SENT |
+| Devis facturés masqués | Les devis avec invoiceId n'apparaissent plus dans la liste |
+| Compteur devis corrigé | L'onglet Devis (N) n'affiche que les devis non encore facturés |
+| Gestion erreur 402 | Message d'erreur visible dans le modal lors d'un dépassement de limite |
+| Suppression Diagnostic IA | Entrée retirée du menu Sidebar |
+
+#### Corrections de bugs
+
+| Bug | Fix |
+|-----|-----|
+| Client non renseigné après conversion devis->facture | Création automatique Prospect depuis clientInfo si prospectId null |
+| Erreur 402 silencieuse (limite devis FREE) | Affichage du message d'erreur dans le modal |
+| Prix HT avec décimales impossible | Champ texte libre avec rawPrices state local dans LineEditor |
+
+---
+
+> Document maintenu par Agent Zero
+> Derniere mise a jour : 2026-05-26
+> Fichier : `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md`
+> Version : 1.4.0 | ~2060 lignes

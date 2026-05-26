@@ -49,7 +49,7 @@ export async function PATCH(
     if (!tx) return NextResponse.json({ error: 'Transaction introuvable' }, { status: 404 })
 
     const body = await req.json().catch(() => ({}))
-    const { amount, type, category, description, date } = body
+    const { amount, type, category, description, date, tvaRate } = body
 
     const updateData: Record<string, unknown> = {}
     if (amount !== undefined)      updateData.amount = Math.abs(parseFloat(amount))
@@ -57,6 +57,7 @@ export async function PATCH(
     if (category !== undefined)    updateData.category = category
     if (description !== undefined) updateData.description = description
     if (date !== undefined)        updateData.date = new Date(date)
+    if (tvaRate !== undefined)     updateData.tvaRate = parseFloat(tvaRate)
 
     const updated = await prisma.transaction.update({ where: { id }, data: updateData })
     return NextResponse.json({ transaction: updated })

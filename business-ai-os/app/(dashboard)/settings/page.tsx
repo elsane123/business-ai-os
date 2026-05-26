@@ -110,6 +110,72 @@ export default function SettingsPage() {
   const [subLoading, setSubLoading] = useState(false)
   const [subMsg, setSubMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
+  // Enrichissement profil
+  const [enrichScore, setEnrichScore] = useState(0)
+  const [enrichOpen, setEnrichOpen] = useState<Record<string, boolean>>({ offers: false, icp: false, location: false, brief: false })
+  const [enrichSaving, setEnrichSaving] = useState<Record<string, boolean>>({})
+  const [enrichMsg, setEnrichMsg] = useState<Record<string, { type: 'success' | 'error'; text: string } | null>>({})
+  // Offres
+  const [offerType, setOfferType] = useState('')
+  const [offerDescription, setOfferDescription] = useState('')
+  const [priceRange, setPriceRange] = useState('')
+  const [typicalDuration, setTypicalDuration] = useState('')
+  // ICP & Strategie
+  const [targetClient, setTargetClient] = useState('')
+  const [clientPainPoint, setClientPainPoint] = useState('')
+  const [valueProposition, setValueProposition] = useState('')
+  const [competitors, setCompetitors] = useState('')
+  const [differentiator, setDifferentiator] = useState('')
+  // Localisation
+  const [targetGeography, setTargetGeography] = useState('')
+  const [workLanguages, setWorkLanguages] = useState('')
+  // Brief
+  const [briefContent, setBriefContent] = useState('')
+
+  // ── Load enrichment ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    fetch('/api/user/enrichment')
+      .then(r => r.json())
+      .then(({ data, score }) => {
+        if (!data) return
+        setEnrichScore(score ?? 0)
+        setOfferType(data.offerType || '')
+        setOfferDescription(data.offerDescription || '')
+        setPriceRange(data.priceRange || '')
+        setTypicalDuration(data.typicalDuration || '')
+        setTargetClient(data.targetClient || '')
+        setClientPainPoint(data.clientPainPoint || '')
+        setValueProposition(data.valueProposition || '')
+        setCompetitors(data.competitors || '')
+        setDifferentiator(data.differentiator || '')
+        setTargetGeography(data.targetGeography || '')
+        setWorkLanguages(data.workLanguages || '')
+        setBriefContent(data.briefContent || '')
+      })
+      .catch(() => null)
+  }, [])
+
+  async function saveEnrichSection(section: string, fields: Record<string, string>) {
+    setEnrichSaving(prev => ({ ...prev, [section]: true }))
+    setEnrichMsg(prev => ({ ...prev, [section]: null }))
+    try {
+      const res = await fetch('/api/user/enrichment', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fields),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setEnrichScore(data.score ?? enrichScore)
+      setEnrichMsg(prev => ({ ...prev, [section]: { type: 'success', text: 'Enregistré avec succès !' } }))
+      setTimeout(() => setEnrichMsg(prev => ({ ...prev, [section]: null })), 3000)
+    } catch {
+      setEnrichMsg(prev => ({ ...prev, [section]: { type: 'error', text: 'Erreur lors de la sauvegarde.' } }))
+    } finally {
+      setEnrichSaving(prev => ({ ...prev, [section]: false }))
+    }
+  }
+
   // ── Load profile ────────────────────────────────────────────────────────────
   useEffect(() => {
     fetch('/api/auth/profile')
@@ -408,6 +474,7 @@ export default function SettingsPage() {
       </SectionCard>
 
       {/* ── Section Cal.com — Intégration RDV ──────────────────────────── */}
+      <div id="calcom" className="scroll-mt-4">
       <SectionCard title="Intégration Cal.com" icon="📅">
         {calcomMsg && <Alert type={calcomMsg.type} message={calcomMsg.text} />}
         <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 mb-4">
@@ -458,6 +525,7 @@ export default function SettingsPage() {
           </div>
         </form>
       </SectionCard>
+      </div>
 
       {/* ── Section 3 : Abonnement ───────────────────────────────────────── */}
       <SectionCard title="Abonnement" icon="💳">
@@ -539,6 +607,221 @@ export default function SettingsPage() {
           )}
         </div>
       </SectionCard>
+
+      {/* ── Section : Enrichir mon profil ──────────────────────────────────── */}
+      <div id="enrich" className="scroll-mt-4">
+      <SectionCard title="Enrichir mon profil" icon="🧬">
+        {/* Score de complétude */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-300 font-medium">Complétude de votre Business Brain</span>
+            <span className="text-sm font-bold text-indigo-400">{enrichScore}%</span>
+          </div>
+          <div className="relative h-2 bg-[#1e1e30] rounded-full overflow-visible mb-1">
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{ width: `${enrichScore}%`, background: 'linear-gradient(90deg,#6366f1,#8b5cf6,#06b6d4)' }}
+            />
+            {[25, 50, 75, 100].map(m => (
+              <div key={m} className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2" style={{ left: `${m}%` }}>
+                <div className={`w-3 h-3 rounded-full border-2 transition-colors ${
+                  enrichScore >= m ? 'bg-indigo-400 border-indigo-400' : 'bg-[#1e1e30] border-[#4a4a6a]'
+                }`} />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between mt-3">
+            {[
+              { pct: 25, label: 'Focus IA', icon: '⚡' },
+              { pct: 50, label: 'Relances IA', icon: '📩' },
+              { pct: 75, label: 'Agents calibrés', icon: '🤖' },
+              { pct: 100, label: 'Brain complet', icon: '🧠' },
+            ].map(({ pct, label, icon }) => (
+              <div key={pct} className="flex flex-col items-center gap-1">
+                <span className={`text-xs font-medium ${ enrichScore >= pct ? 'text-indigo-400' : 'text-gray-600' }`}>{icon}</span>
+                <span className={`text-[10px] ${ enrichScore >= pct ? 'text-gray-300' : 'text-gray-600' }`}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Accordion sections */}
+        {([
+          {
+            key: 'offers',
+            title: 'Offres & Pricing',
+            icon: '📦',
+            unlocks: ['Devis IA personnalisés', 'Relances pricing', 'Propositions commerciales'],
+            fields: (
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Type d&apos;offre</label>
+                  <select value={offerType} onChange={e => setOfferType(e.target.value)} className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#4f46e5]/60 transition-colors">
+                    <option value="">Sélectionner...</option>
+                    <option value="mission">Mission / Projet</option>
+                    <option value="retainer">Forfait mensuel</option>
+                    <option value="product">Produit / SaaS</option>
+                    <option value="formation">Formation</option>
+                    <option value="mixed">Mixte</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Description de votre offre principale</label>
+                  <textarea value={offerDescription} onChange={e => setOfferDescription(e.target.value)} rows={3} maxLength={300} placeholder="Ex: Accompagnement 3 mois pour structurer la stratégie commerciale..." className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#4f46e5]/60 resize-none transition-colors" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Panier moyen</label>
+                    <select value={priceRange} onChange={e => setPriceRange(e.target.value)} className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#4f46e5]/60 transition-colors">
+                      <option value="">Sélectionner...</option>
+                      <option value="<1k">&lt; 1 000€</option>
+                      <option value="1k-5k">1 000 – 5 000€</option>
+                      <option value="5k-15k">5 000 – 15 000€</option>
+                      <option value="15k+">15 000€ +</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Durée typique</label>
+                    <select value={typicalDuration} onChange={e => setTypicalDuration(e.target.value)} className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#4f46e5]/60 transition-colors">
+                      <option value="">Sélectionner...</option>
+                      <option value="day">1 journée</option>
+                      <option value="week">1 semaine</option>
+                      <option value="month">1 mois</option>
+                      <option value="months">3 mois +</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ),
+            onSave: () => saveEnrichSection('offers', { offerType, offerDescription, priceRange, typicalDuration }),
+          },
+          {
+            key: 'icp',
+            title: 'ICP & Stratégie',
+            icon: '🎯',
+            unlocks: ['Agents IA relance', 'Posts LinkedIn ciblés', 'Scoring prospects'],
+            fields: (
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Profil client idéal (ICP)</label>
+                  <textarea value={targetClient} onChange={e => setTargetClient(e.target.value)} rows={3} maxLength={250} placeholder="Ex: Directeurs commerciaux PME tech 20-100 salariés, budget 5-15k..." className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#4f46e5]/60 resize-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Problème principal que vous résolvez</label>
+                  <textarea value={clientPainPoint} onChange={e => setClientPainPoint(e.target.value)} rows={2} maxLength={200} placeholder="Ex: Ils perdent des deals faute de relances structurées..." className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#4f46e5]/60 resize-none transition-colors" />
+                </div>
+                <InputField label="Proposition de valeur en 1 phrase" value={valueProposition} onChange={setValueProposition} placeholder="Ex: Je transforme votre pipeline en machine à revenus prévisibles en 90 jours" />
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField label="Concurrents principaux" value={competitors} onChange={setCompetitors} placeholder="Ex: Pipedrive, HubSpot" />
+                  <InputField label="Votre différenciateur" value={differentiator} onChange={setDifferentiator} placeholder="Ex: Spécialisé SaaS B2B" />
+                </div>
+              </div>
+            ),
+            onSave: () => saveEnrichSection('icp', { targetClient, clientPainPoint, valueProposition, competitors, differentiator }),
+          },
+          {
+            key: 'location',
+            title: 'Localisation & Marché',
+            icon: '🌍',
+            unlocks: ['Prospection géolocalisée', 'Contenu localisé', 'Marché cible'],
+            fields: (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Zone de prospection</label>
+                  <select value={targetGeography} onChange={e => setTargetGeography(e.target.value)} className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#4f46e5]/60 transition-colors">
+                    <option value="">Sélectionner...</option>
+                    <option value="local">Local / Région</option>
+                    <option value="national">France entière</option>
+                    <option value="europe">Europe</option>
+                    <option value="international">International</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Langues de travail</label>
+                  <select value={workLanguages} onChange={e => setWorkLanguages(e.target.value)} className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#4f46e5]/60 transition-colors">
+                    <option value="">Sélectionner...</option>
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                    <option value="fr+en">Bilingue FR/EN</option>
+                    <option value="other">Autre</option>
+                  </select>
+                </div>
+              </div>
+            ),
+            onSave: () => saveEnrichSection('location', { targetGeography, workLanguages }),
+          },
+          {
+            key: 'brief',
+            title: 'Brief Commercial',
+            icon: '📄',
+            unlocks: ['Business Brain enrichi', 'Chat IA contextualisé', 'Agents ultra-personnalisés'],
+            fields: (
+              <div>
+                <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Pitch, brief ou présentation (max 5000 caractères)</label>
+                <textarea value={briefContent} onChange={e => setBriefContent(e.target.value)} rows={8} maxLength={5000} placeholder="Collez ici votre pitch deck, brief commercial, cas clients, FAQ commerciale..." className="w-full bg-[#151524] border border-[#2a2a42] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#4f46e5]/60 resize-y transition-colors" />
+                <p className="text-xs text-gray-500 text-right mt-1">{briefContent.length}/5000</p>
+              </div>
+            ),
+            onSave: () => saveEnrichSection('brief', { briefContent }),
+          },
+        ] as const).map(section => (
+          <div key={section.key} className="border border-[#2a2a42] rounded-xl mb-3 overflow-hidden">
+            {/* Accordion header */}
+            <button
+              onClick={() => setEnrichOpen(prev => ({ ...prev, [section.key]: !prev[section.key] }))}
+              className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#1a1a2e] transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-base">{section.icon}</span>
+                <span className="text-sm font-semibold text-white">{section.title}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {/* Unlock chips */}
+                <div className="hidden sm:flex gap-1.5">
+                  {section.unlocks.map(u => (
+                    <span key={u} className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded-full">{u}</span>
+                  ))}
+                </div>
+                <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${enrichOpen[section.key] ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </button>
+
+            {/* Accordion body */}
+            {enrichOpen[section.key] && (
+              <div className="px-4 pb-4 border-t border-[#2a2a42]">
+                <div className="pt-4">
+                  {/* Unlock callout */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {section.unlocks.map(u => (
+                      <span key={u} className="flex items-center gap-1.5 text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2 py-1 rounded-full">
+                        <span>✨</span><span>{u}</span>
+                      </span>
+                    ))}
+                  </div>
+                  {section.fields}
+                  <div className="mt-4 flex items-center gap-3">
+                    <button
+                      onClick={section.onSave}
+                      disabled={enrichSaving[section.key]}
+                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                      {enrichSaving[section.key] ? 'Enregistrement...' : 'Enregistrer'}
+                    </button>
+                    {enrichMsg[section.key] && (
+                      <span className={`text-sm ${enrichMsg[section.key]?.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                        {enrichMsg[section.key]?.type === 'success' ? '✅' : '❌'} {enrichMsg[section.key]?.text}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </SectionCard>
+      </div>
     </div>
   )
 }

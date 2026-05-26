@@ -1,6 +1,7 @@
 """Brainlo — FastAPI microservice for AI agents."""
 import os
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
@@ -13,6 +14,7 @@ from models.schemas import (
     WikiQueryRequest, WikiQueryResponse,
 )
 from models.schemas import TaskPrioritizeRequest, TaskPrioritizeResponse, WikiLintRequest, WikiLintResponse
+from models.schemas import FacturXRequest
 from agents.daily_focus import generate_daily_focus
 from agents.relance_gen import generate_relance
 from agents.linkedin_gen import generate_linkedin_post
@@ -21,6 +23,7 @@ from agents.wiki_ingest import ingest_wiki_event
 from agents.wiki_query import query_wiki
 from agents.task_prioritizer import prioritize_tasks
 from agents.wiki_lint import lint_wiki
+from agents.facturx_gen import generate_facturx_pdf
 
 load_dotenv()
 
@@ -117,6 +120,21 @@ async def wiki_lint(req: WikiLintRequest):
         return await lint_wiki(req)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/facturx/generate")
+async def facturx_generate(req: FacturXRequest):
+    """Genere un PDF Factur-X BASIC depuis les donnees JSON de la facture."""
+    try:
+        pdf_bytes = await generate_facturx_pdf(req)
+        filename = f"{req.invoice.number}-facturx.pdf"
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == "__main__":
     import uvicorn

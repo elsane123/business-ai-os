@@ -1,6 +1,13 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import { Inter } from 'next/font/google'
 import './globals.css'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://brainlo.ai'),
@@ -38,7 +45,7 @@ export const metadata: Metadata = {
       'CFO, CMO, CRO IA pour solopreneurs et PME. Daily Focus quotidien, trésorerie temps réel, pipeline IA. Gratuit pour commencer.',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://brainlo.ai/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Brainlo — Dashboard agents IA',
@@ -50,7 +57,7 @@ export const metadata: Metadata = {
     title: 'Brainlo — L\'OS IA pour solopreneurs',
     description:
       'Agents IA dédiés : CFO, CMO, CRO. Daily Focus quotidien. Trésorerie temps réel. Gratuit pour commencer.',
-    images: ['/og-image.png'],
+    images: ['https://brainlo.ai/og-image.png'],
     creator: '@brainlo_ai',
   },
   robots: {
@@ -135,7 +142,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className="dark">
+    <html lang="fr" className={`dark ${inter.variable}`}>
       <head>
         <Script
           id="json-ld-software"

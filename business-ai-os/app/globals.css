@@ -2,6 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   ACCESSIBILITÉ — WCAG 2.1 AA
+   ============================================================ */
+
+/* Focus visible — navigation clavier */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Masquer les focus au clic souris, les garder au clavier */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip navigation — lien invisible sauf au focus clavier */
+.skip-nav {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: -1;
+}
+.skip-nav:focus {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  width: auto;
+  height: auto;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: #6366f1;
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Réduction des animations pour les utilisateurs sensibles */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 :root {
   --surface-900: #0f0f1a;
   --surface-800: #151524;
@@ -263,6 +329,44 @@ body {
 /* Prevent horizontal scrollbar on kanban pages */
 html, body {
   overflow-x: hidden;
+}
+
+/* ── Responsive utility ── */
+@media (max-width: 640px) {
+  .hide-sm { display: none !important; }
+}
+
+/* ── Focus visible global (WCAG 2.4.7) ── */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Respect prefers-reduced-motion (WCAG 2.3.3) ── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-orb-pulse,
+  .animate-orb-activate,
+  .animate-spin-slow,
+  .animate-spin-reverse,
+  .animate-float,
+  .animate-blink,
+  .animate-fade-slide-up,
+  .animate-fade-in,
+  .animate-glow,
+  .animate-scan {
+    animation: none !important;
+    transition: none !important;
+  }
+  .text-gradient-ai {
+    animation: none !important;
+    background-position: 0% 50% !important;
+  }
 }
 
 /* ═══ PROSE BLOG — styles pour le contenu Markdown converti en HTML ═══ */

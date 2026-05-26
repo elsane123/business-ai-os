@@ -72,6 +72,29 @@ export async function POST(req: NextRequest) {
     }
     finalLines = JSON.parse(quote.lines)
     finalProspectId = quote.prospectId
+
+    // Si pas de prospect lié mais clientInfo présent, créer un prospect à la volée
+    if (!finalProspectId && quote.clientInfo) {
+      try {
+        const ci = JSON.parse(quote.clientInfo)
+        if (ci.name) {
+          const prospect = await prisma.prospect.create({
+            data: {
+              userId: user.userId,
+              name: ci.name,
+              company: ci.name,
+              email: ci.email || null,
+              enrichAddress: ci.address || null,
+              enrichZip: ci.zipCode || null,
+              enrichCity: ci.city || null,
+              siret: ci.siret || null,
+              status: 'WON',
+            }
+          })
+          finalProspectId = prospect.id
+        }
+      } catch { /* clientInfo malformé, on ignore */ }
+    }
   }
 
   if (!finalLines || !Array.isArray(finalLines) || finalLines.length === 0) {

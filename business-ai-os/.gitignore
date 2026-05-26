@@ -39,3 +39,6 @@ venv/
 /wiki-data/
 prisma/dev.db.backup
 *.tsbuildinfo
+.playwright/\nplaywright-report/\ntest-results/
+\n# Runtime files\nnextjs.pid\npython.pid\n*.out.log
+# Python bytecode\n../__pycache__/

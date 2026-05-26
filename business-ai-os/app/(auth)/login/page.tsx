@@ -67,24 +67,28 @@ function LoginForm() {
               </div>
             )}
             <div>
-              <label className="block text-sm text-gray-300 mb-1.5">Email</label>
+              <label htmlFor="email" className="block text-sm text-gray-300 mb-1.5">Email</label>
               <input
+                id="email"
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
                 placeholder="vous@exemple.com"
+                autoComplete="email"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-300 mb-1.5">Mot de passe</label>
+              <label htmlFor="password" className="block text-sm text-gray-300 mb-1.5">Mot de passe</label>
               <input
+                id="password"
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
                 placeholder="••••••••"
+                autoComplete="current-password"
                 required
               />
             </div>

@@ -1,0 +1,962 @@
+{
+  "total": 65,
+  "passed": 11,
+  "failed": 54,
+  "score": "16.9%",
+  "bugs": [
+    {
+      "id": "OB-08",
+      "ep": "POST /api/auth/change-password",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "OB-09",
+      "ep": "PATCH /api/auth/profile",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "OB-10",
+      "ep": "POST /api/auth/logout+/me",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "CRM-02",
+      "ep": "POST /pipeline/prospects/{id}/enrich",
+      "got": 404,
+      "exp": "200",
+      "ok": false,
+      "n": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\""
+    },
+    {
+      "id": "CRM-03",
+      "ep": "PATCH /pipeline/prospects/{id} CONTACTED",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CRM-04",
+      "ep": "POST /pipeline/prospects/parse-brief",
+      "got": 405,
+      "exp": "200",
+      "ok": false,
+      "n": ""
+    },
+    {
+      "id": "CRM-05",
+      "ep": "GET /pipeline/prospects?status=IDENTIFIED",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "count=0"
+    },
+    {
+      "id": "CRM-06",
+      "ep": "POST /pipeline/prospects/{id}/relance",
+      "got": 404,
+      "exp": "200",
+      "ok": false,
+      "n": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content="
+    },
+    {
+      "id": "CRM-08",
+      "ep": "PATCH /pipeline/prospects LOST",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CRM-09",
+      "ep": "PATCH /pipeline/prospects WON",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CRM-10",
+      "ep": "GET /pipeline/prospects?search=Rousseau",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "cnt=0 found=False"
+    },
+    {
+      "id": "CRM-11",
+      "ep": "POST /pipeline/prospects/{id}/relance OPCO",
+      "got": 404,
+      "exp": "200",
+      "ok": false,
+      "n": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content="
+    },
+    {
+      "id": "CRM-12",
+      "ep": "POST /pipeline/prospects FREE limit",
+      "got": 0,
+      "exp": "402/403",
+      "ok": false,
+      "n": "limit_hit=False"
+    },
+    {
+      "id": "QF-02",
+      "ep": "POST /api/quotes TVA20% 3 tranches",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "id=None {\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-04",
+      "ep": "PATCH /api/quotes/cmp9lzekd000qmmk0ix84ya4f SENT",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-07",
+      "ep": "POST /api/quotes seq numbers",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "num_a= num_b="
+    },
+    {
+      "id": "QF-08",
+      "ep": "POST /api/quotes avec prospectId",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "has_client=False {\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-09",
+      "ep": "POST /api/quotes TVA 0%",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "HT=0 TVA=0"
+    },
+    {
+      "id": "QF-10",
+      "ep": "POST /api/quotes TVA20% calcul",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "HT=0.0 TVA=0.0 TTC=0.0"
+    },
+    {
+      "id": "QF-11",
+      "ep": "POST /api/quotes TVA exoneree formation",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-12",
+      "ep": "GET /api/invoices OVERDUE badge",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "total=0 has_overdue=False"
+    },
+    {
+      "id": "QF-13",
+      "ep": "POST /api/quotes Julie FREE limit",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "QF-14",
+      "ep": "POST /api/quotes/parse-brief MOE 8%",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "TR-03",
+      "ep": "POST /api/cash/parse-brief or /transactions NLP recette",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "TR-04",
+      "ep": "POST /api/cash/parse-brief depense Figma",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "TR-05",
+      "ep": "POST /api/cash/ocr image upload",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "TR-06",
+      "ep": "POST /api/transactions auto-cat",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "category="
+    },
+    {
+      "id": "TR-08",
+      "ep": "GET /api/cash/runway delai_public=90j",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "TR-09",
+      "ep": "GET /api/cash/transactions?period=month",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "TR-11",
+      "ep": "POST /api/cash/recurrences charges rec",
+      "got": 405,
+      "exp": "200",
+      "ok": false,
+      "n": ""
+    },
+    {
+      "id": "KB-03",
+      "ep": "POST /api/knowledge PPTX upload",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "KB-04",
+      "ep": "POST /api/knowledge XLSX upload",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "file_not_found:/a0/usr/workdir/brainlo_kb_docs/KB-I03_Grille_Tarifaire_PharmaFormation.xlsx"
+    },
+    {
+      "id": "KB-05",
+      "ep": "POST /api/knowledge TXT upload",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "KB-08",
+      "ep": "POST /api/chat multi-docs TJM+preavis",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "KB-09",
+      "ep": "POST /api/chat assurances MOE",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "KB-10",
+      "ep": "POST /api/chat eligibilite CPF",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "KB-11",
+      "ep": "DELETE /api/knowledge/{id} DELETE",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "no_doc_id_found"
+    },
+    {
+      "id": "KB-12",
+      "ep": "POST /api/knowledge .mp4 non supporte",
+      "got": 401,
+      "exp": "400/415",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "KB-13",
+      "ep": "POST /api/knowledge avec categorie",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "KB-14",
+      "ep": "POST /api/chat Julie no docs",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "CH-02",
+      "ep": "POST /api/chat prospects chauds",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-03",
+      "ep": "POST /api/chat dilemme prospection",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-04",
+      "ep": "POST /api/chat sante financiere",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-05",
+      "ep": "POST /api/chat analyse du mois",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-07",
+      "ep": "POST /api/chat memoire conversationnelle",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "memory_ok=False {\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-08",
+      "ep": "POST /api/chat hors perimetre meteo",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "out_of_scope=False {\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-09",
+      "ep": "POST /api/chat tresorerie OPCO",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-10",
+      "ep": "POST /api/chat runway",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "DF-01",
+      "ep": "GET /api/focus GET priorites",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "count=0 {\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "DF-02",
+      "ep": "POST /api/focus POST treso critique",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "DF-03",
+      "ep": "GET /api/focus GET prospect inactif",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "mention_prospect=False {\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "DF-04",
+      "ep": "PATCH /api/focus/{id} status=done",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "no_focus_id_found"
+    },
+    {
+      "id": "TK-01",
+      "ep": "POST /api/tasks POST brief NLP",
+      "got": 400,
+      "exp": "200",
+      "ok": false,
+      "n": "id=None {\"error\":\"Le titre est requis\"}"
+    },
+    {
+      "id": "TK-02",
+      "ep": "GET /api/tasks/prioritize scores IA",
+      "got": 405,
+      "exp": "200",
+      "ok": false,
+      "n": ""
+    }
+  ],
+  "results": [
+    {
+      "id": "OB-03",
+      "ep": "POST /api/auth/register",
+      "got": 409,
+      "exp": "409",
+      "ok": true,
+      "n": "{\"error\":\"Cet email est d\u00e9j\u00e0 utilis\u00e9\"}"
+    },
+    {
+      "id": "OB-04",
+      "ep": "POST /api/auth/register",
+      "got": 400,
+      "exp": "400",
+      "ok": true,
+      "n": "{\"error\":\"Le mot de passe doit contenir au moins 8 caract\u00e8res\"}"
+    },
+    {
+      "id": "OB-05",
+      "ep": "POST /api/auth/register",
+      "got": 400,
+      "exp": "400",
+      "ok": true,
+      "n": "{\"error\":\"Nom, email et mot de passe requis\"}"
+    },
+    {
+      "id": "OB-07",
+      "ep": "POST /api/auth/login",
+      "got": 401,
+      "exp": "401",
+      "ok": true,
+      "n": "{\"error\":\"Email ou mot de passe incorrect\"}"
+    },
+    {
+      "id": "OB-08",
+      "ep": "POST /api/auth/change-password",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "OB-09",
+      "ep": "PATCH /api/auth/profile",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "OB-10",
+      "ep": "POST /api/auth/logout+/me",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "CRM-02",
+      "ep": "POST /pipeline/prospects/{id}/enrich",
+      "got": 404,
+      "exp": "200",
+      "ok": false,
+      "n": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\""
+    },
+    {
+      "id": "CRM-03",
+      "ep": "PATCH /pipeline/prospects/{id} CONTACTED",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CRM-04",
+      "ep": "POST /pipeline/prospects/parse-brief",
+      "got": 405,
+      "exp": "200",
+      "ok": false,
+      "n": ""
+    },
+    {
+      "id": "CRM-05",
+      "ep": "GET /pipeline/prospects?status=IDENTIFIED",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "count=0"
+    },
+    {
+      "id": "CRM-06",
+      "ep": "POST /pipeline/prospects/{id}/relance",
+      "got": 404,
+      "exp": "200",
+      "ok": false,
+      "n": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content="
+    },
+    {
+      "id": "CRM-08",
+      "ep": "PATCH /pipeline/prospects LOST",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CRM-09",
+      "ep": "PATCH /pipeline/prospects WON",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CRM-10",
+      "ep": "GET /pipeline/prospects?search=Rousseau",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "cnt=0 found=False"
+    },
+    {
+      "id": "CRM-11",
+      "ep": "POST /pipeline/prospects/{id}/relance OPCO",
+      "got": 404,
+      "exp": "200",
+      "ok": false,
+      "n": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content="
+    },
+    {
+      "id": "CRM-12",
+      "ep": "POST /pipeline/prospects FREE limit",
+      "got": 0,
+      "exp": "402/403",
+      "ok": false,
+      "n": "limit_hit=False"
+    },
+    {
+      "id": "QF-02",
+      "ep": "POST /api/quotes TVA20% 3 tranches",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "id=None {\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-03",
+      "ep": "GET /api/quotes/{id}/pdf or /print/quote",
+      "got": 200,
+      "exp": "200",
+      "ok": true,
+      "n": "<!DOCTYPE html><html lang=\"fr\" class=\"dark\"><head><meta charSet=\"utf-8\"/><meta n"
+    },
+    {
+      "id": "QF-04",
+      "ep": "PATCH /api/quotes/cmp9lzekd000qmmk0ix84ya4f SENT",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-07",
+      "ep": "POST /api/quotes seq numbers",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "num_a= num_b="
+    },
+    {
+      "id": "QF-08",
+      "ep": "POST /api/quotes avec prospectId",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "has_client=False {\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-09",
+      "ep": "POST /api/quotes TVA 0%",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "HT=0 TVA=0"
+    },
+    {
+      "id": "QF-10",
+      "ep": "POST /api/quotes TVA20% calcul",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "HT=0.0 TVA=0.0 TTC=0.0"
+    },
+    {
+      "id": "QF-11",
+      "ep": "POST /api/quotes TVA exoneree formation",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-12",
+      "ep": "GET /api/invoices OVERDUE badge",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "total=0 has_overdue=False"
+    },
+    {
+      "id": "QF-13",
+      "ep": "POST /api/quotes Julie FREE limit",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "QF-14",
+      "ep": "POST /api/quotes/parse-brief MOE 8%",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "QF-15",
+      "ep": "GET /print/invoice/cmp9m8lr7000smmk0m0m13281",
+      "got": 200,
+      "exp": "200",
+      "ok": true,
+      "n": "<!DOCTYPE html><html lang=\"fr\" class=\"dark\"><head><meta charSet=\"utf-8\"/><meta n"
+    },
+    {
+      "id": "TR-03",
+      "ep": "POST /api/cash/parse-brief or /transactions NLP recette",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "TR-04",
+      "ep": "POST /api/cash/parse-brief depense Figma",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "TR-05",
+      "ep": "POST /api/cash/ocr image upload",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "TR-06",
+      "ep": "POST /api/transactions auto-cat",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "category="
+    },
+    {
+      "id": "TR-08",
+      "ep": "GET /api/cash/runway delai_public=90j",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "TR-09",
+      "ep": "GET /api/cash/transactions?period=month",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "TR-11",
+      "ep": "POST /api/cash/recurrences charges rec",
+      "got": 405,
+      "exp": "200",
+      "ok": false,
+      "n": ""
+    },
+    {
+      "id": "KB-03",
+      "ep": "POST /api/knowledge PPTX upload",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "KB-04",
+      "ep": "POST /api/knowledge XLSX upload",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "file_not_found:/a0/usr/workdir/brainlo_kb_docs/KB-I03_Grille_Tarifaire_PharmaFormation.xlsx"
+    },
+    {
+      "id": "KB-05",
+      "ep": "POST /api/knowledge TXT upload",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "KB-08",
+      "ep": "POST /api/chat multi-docs TJM+preavis",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "KB-09",
+      "ep": "POST /api/chat assurances MOE",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "KB-10",
+      "ep": "POST /api/chat eligibilite CPF",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "KB-11",
+      "ep": "DELETE /api/knowledge/{id} DELETE",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "no_doc_id_found"
+    },
+    {
+      "id": "KB-12",
+      "ep": "POST /api/knowledge .mp4 non supporte",
+      "got": 401,
+      "exp": "400/415",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "KB-13",
+      "ep": "POST /api/knowledge avec categorie",
+      "got": 401,
+      "exp": "201",
+      "ok": false,
+      "n": "{\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "KB-14",
+      "ep": "POST /api/chat Julie no docs",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "login_failed"
+    },
+    {
+      "id": "CH-02",
+      "ep": "POST /api/chat prospects chauds",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-03",
+      "ep": "POST /api/chat dilemme prospection",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-04",
+      "ep": "POST /api/chat sante financiere",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-05",
+      "ep": "POST /api/chat analyse du mois",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-07",
+      "ep": "POST /api/chat memoire conversationnelle",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "memory_ok=False {\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-08",
+      "ep": "POST /api/chat hors perimetre meteo",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "out_of_scope=False {\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-09",
+      "ep": "POST /api/chat tresorerie OPCO",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "CH-10",
+      "ep": "POST /api/chat runway",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "DF-01",
+      "ep": "GET /api/focus GET priorites",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "count=0 {\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "DF-02",
+      "ep": "POST /api/focus POST treso critique",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "{\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "DF-03",
+      "ep": "GET /api/focus GET prospect inactif",
+      "got": 401,
+      "exp": "200",
+      "ok": false,
+      "n": "mention_prospect=False {\"error\":\"Non authentifi\u00e9\"}"
+    },
+    {
+      "id": "DF-04",
+      "ep": "PATCH /api/focus/{id} status=done",
+      "got": 0,
+      "exp": "200",
+      "ok": false,
+      "n": "no_focus_id_found"
+    },
+    {
+      "id": "DF-05",
+      "ep": "POST /api/focus/send-email or cron",
+      "got": 401,
+      "exp": "200/404",
+      "ok": true,
+      "n": "status=401 resend_domain_dep {\"error\":\"Unauthorized\"}"
+    },
+    {
+      "id": "DF-06",
+      "ep": "GET /api/focus Julie FREE limitation",
+      "got": 403,
+      "exp": "200",
+      "ok": true,
+      "n": "status=403 items=0 {\"error\":\"Fonctionnalit\u00e9 Solo Pro requise\",\"upgradeRequired\":true}"
+    },
+    {
+      "id": "TK-01",
+      "ep": "POST /api/tasks POST brief NLP",
+      "got": 400,
+      "exp": "200",
+      "ok": false,
+      "n": "id=None {\"error\":\"Le titre est requis\"}"
+    },
+    {
+      "id": "TK-02",
+      "ep": "GET /api/tasks/prioritize scores IA",
+      "got": 405,
+      "exp": "200",
+      "ok": false,
+      "n": ""
+    },
+    {
+      "id": "TK-03",
+      "ep": "POST /api/tasks POST recurrente mensuelle",
+      "got": 201,
+      "exp": "200",
+      "ok": true,
+      "n": "id=cmp9nadd1002cmmk05sbh61jk {\"task\":{\"id\":\"cmp9nadd1002cmmk05sbh61jk\",\"userId\":\"cmp9lqtba0000mmk0xl3tp7ma\",\"title\":\"Relance clie"
+    },
+    {
+      "id": "TK-04",
+      "ep": "PATCH /api/tasks/cmp9nadd1002cmmk05sbh61jk status=DONE",
+      "got": 200,
+      "exp": "200",
+      "ok": true,
+      "n": "{\"task\":{\"id\":\"cmp9nadd1002cmmk05sbh61jk\",\"userId\":\"cmp9lqtba0000mmk0xl3tp7ma\",\"title\":\"Relance clie"
+    },
+    {
+      "id": "TK-05",
+      "ep": "PATCH /api/tasks/cmp9nadd1002cmmk05sbh61jk +prospectId",
+      "got": 200,
+      "exp": "200",
+      "ok": true,
+      "n": "has_prospectId=True"
+    }
+  ]
+}
