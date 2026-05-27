@@ -26,7 +26,8 @@ function LoginForm() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erreur de connexion')
-      router.push('/focus')
+      const returnTo = searchParams.get('returnTo')
+      router.push(returnTo || '/focus')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur inconnue')
     } finally {
@@ -91,6 +92,11 @@ function LoginForm() {
                 autoComplete="current-password"
                 required
               />
+            </div>
+            <div className="flex justify-end">
+              <Link href="/forgot-password" className="text-sm text-indigo-400 hover:text-indigo-300">
+                Mot de passe oublié ?
+              </Link>
             </div>
             <button
               type="submit"

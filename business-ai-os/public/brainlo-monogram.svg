@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <linearGradient id="glyph" x1="102" y1="102" x2="410" y2="410" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e0e7ff" />
+      <stop offset="100%" stop-color="#c4b5fd" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+
+  <!-- Left vertical bar of B -->
+  <rect x="128" y="128" width="51" height="256" rx="26" fill="url(#glyph)" />
+
+  <!-- Top lobe of B -->
+  <path
+    d="M179 128 Q307 128 307 198 Q307 269 179 269"
+    stroke="url(#glyph)"
+    stroke-width="45"
+    stroke-linecap="round"
+    fill="none"
+  />
+
+  <!-- Bottom lobe of B - slightly wider -->
+  <path
+    d="M179 269 Q333 269 333 339 Q333 410 179 410"
+    stroke="url(#glyph)"
+    stroke-width="45"
+    stroke-linecap="round"
+    fill="none"
+  />
+
+  <!-- Neural dot top-right -->
+  <circle cx="358" cy="141" r="32" fill="#a5b4fc" opacity="0.85" />
+  <!-- Neural dot mid-right -->
+  <circle cx="397" cy="243" r="23" fill="#c4b5fd" opacity="0.7" />
+  <!-- Neural dot bottom-right -->
+  <circle cx="358" cy="397" r="26" fill="#a5b4fc" opacity="0.6" />
+
+  <!-- Connecting lines -->
+  <line x1="307" y1="166" x2="340" y2="141" stroke="#818cf8" stroke-width="13" opacity="0.6" />
+  <line x1="320" y1="243" x2="374" y2="243" stroke="#818cf8" stroke-width="13" opacity="0.5" />
+  <line x1="307" y1="371" x2="340" y2="397" stroke="#818cf8" stroke-width="13" opacity="0.5" />
+</svg>

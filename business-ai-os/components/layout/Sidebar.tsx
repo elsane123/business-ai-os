@@ -15,6 +15,7 @@ const navItems = [
   { icon: '🧠', label: 'Chat',                 href: '/chat',           isPro: true  },
   { icon: '🤖', label: 'Agents IA',            href: '/agents',         isPro: true  },
   { icon: '📚', label: 'Base de connaissance', href: '/knowledge-base', isPro: true  },
+  { icon: '📖', label: 'Wiki & Aide',           href: '/wiki',           isPro: false },
   { icon: '⚙️', label: 'Paramètres',           href: '/settings',       isPro: false },
 ]
 

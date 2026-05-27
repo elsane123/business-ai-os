@@ -433,6 +433,20 @@ export default function SettingsPage() {
         </form>
       </SectionCard>
 
+      {/* ── Lien enrichissement ──────────────────────────────────────────── */}
+      <div className="-mt-3 mb-6 flex justify-end">
+        <a
+          href="#enrich"
+          className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+        >
+          <span>🧬</span>
+          <span>Enrichir mon profil</span>
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+      </div>
+
       {/* ── Section 2 : Sécurité ─────────────────────────────────────────── */}
       <SectionCard title="Sécurité" icon="🔒">
         {pwdMsg && <Alert type={pwdMsg.type} message={pwdMsg.text} />}

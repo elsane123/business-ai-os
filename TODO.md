@@ -96,6 +96,16 @@
 
 ---
 
+## 🔴 Stripe — Abonnement mensuel récurrent
+
+- [x] **Créer un prix récurrent dans Stripe dashboard** — `price_1Tbcvs1DYEHpPzLOjfMh3Lyj` (29€/mois, produit `prod_UaoZ20ZcQR9LS1`)
+- [x] **Mettre à jour `STRIPE_PRICE_ID_SOLO_PRO`** dans `.env` — fait
+- [x] **Passer `mode: 'subscription'`** dans `lib/stripe.ts` — fait
+- [ ] **Enregistrer le webhook** dans Stripe dashboard (test + live) : URL `https://brainlo.ai/api/stripe/webhook`, événements : `checkout.session.completed`, `customer.subscription.deleted`, `invoice.payment_failed`
+- [ ] **Tester le cycle complet** : paiement → PRO → annulation → FREE automatique
+
+---
+
 ## 📊 Résumé effort restant
 
 | Priorité | Items | Effort estimé |

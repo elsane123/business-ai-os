@@ -79,6 +79,7 @@ model User {
   agentActivations AgentActivation[]
   urssafDeclarations UrssafDeclaration[]
   agentMessages   AgentChatMessage[]
+  aiUsages        AIUsage[]
 
   @@map("users")
 }

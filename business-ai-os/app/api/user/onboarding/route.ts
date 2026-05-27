@@ -4,7 +4,7 @@ import { getSession } from '@/lib/auth'
 
 // Step IDs that are auto-detected from real data
 // Step IDs that must be manually marked (visits)
-const MANUAL_STEPS = ['chat', 'agents']
+const MANUAL_STEPS = ['chat', 'linkedin', 'agents']
 
 export async function GET() {
   try {

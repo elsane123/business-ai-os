@@ -155,7 +155,7 @@ function PipelineBriefModal({ onClose, onParsed }: {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="bg-[#1a1d2e] border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div>
@@ -253,7 +253,7 @@ export default function PipelinePage() {
   const [relanceResult, setRelanceResult] = useState<{ subject: string; message: string; hook: string; channel: string } | null>(null)
   const [relanceError, setRelanceError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [upgradeModalReason, setUpgradeModalReason] = useState<'relance' | 'prospect' | null>(null)
 
   // Cal.com integration
   const [calcomBookingUrl, setCalcomBookingUrl] = useState<string | null>(null)
@@ -466,6 +466,10 @@ export default function PipelinePage() {
       })
       if (!res.ok) {
         const d = await res.json()
+        if (d.upgradeRequired) {
+          setUpgradeModalReason('prospect')
+          return
+        }
         throw new Error(d.error || 'Erreur création')
       }
       const { prospect } = await res.json()
@@ -514,7 +518,7 @@ export default function PipelinePage() {
       if (!res.ok) {
         const d = await res.json()
         if (d.upgradeRequired) {
-          setShowUpgradeModal(true)
+          setUpgradeModalReason('relance')
           return
         }
         throw new Error(d.error || 'Erreur génération')
@@ -574,18 +578,21 @@ export default function PipelinePage() {
   return (
     <div className="p-4 sm:p-6 max-w-[1600px] mx-auto overflow-x-hidden pb-24 sm:pb-6">
       {/* Upgrade Modal */}
-      {showUpgradeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      {upgradeModalReason !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
             <div className="text-5xl mb-4">🚀</div>
             <h2 className="text-xl font-bold text-white mb-2">Fonctionnalité Solo Pro</h2>
             <p className="text-[#818cf8] text-sm mb-6">
-              La génération de relances IA est réservée aux abonnés <span className="text-white font-semibold">Solo Pro</span>.
-              Débloquez des messages personnalisés pour chaque prospect avec l&apos;IA.
+              {upgradeModalReason === 'prospect' ? (
+                <>Vous avez atteint la limite de <span className="text-white font-semibold">3 prospects</span> sur le plan gratuit. Passez en <span className="text-white font-semibold">Solo Pro</span> pour ajouter des prospects en illimité.</>
+              ) : (
+                <>La génération de relances IA est réservée aux abonnés <span className="text-white font-semibold">Solo Pro</span>. Débloquez des messages personnalisés pour chaque prospect avec l&apos;IA.</>
+              )}
             </p>
             <div className="flex gap-3 justify-center">
               <button
-                onClick={() => setShowUpgradeModal(false)}
+                onClick={() => setUpgradeModalReason(null)}
                 className="px-4 py-2 text-sm text-[#818cf8] hover:text-white border border-[#2a2a42] hover:border-[#4f46e5]/50 rounded-lg transition-all"
               >
                 Plus tard
@@ -790,7 +797,7 @@ export default function PipelinePage() {
 
       {/* Edit Prospect Modal */}
       {editProspect && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && setEditProspect(null)}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && setEditProspect(null)}>
           <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl overflow-y-auto max-h-[90vh]">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-white">✏️ Modifier le prospect</h2>
@@ -839,7 +846,7 @@ export default function PipelinePage() {
 
       {/* Add Prospect Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl overflow-y-auto max-h-[90vh]">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-white">Nouveau prospect</h2>
@@ -960,7 +967,7 @@ export default function PipelinePage() {
 
       {/* Relance IA Modal */}
       {relanceProspect && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-xl shadow-2xl overflow-y-auto max-h-[90vh]">
             <div className="flex items-center justify-between mb-5">
               <div>

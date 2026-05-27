@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1" />
+      <stop offset="100%" style="stop-color:#8b5cf6" />
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" ry="96" fill="url(#bg)" />
+  <rect width="512" height="512" rx="96" ry="96" fill="url(#shine)" />
+
+  <!-- Brain shape centered -->
+  <!-- Main brain outline -->
+  <path d="M176 256 C176 196 210 148 248 148 C262 148 272 158 272 168 C272 158 282 148 296 148 C334 148 368 196 368 256 C368 296 350 324 326 334 C316 338 306 336 300 330 C294 336 280 342 256 342 C232 342 218 336 212 330 C206 336 196 338 186 334 C162 324 144 296 144 256 Z"
+        fill="white" opacity="0.95" />
+
+  <!-- Center line -->
+  <line x1="256" y1="152" x2="256" y2="338" stroke="url(#bg)" stroke-width="6" opacity="0.5" />
+
+  <!-- Neural nodes -->
+  <circle cx="198" cy="210" r="11" fill="white" opacity="0.7" />
+  <circle cx="314" cy="210" r="11" fill="white" opacity="0.7" />
+  <circle cx="180" cy="268" r="9" fill="white" opacity="0.55" />
+  <circle cx="332" cy="268" r="9" fill="white" opacity="0.55" />
+  <circle cx="210" cy="312" r="8" fill="white" opacity="0.45" />
+  <circle cx="302" cy="312" r="8" fill="white" opacity="0.45" />
+
+  <!-- Center node (highlighted) -->
+  <circle cx="256" cy="232" r="16" fill="white" opacity="0.95" />
+  <circle cx="256" cy="232" r="8" fill="url(#bg)" opacity="0.8" />
+
+  <!-- Neural connections -->
+  <line x1="198" y1="210" x2="256" y2="232" stroke="white" stroke-width="4" opacity="0.45" />
+  <line x1="314" y1="210" x2="256" y2="232" stroke="white" stroke-width="4" opacity="0.45" />
+  <line x1="180" y1="268" x2="210" y2="312" stroke="white" stroke-width="3" opacity="0.35" />
+  <line x1="332" y1="268" x2="302" y2="312" stroke="white" stroke-width="3" opacity="0.35" />
+  <line x1="256" y1="232" x2="210" y2="312" stroke="white" stroke-width="3" opacity="0.3" />
+  <line x1="256" y1="232" x2="302" y2="312" stroke="white" stroke-width="3" opacity="0.3" />
+
+  <!-- BRAINLO text -->
+  <text x="256" y="420" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="62" font-weight="800" letter-spacing="-2" fill="white" text-anchor="middle" opacity="0.97">brainlo</text>
+</svg>

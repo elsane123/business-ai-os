@@ -19,9 +19,10 @@ const STEPS: Step[] = [
   { id: 'prospect', label: 'Ajouter votre 1er prospect',  description: 'Gérez vos opportunités commerciales', href: '/pipeline',       icon: '👥', isPro: false, isManual: false },
   { id: 'task',     label: 'Créer votre première tâche',  description: 'Organisez votre travail au quotidien', href: '/tasks',          icon: '📋', isPro: false, isManual: false },
   { id: 'focus',    label: 'Générer votre Daily Focus',   description: 'Votre journée guidée par l\'IA',        href: '/focus',          icon: '⚡', isPro: false, isManual: false },
-  { id: 'chat',     label: 'Essayer le Chat IA',          description: 'Posez vos questions business à l\'IA',  href: '/chat',           icon: '🧠', isPro: true,  isManual: true  },
-  { id: 'agents',   label: 'Explorer les Agents IA',      description: 'Automatisez relances et contenus',     href: '/agents',         icon: '🤖', isPro: true,  isManual: true  },
   { id: 'enrich',   label: 'Enrichir votre profil',       description: 'Débloquez les agents IA avancés',      href: '/settings#enrich', icon: '✨', isPro: false, isManual: false },
+  { id: 'chat',     label: 'Essayer le Chat IA',          description: 'Posez vos questions business à l\'IA',  href: '/chat',           icon: '🧠', isPro: true,  isManual: true  },
+  { id: 'linkedin', label: 'Essayer le Générateur LinkedIn', description: 'Créez des posts LinkedIn avec l\'IA',   href: '/content',        icon: '💼', isPro: true,  isManual: true  },
+  { id: 'agents',   label: 'Explorer les Agents IA',      description: 'Automatisez relances et contenus',     href: '/agents',         icon: '🤖', isPro: true,  isManual: true  },
   { id: 'calcom',   label: 'Connecter Cal.com',           description: 'Synchronisez vos rendez-vous',         href: '/settings#calcom', icon: '📅', isPro: false, isManual: false },
 ]
 
@@ -82,7 +83,29 @@ export default function OnboardingChecklist({ plan }: { plan: string }) {
     }
   }
 
-  if (loading || dismissed || allDone) return null
+  if (loading || allDone) return null
+
+  if (dismissed) {
+    const doneCountMini = STEPS.filter(s => completed.includes(s.id)).length
+    return (
+      <div className="mx-4 mt-4 mb-0">
+        <button
+          type="button"
+          onClick={() => {
+            localStorage.removeItem(DISMISS_KEY)
+            setDismissed(false)
+          }}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#2a2a42] bg-[#13131f] hover:border-[#6366f1]/50 hover:bg-[#1a1a2e] transition-all text-xs text-[#818cf8] shadow"
+        >
+          <span>🚀</span>
+          <span>Premiers pas</span>
+          <span className="bg-[#6366f1]/20 text-[#818cf8] px-1.5 py-0.5 rounded-full text-[10px] font-semibold">
+            {doneCountMini}/{STEPS.length}
+          </span>
+        </button>
+      </div>
+    )
+  }
 
   const doneCount = STEPS.filter(s => completed.includes(s.id)).length
   const pct       = Math.round((doneCount / STEPS.length) * 100)

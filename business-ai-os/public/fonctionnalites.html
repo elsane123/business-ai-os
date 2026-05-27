@@ -9,7 +9,8 @@
 :root{--bg:#0a0a0f;--bg2:#111118;--bg3:#16161f;--card:#1a1a28;--border:#2a2a40;--indigo:#6366f1;--violet:#8b5cf6;--il:#818cf8;--vl:#a78bfa;--text:#e2e8f0;--muted:#94a3b8;--green:#10b981;--amber:#f59e0b;--red:#ef4444}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-nav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:66px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,20,0.85);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(99,102,241,0.14);height:64px}
+.nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,var(--il),var(--vl));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .nav-links{display:flex;gap:2rem;align-items:center}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:.88rem;transition:color .2s}
@@ -101,13 +102,33 @@ section{padding:6rem 2rem}
   </style>
 </head>
 <body>
-<nav>
-  <span class="logo">Brainlo</span>
-  <div class="nav-links">
-    <a href="#features" class="hide-sm">Fonctionnalités</a>
-    <a href="#wiki" class="hide-sm">LLM Wiki</a>
-    <a href="#pricing" class="hide-sm">Tarifs</a>
-    <a href="#pricing" class="btn-nav">Commencer gratuitement</a>
+<nav aria-label="Navigation principale">
+  <div class="nav-inner">
+    <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;border-radius:11px;box-shadow:0 0 14px rgba(99,102,241,0.55);">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4f46e5"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+          <linearGradient id="gl" x1="8" y1="8" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e0e7ff"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient>
+        </defs>
+        <rect width="40" height="40" rx="11" fill="url(#bg)"/>
+        <rect x="10" y="10" width="4" height="20" rx="2" fill="url(#gl)"/>
+        <path d="M14 10 Q24 10 24 15.5 Q24 21 14 21" stroke="url(#gl)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <path d="M14 21 Q26 21 26 26.5 Q26 32 14 32" stroke="url(#gl)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <circle cx="28" cy="11" r="2.5" fill="#a5b4fc" opacity="0.85"/>
+        <circle cx="31" cy="19" r="1.8" fill="#c4b5fd" opacity="0.7"/>
+        <circle cx="28" cy="31" r="2" fill="#a5b4fc" opacity="0.6"/>
+        <line x1="24" y1="13" x2="26.5" y2="11" stroke="#818cf8" stroke-width="1" opacity="0.6"/>
+        <line x1="25" y1="19" x2="29.2" y2="19" stroke="#818cf8" stroke-width="1" opacity="0.5"/>
+        <line x1="24" y1="29" x2="26.5" y2="31" stroke="#818cf8" stroke-width="1" opacity="0.5"/>
+      </svg>
+      <span style="font-weight:700;font-size:17px;color:#fff;letter-spacing:-0.025em;line-height:1;">Brainlo</span>
+    </a>
+    <div class="nav-links" style="gap:20px;">
+      <a href="/login" style="color:#94a3b8;font-size:14px;font-weight:500;">Se connecter</a>
+      <a href="/assessment" style="color:#94a3b8;font-size:14px;font-weight:500;">Diagnostic IA</a>
+      <a href="/fonctionnalites.html" style="color:#818cf8;font-size:14px;font-weight:600;border:1px solid rgba(129,140,248,0.35);padding:6px 14px;border-radius:8px;">🚀 Fonctionnalités</a>
+      <a href="/onboarding" class="btn-nav" style="padding:9px 20px;border-radius:10px;font-size:14px;box-shadow:0 0 16px rgba(99,102,241,0.4);">Commencer</a>
+    </div>
   </div>
 </nav>
 
@@ -200,14 +221,14 @@ section{padding:6rem 2rem}
         </ul>
       </div>
       <div class="fcard">
-        <div class="ficon br">&#x1F4C4;</div>
-        <h3>Rapport Mensuel Auto</h3>
-        <p>Le 1er de chaque mois, un PDF consolidé avec vos KPIs finance, ventes, visibilité et les recommandations IA.</p>
+        <div class="ficon bi">&#x1F9FE;</div>
+        <h3>Facturation &eacute;lectronique Factur-X</h3>
+        <p>G&eacute;n&eacute;rez des factures au format Factur-X (PDF + XML CII EN&nbsp;16931 embarqu&eacute;), le standard europ&eacute;en de facturation &eacute;lectronique obligatoire en France d&egrave;s 2026.</p>
         <ul class="flist">
-          <li>CA, charges, net, runway</li>
-          <li>Taux conversion, vélocité pipeline</li>
-          <li>Impressions LinkedIn + SEO</li>
-          <li>Plan d'action mois suivant</li>
+          <li>PDF hybride lisible + XML machine-readable</li>
+          <li>Profil BASIC conforme EN&nbsp;16931 / Chorus Pro</li>
+          <li>T&eacute;l&eacute;chargement en 1 clic depuis chaque facture</li>
+          <li>Enrichissement SIRET automatique (API gouvernementale)</li>
         </ul>
       </div>
     </div>

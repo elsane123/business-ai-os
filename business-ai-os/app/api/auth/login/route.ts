@@ -50,6 +50,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (user.isSuspended) {
+      return NextResponse.json(
+        { error: 'Votre compte a été suspendu. Contactez le support.' },
+        { status: 403 }
+      )
+    }
+
     const token = await signToken({ userId: user.id, email: user.email, plan: user.plan })
 
     // ── BUG-06: JWT removed from response body — only set in httpOnly cookie ──

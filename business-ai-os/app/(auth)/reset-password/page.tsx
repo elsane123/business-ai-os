@@ -1,37 +1,57 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Brain, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+
+function InvalidTokenScreen() {
+  return (
+    <div className="min-h-screen bg-[#030712] flex items-center justify-center px-4">
+      <div className="w-full max-w-md text-center">
+        <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+        <h1 className="text-xl font-bold text-white mb-2">Lien invalide ou expiré</h1>
+        <p className="text-gray-400 text-sm mb-6">
+          Ce lien de réinitialisation est invalide ou a expiré.
+        </p>
+        <Link
+          href="/forgot-password"
+          className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-6 rounded-lg transition-colors"
+        >
+          Demander un nouveau lien
+        </Link>
+      </div>
+    </div>
+  )
+}
 
 function ResetPasswordForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token') ?? ''
 
+  const [tokenValid, setTokenValid] = useState<boolean | null>(null)
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  // Token manquant dans l'URL
-  if (!token) {
+  useEffect(() => {
+    if (!token) { setTokenValid(false); return }
+    fetch(`/api/auth/validate-reset-token?token=${encodeURIComponent(token)}`)
+      .then(r => r.json())
+      .then(d => setTokenValid(d.valid === true))
+      .catch(() => setTokenValid(false))
+  }, [token])
+
+  // Token manquant ou invalide
+  if (!token || tokenValid === false) return <InvalidTokenScreen />
+
+  // Validation en cours
+  if (tokenValid === null) {
     return (
-      <div className="min-h-screen bg-[#030712] flex items-center justify-center px-4">
-        <div className="w-full max-w-md text-center">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-white mb-2">Lien invalide</h1>
-          <p className="text-gray-400 text-sm mb-6">
-            Ce lien de réinitialisation est invalide ou a expiré.
-          </p>
-          <Link
-            href="/forgot-password"
-            className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-6 rounded-lg transition-colors"
-          >
-            Demander un nouveau lien
-          </Link>
-        </div>
+      <div className="min-h-screen bg-[#030712] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
       </div>
     )
   }

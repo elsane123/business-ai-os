@@ -104,8 +104,28 @@ export default function FocusPage() {
   // ── Détection upgrade=success dans l'URL ─────────────────────────────────
   useEffect(() => {
     if (searchParams.get('upgrade') === 'success') {
+      const sessionId = searchParams.get('session_id')
+      if (sessionId) {
+        // Verify Stripe session and upgrade plan
+        fetch('/api/stripe/verify-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId }),
+        }).then(res => {
+          if (res.ok) {
+            // Reload to refresh plan from DB
+            window.location.replace('/focus?upgraded=1')
+          }
+        }).catch(() => {
+          // Silent — plan update will happen via webhook
+        })
+      }
       setUpgradeToast(true)
-      // Nettoyer l'URL sans recharger la page
+      window.history.replaceState({}, '', '/focus')
+      setTimeout(() => setUpgradeToast(false), 8000)
+    }
+    if (searchParams.get('upgraded') === '1') {
+      setUpgradeToast(true)
       window.history.replaceState({}, '', '/focus')
       setTimeout(() => setUpgradeToast(false), 8000)
     }

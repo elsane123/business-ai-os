@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // ─── Dev Origins ───
-  allowedDevOrigins: ['51.159.164.33'],
+  allowedDevOrigins: ['51.159.164.33', 'brainlo.ai'],
 
   // ─── Compression & Performance ───
   compress: true,

@@ -1,8 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import { prisma } from '@/lib/db'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
     if (!session) {
@@ -11,39 +10,15 @@ export async function POST() {
 
     const stripeKey = process.env.STRIPE_SECRET_KEY ?? ''
     const priceId = process.env.STRIPE_PRICE_ID_SOLO_PRO ?? ''
-    const testMode = process.env.STRIPE_TEST_MODE === 'true'
 
-    // ─── Mode Test : upgrade direct sans Stripe ───────────────────────────────
-    if (testMode || !stripeKey.startsWith('sk_')) {
-      console.log(`[stripe/checkout] TEST MODE — upgrading user ${session.userId} to PRO directly`)
-
-      await prisma.user.update({
-        where: { id: session.userId },
-        data: { plan: 'PRO' },
-      })
-
-      return NextResponse.json({ url: '/focus?upgrade=success&mock=true' })
+    if (!stripeKey.startsWith('sk_') || !priceId.startsWith('price_')) {
+      console.error('[stripe/checkout] Stripe non configuré — STRIPE_SECRET_KEY ou STRIPE_PRICE_ID_SOLO_PRO manquant')
+      return NextResponse.json({ error: 'Paiement non disponible — configuration Stripe manquante' }, { status: 503 })
     }
 
-    // ─── Stripe Live : vérifier configuration complète ───────────────────────
-    const isConfigured =
-      stripeKey.length > 10 &&
-      priceId.startsWith('price_') &&
-      !priceId.includes('roadmap') &&
-      !priceId.includes('xxx')
-
-    if (!isConfigured) {
-      console.warn('[stripe/checkout] Stripe not fully configured — test upgrade fallback')
-      await prisma.user.update({
-        where: { id: session.userId },
-        data: { plan: 'PRO' },
-      })
-      return NextResponse.json({ url: '/focus?upgrade=success&mock=true' })
-    }
-
-    // ─── Stripe Live : créer une vraie session checkout ───────────────────────
     const { createCheckoutSession } = await import('@/lib/stripe')
-    const checkoutSession = await createCheckoutSession(session.userId, session.email)
+    const baseUrl = request.headers.get('origin') || `http://${request.headers.get('host') || 'localhost:50082'}`
+    const checkoutSession = await createCheckoutSession(session.userId, session.email, baseUrl)
 
     return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {

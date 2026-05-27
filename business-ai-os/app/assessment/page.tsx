@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react'
 import Link from 'next/link'
 import { QUESTIONS, LEADS_MAP, SECTION_LABELS, SECTION_MAX, TOTAL_MAX } from '@/lib/assessment'
+import BrainloLogo from '@/components/ui/BrainloLogo'
 
 type Phase = 'hero' | 'quiz' | 'lead' | 'results' | 'loading'
 
@@ -12,34 +13,25 @@ interface ResultData {
 }
 
 const ACCENT = '#4f46e5'
-const NAV_STYLE: React.CSSProperties = {
-  position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-  background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(18px)',
-  WebkitBackdropFilter: 'blur(18px)',
-  borderBottom: '1px solid rgba(79,70,229,0.1)',
-  boxShadow: '0 1px 12px rgba(0,0,0,0.06)'
-}
 
 function Navbar() {
   return (
-    <nav style={NAV_STYLE}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', height: 64,
+    <nav aria-label="Navigation principale" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+      background: 'rgba(10,10,20,0.85)', backdropFilter: 'blur(18px)',
+      WebkitBackdropFilter: 'blur(18px)',
+      borderBottom: '1px solid rgba(99,102,241,0.14)' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: 64,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{ width: 34, height: 34, borderRadius: 10,
-            background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 17, boxShadow: '0 0 14px rgba(99,102,241,0.4)', flexShrink: 0 }}>🧠</div>
-          <span style={{ fontWeight: 700, fontSize: 17, color: '#0f172a', letterSpacing: '-0.02em' }}>Brainlo</span>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <BrainloLogo size={34} showText={true} textSize="17px" />
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link href="/" style={{ color: '#64748b', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>← Accueil</Link>
-          <Link href="/login" style={{ color: '#64748b', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>Se connecter</Link>
-          <Link href="/onboarding" style={{
-            background: 'linear-gradient(135deg,#4f46e5,#7c3aed)',
-            color: '#fff', fontWeight: 600, fontSize: 14, padding: '8px 18px',
-            borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 12px rgba(99,102,241,0.35)'
-          }}>Commencer</Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <Link href="/login" style={{ color: '#94a3b8', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>Se connecter</Link>
+          <span style={{ color: '#818cf8', fontSize: 14, fontWeight: 600 }}>Diagnostic IA</span>
+          <a href="/fonctionnalites.html" style={{ color: '#818cf8', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(129,140,248,0.35)', padding: '6px 14px', borderRadius: 8 }}>🚀 Fonctionnalités</a>
+          <Link href="/onboarding" style={{ background: 'linear-gradient(135deg,#4f46e5,#7c3aed)',
+            color: '#fff', fontWeight: 600, fontSize: 14, padding: '9px 20px',
+            borderRadius: 10, textDecoration: 'none', boxShadow: '0 0 16px rgba(99,102,241,0.4)' }}>Commencer</Link>
         </div>
       </div>
     </nav>

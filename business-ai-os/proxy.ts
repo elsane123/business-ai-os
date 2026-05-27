@@ -11,6 +11,7 @@ const JWT_SECRET = new TextEncoder().encode(
 const PROTECTED_PATHS = [
   '/focus', '/cash', '/pipeline', '/content', '/chat',
   '/tasks', '/settings', '/knowledge-base', '/calendar', '/profile', '/invoices', '/agents',
+  '/admin', '/wiki',
 ]
 const AUTH_PATHS = ['/login']
 
@@ -23,12 +24,16 @@ export async function proxy(request: NextRequest) {
 
   if (isProtected) {
     if (!token) {
-      return NextResponse.redirect(new URL('/login', request.url))
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('returnTo', pathname + (request.nextUrl.search || ''))
+      return NextResponse.redirect(loginUrl)
     }
     try {
       await jwtVerify(token, JWT_SECRET)
     } catch {
-      const response = NextResponse.redirect(new URL('/login', request.url))
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('returnTo', pathname + (request.nextUrl.search || ''))
+      const response = NextResponse.redirect(loginUrl)
       response.cookies.delete('auth_token')
       return response
     }
@@ -61,6 +66,9 @@ export const config = {
     '/profile/:path*',
     '/invoices/:path*',
     '/agents/:path*',
+    '/admin/:path*',
+    '/admin',
+    '/wiki/:path*',
     '/login',
   ],
 }

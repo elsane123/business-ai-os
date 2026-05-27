@@ -47,55 +47,62 @@
 | 14 | [Email Daily Focus Automatique](#video-14--email-daily-focus-automatique) | 2 min |
 | 15 | [Rapport Mensuel Auto](#video-15--rapport-mensuel-auto) | 3 min |
 | 16 | [Sécurité & Gestion de Compte](#video-16--sécurité--gestion-de-compte) | 2 min |
+| 17 | [Facture X — Facturation Électronique](#video-17--facture-x--facturation-électronique) | 2 min |
 
 ---
 
 ## VIDEO 1 — Inscription & Onboarding
 
 ### 🎯 Objectif
-Montrer la simplicité de prise en main : de zéro à un OS business configuré en moins de 3 minutes.
+Montrer la simplicité de prise en main : de zéro à un OS business opérationnel en moins de 2 minutes.
 
 ### 📣 Accroche (narration)
-> *"Vous démarrez votre activité ou vous êtes lassé de jongler entre 10 outils ? Avec Brainlo, vous êtes opérationnel en 3 minutes. Voici comment."*
+> *"Vous démarrez votre activité ou vous êtes lassé de jongler entre 10 outils ? Avec Brainlo, vous êtes opérationnel en 2 minutes. Voici comment."*
 
 ### 🖥️ Actions à l'écran
 
-**Étape 1 — Landing page** `(0:00–0:20)`
-- Aller sur `http://51.159.164.33:50082`
+**Étape 1 — Landing page** `(0:00–0:15)`
+- Aller sur `http://brainlo.ai`
 - Montrer la page d'accueil, scroller rapidement sur les fonctionnalités
 - Cliquer sur **"Commencer gratuitement"**
 
-**Étape 2 — Inscription** `(0:20–0:45)`
-- Remplir : Nom `"Sophie Martin"`, Email `"sophie@designstudio.fr"`, Mot de passe
-- Cliquer **"Créer mon compte"**
-- 💬 *"En 10 secondes, mon compte est créé. Pas de carte bancaire, pas de vérification email complexe."*
+**Étape 2 — Onboarding Étape 1 : Votre compte** `(0:15–0:45)`
+- Remplir : Nom `"Sophie Martin"`, Email `"sophie@designstudio.fr"`, Mot de passe, Entreprise `"Design Studio Sophie"`
+- Montrer le bloc indigo **"Pourquoi on vous demande ça"** :
+  - 🔐 Sécurise votre espace · 🧠 Personnalise vos agents IA · 📋 Pré-remplit vos devis · ⚡ Active votre Focus
+- 💬 *"Un seul formulaire, et déjà Brainlo sait qui je suis. Ces infos vont alimenter tous mes agents IA."*
+- Cliquer **Continuer**
 
-**Étape 3 — Onboarding Étape 1 : Votre activité** `(0:45–1:15)`
-- Remplir **Nom de l'entreprise** : `Design Studio Sophie`
-- Sélectionner **Secteur** : `Design & Créativité`
-- 💬 *"Je dis à l'OS qui je suis. Ces informations vont alimenter tous mes agents IA."*
-- Cliquer **Suivant**
+**Étape 3 — Onboarding Étape 2 : Votre profil** `(0:45–1:15)`
+- Sélectionner **Secteur** via les chips visuels : `🎨 Créatif`
+- Renseigner optionnellement **Objectif CA mensuel** : `5 000€`
+- Montrer le bloc WHY :
+  - 🤖 Calibre vos agents · 💡 Personnalise le Daily Focus · 📣 Oriente le contenu LinkedIn
+- 💬 *"Je sélectionne mon secteur. L'IA va s'adapter à ma réalité. En quelques secondes."*
+- Cliquer **Activer Brainlo**
 
-**Étape 4 — Onboarding Étape 2 : Vos objectifs** `(1:15–1:45)`
-- **Objectif CA mensuel** : `5 000€`
-- **Charges fixes mensuelles** : `800€`
-- 💬 *"Je fixe mes objectifs financiers. Le système va maintenant calculer mon runway et me dire si je suis en bonne santé financière."*
-- Cliquer **Suivant**
+**Étape 4 — Activation** `(1:15–1:35)`
+- Animation d'activation (orb IA qui pulse)
+- 💬 *"L'OS s'initialise. Mon Business Brain est en train d'être créé."*
 
-**Étape 5 — Onboarding Étape 3 : Votre profil** `(1:45–2:15)`
-- **LinkedIn** : `linkedin.com/in/sophiemartin`
-- **Cal.com** : entrer le lien de prise de RDV
-- 💬 *"Je connecte mes outils. Cal.com pour les RDV, LinkedIn pour la visibilité."*
-- Cliquer **Terminer la configuration**
+**Étape 5 — Dashboard + Checklist** `(1:35–2:00)`
+- Le dashboard s'affiche avec la checklist **"🚀 Premiers pas avec Brainlo"** (9 étapes, 22%)
+- Montrer les premières étapes cochées automatiquement (compte ✅, secteur ✅)
+- 💬 *"Mon OS est prêt en 2 minutes. La checklist me guide pour découvrir les modules un par un — à mon rythme."*
+- Pointer le badge **PRO** sur LinkedIn, Chat, Agents IA
+- 💬 *"Les modules IA sont disponibles en Solo Pro. Je peux commencer gratuitement avec le pipeline, les tâches et la trésorerie."*
 
-**Étape 6 — Dashboard** `(2:15–2:30)`
-- Le dashboard s'affiche avec les premiers widgets
-- 💬 *"Mon OS est prêt. Chaque module est déjà connecté à mon profil. Je peux commencer à travailler."*
+**Étape 6 (bonus) — Enrichir mon profil** `(2:00–2:20)` *(optionnel pour vidéo longue)*
+- Cliquer sur **Enrichir votre profil** dans la checklist → `Settings > Enrichir mon profil`
+- Montrer le score de complétion (0%) et les 4 sections (Offres, ICP, Localisation, Brief)
+- 💬 *"Plus je complète mon profil, plus les agents IA seront précis. Je débloquerai les relances calibrées dès 50%."*
 
 ### ✅ Points clés à souligner
 - Aucune carte bancaire requise pour commencer
-- Le profil renseigné alimente automatiquement tous les agents IA
-- 3 étapes, 3 minutes, et vous avez un OS complet
+- **2 minutes** de bout en bout (vs 7–8 min avant)
+- Les WHY callouts expliquent la valeur de chaque donnée collectée
+- La checklist dashboard guide la découverte progressive
+- L'enrichissement profil se fait à son rythme depuis les settings
 
 ---
 
@@ -371,11 +378,22 @@ Montrer la création d'un devis depuis un brief naturel, puis sa conversion en f
 - La transaction correspondante est créée dans Cash
 - 💬 *"Dès que je marque la facture payée, le montant apparaît automatiquement dans ma trésorerie. Tout est connecté."*
 
+**Étape 8 — Télécharger en Facture X** `(3:00–3:30)`
+- Depuis la liste des factures, localiser la facture `FAC-2026-007`
+- Cliquer le bouton **⬇️ Factur-X** (à côté du bouton PDF classique)
+- Le PDF hybride se télécharge automatiquement : `FAC-2026-007-facturx.pdf`
+- 💬 *"Brainlo génère une Facture X conforme à la norme européenne EN 16931. Un PDF classique, mais avec les données XML embarquées — obligatoire pour la facturation électronique B2B en France dès 2026."*
+- Ouvrir le PDF pour montrer qu'il est identique visuellement à un PDF classique
+- 💬 *"Visuellement identique. Mais à l'intérieur, un fichier XML CII est embarqué — lisible par tous les logiciels de comptabilité."*
+
+> ⚠️ **Prérequis Facture X** : le profil doit contenir SIRET, adresse complète et numéro TVA (à compléter dans `Settings > Enrichir mon profil`).
+
 ### ✅ Points clés à souligner
 - Brief langage naturel → devis structuré en 30 secondes
 - Numérotation automatique DEVIS-YYYY-XXX / FAC-YYYY-XXX
 - Paiement facture → transaction Cash automatique
 - PDF professionnel avec mentions légales
+- **Facture X (EN 16931)** — conformité facturation électronique européenne intégrée
 
 ---
 
@@ -942,10 +960,61 @@ Montrer les fonctionnalités de gestion de compte : modification du profil, réi
 | 🆕 14 | Email Daily Focus (V14) | Fonctionnalité PRO différenciante |
 | 🆕 15 | Rapport Mensuel (V15) | Démo valeur Solo Pro |
 | 🆕 16 | Sécurité & Gestion Compte (V16) | Confiance et réassurance |
+| 🆕 17 | Facture X (V17) | Conformité e-invoicing B2B FR 2026 |
 
 ---
 
-> 📹 **Document créé par Agent Zero — Brainlo v1.2.0**
-> Dernière mise à jour : 2026-05-17
+## VIDEO 17 — Facture X — Facturation Électronique
+
+### 🎯 Objectif
+Montrer la génération d'une Facture X conforme à la norme européenne EN 16931 — le standard de facturation électronique obligatoire pour les entreprises B2B françaises à partir de 2026.
+
+### 📣 Accroche (narration)
+> *"La facturation électronique devient obligatoire en France pour toutes les entreprises B2B dès 2026. Brainlo vous prépare dès maintenant — en un clic, votre facture est conforme à la norme Factur-X sans rien changer à votre workflow habituel."*
+
+### 🖥️ Actions à l'écran
+
+**Étape 1 — Contexte réglementaire** `(0:00–0:20)`
+- 💬 *"En France, la réforme e-invoicing entre en vigueur progressivement à partir de 2026. Toutes les factures B2B devront être au format électronique structuré. Brainlo est déjà conforme."*
+
+**Étape 2 — Préparer le profil** `(0:20–0:40)`
+- Aller dans `Settings > Profil légal`
+- Vérifier que **SIRET**, **adresse complète** et **numéro TVA** sont renseignés
+- 💬 *"La Facture X nécessite vos informations légales complètes. Je vérifie que tout est renseigné dans mon profil."*
+
+**Étape 3 — Sélectionner une facture** `(0:40–1:00)`
+- Aller dans **Factures** → liste des factures
+- Localiser une facture avec statut `PAID` ou `SENT` (ex: `FAC-2026-007`)
+- 💬 *"Je prends une facture existante. Elle a déjà été envoyée et payée."*
+
+**Étape 4 — Télécharger la Facture X** `(1:00–1:30)`
+- Localiser le bouton **⬇️ Factur-X** dans la ligne de la facture
+- Cliquer sur le bouton
+- Le PDF se télécharge automatiquement : `FAC-2026-007-facturx.pdf`
+- 💬 *"Un seul clic. Le PDF Factur-X est généré instantanément."*
+
+**Étape 5 — Inspecter le résultat** `(1:30–2:00)`
+- Ouvrir le PDF téléchargé
+- Montrer qu'il est **visuellement identique** à un PDF classique : logo, lignes, totaux, mentions légales
+- 💬 *"Visuellement, c'est une facture normale. Mais à l'intérieur, un fichier XML CII (Cross Industry Invoice) est embarqué selon la norme UN/CEFACT. C'est ce que lit votre logiciel de comptabilité, le portail Chorus Pro, et les outils de vos clients."*
+- Mentionner le profil : **Factur-X BASIC (EN 16931)**
+
+### ✅ Points clés à souligner
+- Conformité **EN 16931** — norme européenne e-invoicing
+- Profil **Factur-X BASIC** — compatible Chorus Pro et logiciels comptables
+- **Zéro workflow supplémentaire** — un bouton, une seconde
+- PDF hybride : lisible humain + données XML embarquées
+- Prérequis : SIRET + TVA + adresse dans le profil
+
+### 💡 Astuce scénariste
+Montrer côte à côte :
+- La facture PDF classique (bouton 🖨️ Imprimer)
+- La facture Factur-X (bouton ⬇️ Factur-X)
+→ Identiques visuellement, mais la Factur-X contient les métadonnées structurées en XML.
+
+---
+
+> 📹 **Document créé par Agent Zero — Brainlo v1.4.0**
+> Dernière mise à jour : 2026-05-26
 > Fichier : `/a0/usr/projects/business_ai_os/MANUEL_UTILISATEUR_DEMO.md`
-> **16 vidéos | ~55 scénarios détaillés | ~1000 lignes**
+> **17 vidéos | ~60 scénarios détaillés | ~990 lignes**

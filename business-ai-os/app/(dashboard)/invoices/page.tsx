@@ -386,10 +386,12 @@ export default function InvoicesPage() {
   }
 
   const [createError, setCreateError] = useState('')
+  const [isUpgradeError, setIsUpgradeError] = useState(false)
 
   const handleCreate = async () => {
     setSaving(true)
     setCreateError('')
+    setIsUpgradeError(false)
     const url = modalType === 'quote' ? '/api/quotes' : '/api/invoices'
     const clientInfo = { name: clientName, address: clientAddress, zipCode: clientZip, city: clientCity, siret: clientSiret, email: clientEmail }
     const method = editingQuoteId ? 'PATCH' : 'POST'
@@ -403,6 +405,7 @@ export default function InvoicesPage() {
     } else {
       const data = await res.json().catch(() => ({}))
       setCreateError(data.error || `Erreur ${res.status}`)
+      setIsUpgradeError(!!data.upgradeRequired)
     }
     setSaving(false)
   }
@@ -640,7 +643,19 @@ export default function InvoicesPage() {
             </div>
             {createError && (
               <div className="mt-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-400">
-                ⚠️ {createError}
+                <p>⚠️ {createError}</p>
+                {isUpgradeError && (
+                  <button
+                    onClick={async () => {
+                      const res = await fetch('/api/stripe/checkout', { method: 'POST' })
+                      const data = await res.json()
+                      if (data.url) window.location.href = data.url
+                    }}
+                    className="mt-3 w-full px-4 py-2 text-sm font-semibold bg-[#4f46e5] hover:bg-[#4338ca] text-white rounded-lg transition-colors"
+                  >
+                    🚀 Upgrader maintenant — 29€/mois
+                  </button>
+                )}
               </div>
             )}
             <div className="flex justify-end gap-3 mt-6">

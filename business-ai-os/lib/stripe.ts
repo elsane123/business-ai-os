@@ -5,7 +5,8 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
   typescript: true,
 })
 
-export async function createCheckoutSession(userId: string, email: string) {
+export async function createCheckoutSession(userId: string, email: string, baseUrl?: string) {
+  const appUrl = baseUrl || process.env.NEXT_PUBLIC_APP_URL
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'subscription',
@@ -14,8 +15,8 @@ export async function createCheckoutSession(userId: string, email: string) {
       price: process.env.STRIPE_PRICE_ID_SOLO_PRO,
       quantity: 1,
     }],
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgrade=success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgrade=cancel`,
+    success_url: `${appUrl}/focus?upgrade=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${appUrl}/focus?upgrade=cancel`,
     metadata: { userId },
   })
   return session
