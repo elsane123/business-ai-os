@@ -86,6 +86,58 @@ export default function AgentChatPage() {
   const [coldEmailResult, setColdEmailResult] = useState<Array<{ day: number; subject: string; body: string }> | null>(null)
   const [coldEmailCopied, setColdEmailCopied] = useState<number | null>(null)
 
+  // Story 8.3 — LinkedIn CMO Post (CMO agent only)
+  const [liPostLoading, setLiPostLoading] = useState(false)
+  const [liPostContent, setLiPostContent] = useState('')
+  const [liPostPublishing, setLiPostPublishing] = useState(false)
+  const [liPostUrl, setLiPostUrl] = useState<string | null>(null)
+  const [liPostError, setLiPostError] = useState<string | null>(null)
+  const [liPostCopied, setLiPostCopied] = useState(false)
+
+  async function handleGenerateLinkedIn() {
+    setLiPostLoading(true)
+    setLiPostError(null)
+    setLiPostUrl(null)
+    try {
+      const res = await fetch('/api/agents/linkedin-post/generate', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Erreur')
+      setLiPostContent(data.content ?? '')
+    } catch (err) {
+      console.error('[linkedin-post generate]', err)
+      setLiPostError('Erreur lors de la génération du post.')
+    } finally {
+      setLiPostLoading(false)
+    }
+  }
+
+  async function handlePublishLinkedIn() {
+    if (!liPostContent.trim()) return
+    setLiPostPublishing(true)
+    setLiPostError(null)
+    try {
+      const res = await fetch('/api/agents/linkedin-post/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: liPostContent }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        if (data.error === 'token_expired') {
+          setLiPostError('Token LinkedIn expiré — Reconnecte-toi dans Paramètres > Intégrations.')
+        } else {
+          setLiPostError('Échec de la publication LinkedIn.')
+        }
+        return
+      }
+      setLiPostUrl(data.postUrl)
+    } catch {
+      setLiPostError('Erreur réseau lors de la publication.')
+    } finally {
+      setLiPostPublishing(false)
+    }
+  }
+
   async function handleGenerateColdEmail(e: React.FormEvent) {
     e.preventDefault()
     if (!coldEmailForm.prospectName.trim()) return
@@ -343,6 +395,64 @@ export default function AgentChatPage() {
                       </button>
                     </div>
                   </form>
+                )}
+              </div>
+            )}
+
+            {/* Story 8.3 — LinkedIn Post Generator (CMO agent only) */}
+            {agentId === 'agent-cmo' && (
+              <div className="mt-6 w-full max-w-sm space-y-3">
+                {!liPostContent ? (
+                  <button
+                    onClick={handleGenerateLinkedIn}
+                    disabled={liPostLoading}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 font-medium rounded-xl text-sm transition-colors disabled:opacity-50"
+                  >
+                    {liPostLoading ? '⏳ Génération...' : '💼 Rédiger un post LinkedIn'}
+                  </button>
+                ) : (
+                  <div className="bg-[#1a1d2e] border border-blue-500/20 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold text-blue-300">💼 Post LinkedIn</p>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] ${liPostContent.length > 3000 ? 'text-red-400' : 'text-slate-500'}`}>{liPostContent.length}/3000</span>
+                        <button onClick={() => { setLiPostContent(''); setLiPostUrl(null); setLiPostError(null) }} className="text-xs text-slate-500 hover:text-white">✕</button>
+                      </div>
+                    </div>
+                    <textarea
+                      value={liPostContent}
+                      onChange={e => setLiPostContent(e.target.value)}
+                      rows={10}
+                      maxLength={3000}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50 resize-none leading-relaxed"
+                    />
+                    {liPostError && (
+                      <p className="text-xs text-red-400">{liPostError} {liPostError.includes('Paramètres') && <a href="/settings" className="underline text-red-300">Paramètres &rarr;</a>}</p>
+                    )}
+                    {liPostUrl ? (
+                      <a href={liPostUrl} target="_blank" rel="noopener noreferrer" className="block text-center text-sm text-green-400 bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-2 hover:bg-green-500/20 transition-colors">
+                        ✓ Post publié — Voir sur LinkedIn →
+                      </a>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => { navigator.clipboard.writeText(liPostContent); setLiPostCopied(true); setTimeout(() => setLiPostCopied(false), 2000) }}
+                          className="flex-1 py-2 rounded-lg border border-white/10 text-slate-400 hover:text-white text-sm transition-colors"
+                        >
+                          {liPostCopied ? '✓ Copié' : 'Copier'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handlePublishLinkedIn}
+                          disabled={liPostPublishing || liPostContent.length > 3000}
+                          className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-medium text-sm transition-colors"
+                        >
+                          {liPostPublishing ? '⏳ Publication...' : '🚀 Publier'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}
