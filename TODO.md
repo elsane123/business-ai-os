@@ -1,6 +1,6 @@
 # TODO — Brainlo Roadmap
 
-> Dernière mise à jour : 2026-05-27  
+> Dernière mise à jour : 2026-06-02 (session 3)  
 > État du projet : **Production-ready avec quelques bloquants à lever**
 
 ---
@@ -82,16 +82,18 @@
 - [ ] **Tests E2E Playwright** — Mettre à jour les tests existants pour couvrir les nouveaux composants WCAG (skip-nav, aria-expanded, progressbar)
 - [ ] **Tests E2E Playwright** — Ajouter couverture des pages : `/onboarding`, `/settings#enrich`, flux Stripe checkout complet
 - [ ] **Performance** — Vérifier bundle size Next.js, lazy loading images, code splitting (score estimé 70/100)
-- [ ] **`.env.example` incomplet** — Ajouter les variables manquantes : `CRON_SECRET`, `NODE_ENV`, `DISABLE_RATE_LIMIT` (présentes dans `.env` mais non documentées)
-- [ ] **Doublon variable Python URL** — `.env` contient `PYTHON_AGENT_URL` et `PYTHON_API_URL` qui pointent vers la même URL. Consolider en une seule variable et nettoyer les références dans le code
+- [x] **`.env.example` complet** — `CRON_SECRET`, `NODE_ENV`, `DISABLE_RATE_LIMIT`, `STRIPE_CUSTOMER_PORTAL_URL`, `NOTION_TOKEN` ajoutés + instructions DNS Resend + WIKI_BASE_PATH générique
+- [x] **Doublon variable Python URL** — `PYTHON_API_URL` consolidé en `PYTHON_AGENT_URL` dans toutes les références code
 
 ---
 
-## 🟣 Priorité 5 — Acquisition Client AI (Epics 8)
+## 🟣 Priorité 5 — Acquisition Client AI (Epic 8) ✅ DONE
 
-- [ ] **E8.1 ICP Builder** — Bouton "Générer mon ICP" dans le pipeline : l'agent CRO analyse les deals WON + Business Brain → génère le Profil Client Idéal → sauvegarde dans `BRAIN.md` section `## Profil Client Idéal (ICP)`. Endpoint : `POST /api/pipeline/icp/generate`. Panel résultat dans la page pipeline. Score mécanique actuel (`calcLeadScore`) conservé tel quel.
-- [ ] **E8.2 Séquence Cold Email** — Agent CRO génère 5 emails de prospection contextualisés (offre Brain + ton + ICP) pour un prospect cible. Export copier/coller par email. Tonalité configurable.
-- [ ] **E8.3 LinkedIn Outreach** — Agent CMO rédige + publie un post LinkedIn ciblé ICP. Connexion via `LINKEDIN_ACCESS_TOKEN` (déjà en secrets). Preview avant publication. Analytics impressions/engagement.
+- [x] **E8.1 ICP Builder** — `POST /api/pipeline/icp/generate` — CRO agent analyse deals WON + Business Brain → ICP + scores de closing sur chaque prospect. Badges couleur sur pipeline page. ICP sauvegardé dans `BRAIN.md`.
+- [x] **E8.2 Séquence Cold Email** — `POST /api/agents/cold-email/generate` — séquence 5 emails (J1/J3/J7/J14/J21), accordéon UI sur agent CRO, copier/coller par email, tonalité configurable.
+- [x] **E8.3 LinkedIn CMO Outreach** — `POST /api/agents/linkedin-post/generate` + `/publish` — génère + publie post LinkedIn via UGC Posts API. UI sur agent CMO avec textarea 3000 chars, bouton publier, gestion expiration token.
+- [x] **LinkedIn token user-configured** — `GET/POST/DELETE /api/user/linkedin-token` — token stocké en DB par user. Section dédiée Settings > Intégrations (save/disconnect). Plus de dépendance à `process.env.LINKEDIN_ACCESS_TOKEN`.
+- [x] **Sidebar CROISSANCE** — nouvelle section rose avec Contenu LinkedIn, ICP Builder, Séquence Email, LinkedIn CMO.
 
 ---
 
