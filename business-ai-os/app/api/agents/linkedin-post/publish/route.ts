@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
+import { prisma } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +15,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Contenu du post requis' }, { status: 400 })
     }
 
-    const token = process.env.LINKEDIN_ACCESS_TOKEN
+    // Read LinkedIn access token from user's DB record
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { linkedinAccessToken: true },
+    })
+    const token = user?.linkedinAccessToken
     if (!token) {
       return NextResponse.json({ error: 'token_expired' }, { status: 401 })
     }

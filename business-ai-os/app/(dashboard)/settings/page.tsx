@@ -147,6 +147,12 @@ export default function SettingsPage() {
   const [stripeMsg, setStripeMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [stripeSyncResult, setStripeSyncResult] = useState<{ imported: number; skipped: number; total: number } | null>(null)
 
+  // LinkedIn token state
+  const [linkedinTokenConfigured, setLinkedinTokenConfigured] = useState(false)
+  const [linkedinTokenInput, setLinkedinTokenInput] = useState('')
+  const [linkedinTokenSaving, setLinkedinTokenSaving] = useState(false)
+  const [linkedinTokenMsg, setLinkedinTokenMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
   // Profile form state
   const [name, setName] = useState('')
   const [businessName, setBusinessName] = useState('')
@@ -275,7 +281,52 @@ export default function SettingsPage() {
       })
       .finally(() => setLoading(false))
     loadStripeConnect()
+    loadLinkedinToken()
   }, [])
+
+  // ── LinkedIn token ────────────────────────────────────────────────────────────
+  async function loadLinkedinToken() {
+    try {
+      const res = await fetch('/api/user/linkedin-token')
+      if (res.ok) {
+        const data = await res.json()
+        setLinkedinTokenConfigured(data.configured ?? false)
+      }
+    } catch { /* silent */ }
+  }
+
+  async function handleSaveLinkedinToken(e: React.FormEvent) {
+    e.preventDefault()
+    if (!linkedinTokenInput.trim()) return
+    setLinkedinTokenSaving(true)
+    setLinkedinTokenMsg(null)
+    try {
+      const res = await fetch('/api/user/linkedin-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: linkedinTokenInput.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erreur')
+      setLinkedinTokenInput('')
+      setLinkedinTokenConfigured(true)
+      setLinkedinTokenMsg({ type: 'success', text: '✅ Token LinkedIn enregistré' })
+    } catch (err: unknown) {
+      setLinkedinTokenMsg({ type: 'error', text: err instanceof Error ? err.message : 'Erreur inconnue' })
+    } finally {
+      setLinkedinTokenSaving(false)
+      setTimeout(() => setLinkedinTokenMsg(null), 5000)
+    }
+  }
+
+  async function handleDisconnectLinkedin() {
+    if (!confirm('Supprimer le token LinkedIn ?')) return
+    try {
+      await fetch('/api/user/linkedin-token', { method: 'DELETE' })
+      setLinkedinTokenConfigured(false)
+      setLinkedinTokenMsg({ type: 'success', text: 'Token LinkedIn supprimé' })
+    } catch { /* silent */ }
+  }
 
   // ── Save Stripe personal API key ─────────────────────────────────────────────
   async function handleSaveStripeKey(e: React.FormEvent) {
@@ -769,6 +820,61 @@ export default function SettingsPage() {
             </div>
           </form>
         )}
+
+        {/* ── LinkedIn Token ───────────────────────────────────────────────── */}
+        <div className="mt-6 pt-6 border-t border-[#2a2a42]">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-sm font-medium text-gray-200">🔗 Token LinkedIn</p>
+              <p className="text-xs text-gray-400 mt-0.5">Requis pour publier via l&apos;Agent CMO</p>
+            </div>
+            {linkedinTokenConfigured && (
+              <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+                ✅ Configuré
+              </span>
+            )}
+          </div>
+          {linkedinTokenMsg && <Alert type={linkedinTokenMsg.type} message={linkedinTokenMsg.text} />}
+          {linkedinTokenConfigured ? (
+            <div className="flex items-center justify-between p-3 rounded-lg bg-[#151524] border border-[#2a2a42]">
+              <p className="text-xs text-gray-400">Token enregistré — masqué pour votre sécurité</p>
+              <button
+                onClick={handleDisconnectLinkedin}
+                className="text-xs text-red-400 hover:text-red-300 transition-colors"
+              >
+                Supprimer
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSaveLinkedinToken} className="space-y-3">
+              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
+                <p className="font-semibold mb-1">🔑 Comment obtenir votre token ?</p>
+                <ol className="list-decimal list-inside space-y-1 text-amber-200">
+                  <li>Créez une app sur <strong>LinkedIn Developers</strong></li>
+                  <li>Générez un token OAuth avec les scopes <code className="bg-[#0a0a1a] px-1 rounded text-indigo-300">w_member_social</code></li>
+                  <li>Copiez le token d&apos;accès ci-dessous</li>
+                </ol>
+              </div>
+              <InputField
+                label="Token d'accès LinkedIn"
+                type="password"
+                value={linkedinTokenInput}
+                onChange={setLinkedinTokenInput}
+                placeholder="AQV..."
+                hint="Utilisé uniquement pour publier vos posts via l'Agent CMO"
+              />
+              <div className="flex justify-end pt-1">
+                <button
+                  type="submit"
+                  disabled={linkedinTokenSaving || !linkedinTokenInput.trim()}
+                  className="px-6 py-2 bg-[#f472b6] hover:bg-[#ec4899] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {linkedinTokenSaving ? 'Enregistrement...' : 'Connecter LinkedIn'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </SectionCard>
       </div>
 

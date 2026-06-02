@@ -62,7 +62,8 @@ model User {
   urssafPeriodicity String? @default("MONTHLY") // MONTHLY | QUARTERLY
   tvaThreshold  Float?   @default(36800) // seuil franchise TVA annuel
   versementLiberatoire Boolean @default(false) // Option versement libératoire de l'impôt (IR)
-  stripePersonalApiKey String? // Clé API Stripe personnelle (rk_live_...) pour import transactions
+  stripePersonalApiKey  String? // Clé API Stripe personnelle (rk_live_...) pour import transactions
+  linkedinAccessToken   String? // Token LinkedIn OAuth (user-configured in Settings > Intégrations)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
