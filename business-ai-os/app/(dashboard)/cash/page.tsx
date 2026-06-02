@@ -500,12 +500,16 @@ export default function CashPage() {
 
   // URSSAF + TVA état
   const [urssaf, setUrssaf] = useState<{
-    activityType: string; urssafRate: number; urssafPeriodicity: string
+    activityType: string; urssafRate: number; cfpRate: number; vflRate: number
+    versementLiberatoire: boolean; urssafPeriodicity: string
     tvaThreshold: number; tvaTolerance: number; annualCA: number
-    tvaPercent: number; tvaStatus: string; pendingCount: number; currentYear: number
+    tvaPercent: number; tvaStatus: string
+    caCeiling: number; caPercent: number; caStatus: string
+    pendingCount: number; currentYear: number
     months: Array<{
       period: string; month: number; label: string; ca: number
-      cotisations: number; status: string; declaredAt: string | null
+      cotisations: number; cfp: number; vfl: number; totalCharges: number
+      status: string; declaredAt: string | null
       isPast: boolean; isCurrent: boolean; hasCA: boolean
     }>
   } | null>(null)
@@ -637,6 +641,10 @@ export default function CashPage() {
   }
 
   const pessimisticAlert = runway && runway.runway.pessimistic.months < 2
+  const goalAlert = runway &&
+    runway.monthlyGoal > 0 &&
+    runway.goalProgress < 60 &&
+    new Date().getDate() >= 20
 
   const modalInitial = modalMode && modalMode !== 'create' ? {
     amount: String(modalMode.amount),
@@ -672,12 +680,26 @@ export default function CashPage() {
 
       {/* Alerte runway critique */}
       {pessimisticAlert && (
-        <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-6">
+        <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
           <span className="text-xl">🚨</span>
           <div>
             <p className="text-sm font-semibold text-red-400">Alerte trésorerie critique</p>
             <p className="text-xs text-red-300/80 mt-0.5">
               Scénario pessimiste : seulement {runway.runway.pessimistic.months} mois de runway. Prenez des mesures immédiatement.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Alerte objectif mensuel à risque */}
+      {goalAlert && (
+        <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3 mb-6">
+          <span className="text-xl">⚡</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-amber-400">Objectif mensuel à risque</p>
+            <p className="text-xs text-amber-300/80 mt-0.5">
+              Vous êtes à {runway?.goalProgress ?? 0}% de votre objectif et il reste peu de jours ce mois-ci.
+              Il manque <span className="font-semibold">{new Intl.NumberFormat('fr-FR').format(Math.max(0, Math.round(((runway?.monthlyGoal ?? 0) - (runway?.monthlyIncome ?? 0)) * 100) / 100))} €</span> pour atteindre {new Intl.NumberFormat('fr-FR').format(runway?.monthlyGoal ?? 0)} €.
             </p>
           </div>
         </div>
@@ -836,7 +858,31 @@ export default function CashPage() {
                   {urssaf.tvaStatus === 'WARNING' && <p className="text-xs text-yellow-400 mt-2">⚡ Vous approchez du seuil de franchise TVA</p>}
                   {urssaf.tvaStatus === 'OK' && urssaf.tvaPercent < 50 && <p className="text-xs text-green-400 mt-2">✅ En franchise de TVA — restant : {fmt(urssaf.tvaThreshold - urssaf.annualCA)} €</p>}
                 </div>
-                <div className="flex items-center gap-4 pt-2 border-t border-[#2a2a42]">
+
+                {/* Plafond CA régime micro-entrepreneur */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-sm font-semibold text-white">🏢 Plafond CA micro-entrepreneur</h3>
+                      <p className="text-xs text-[#6b7280] mt-0.5">Seuil {urssaf.activityType === 'COMMERCE' ? 'commerce' : 'services'} — {fmt(urssaf.caCeiling)} € / an</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-lg font-bold ${urssaf.caStatus === 'EXCEEDED' ? 'text-red-400' : urssaf.caStatus === 'WARNING' ? 'text-orange-400' : urssaf.caStatus === 'WATCH' ? 'text-yellow-400' : 'text-green-400'}`}>{urssaf.caPercent}%</p>
+                      <p className="text-xs text-[#6b7280]">{fmt(urssaf.annualCA)} € CA {urssaf.currentYear}</p>
+                    </div>
+                  </div>
+                  <div className="relative h-3 bg-[#1e1e30] rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-500 ${urssaf.caStatus === 'EXCEEDED' ? 'bg-red-500' : urssaf.caStatus === 'WARNING' ? 'bg-orange-500' : urssaf.caStatus === 'WATCH' ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: `${Math.min(urssaf.caPercent, 100)}%` }} />
+                    <div className="absolute top-0 h-full border-l border-yellow-400/40" style={{ left: '70%' }} />
+                    <div className="absolute top-0 h-full border-l border-orange-400/40" style={{ left: '90%' }} />
+                  </div>
+                  {urssaf.caStatus === 'EXCEEDED' && <p className="text-xs text-red-400 mt-2 font-medium">🚨 Plafond dépassé — vous sortez du régime micro-entrepreneur à partir de l&apos;année prochaine</p>}
+                  {urssaf.caStatus === 'WARNING' && <p className="text-xs text-orange-400 mt-2">⚠️ Vous approchez du plafond — anticipez le passage au régime réel</p>}
+                  {urssaf.caStatus === 'WATCH' && <p className="text-xs text-yellow-400 mt-2">⚡ Restant : {fmt(urssaf.caCeiling - urssaf.annualCA)} € avant sortie du régime micro</p>}
+                  {urssaf.caStatus === 'OK' && <p className="text-xs text-green-400 mt-2">✅ Dans les limites du régime micro — restant : {fmt(urssaf.caCeiling - urssaf.annualCA)} €</p>}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-[#2a2a42]">
                   <label className="text-xs text-[#818cf8] font-medium whitespace-nowrap">Type d&apos;activité :</label>
                   <select value={urssaf.activityType} onChange={async e => { await fetch('/api/cash/urssaf', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ activityType: e.target.value }) }); fetchUrssaf() }} className="bg-[#1e1e30] border border-[#2a2a42] text-white text-xs rounded px-2 py-1.5 outline-none">
                     <option value="SERVICE_BNC">Prestation services BNC (22%) — seuil 36 800€</option>
@@ -844,6 +890,15 @@ export default function CashPage() {
                     <option value="COMMERCE">Vente marchandises / hébergement (12.3%) — seuil 91 900€</option>
                     <option value="LIBERAL">Libéral réglementé CIPAV (22.2%) — seuil 36 800€</option>
                   </select>
+                  <label className="flex items-center gap-2 cursor-pointer ml-auto">
+                    <input
+                      type="checkbox"
+                      checked={urssaf.versementLiberatoire}
+                      onChange={async e => { await fetch('/api/cash/urssaf', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ versementLiberatoire: e.target.checked }) }); fetchUrssaf() }}
+                      className="w-3.5 h-3.5 accent-indigo-500"
+                    />
+                    <span className="text-xs text-[#818cf8]">Versement libératoire IR ({urssaf.vflRate}%)</span>
+                  </label>
                 </div>
                 <div className="pt-2">
                   <div className="flex items-center justify-between mb-3">
@@ -856,6 +911,9 @@ export default function CashPage() {
                         <p className="text-[11px] text-[#818cf8] font-medium capitalize truncate">{month.label.split(' ')[0]}</p>
                         <p className="text-sm font-bold text-white mt-0.5">{fmt(month.ca)} €</p>
                         <p className="text-[10px] text-[#6b7280] mt-0.5">Cotis. : {fmt(month.cotisations)} €</p>
+                        {month.cfp > 0 && <p className="text-[10px] text-[#6b7280]">CFP : {fmt(month.cfp)} €</p>}
+                        {month.vfl > 0 && <p className="text-[10px] text-indigo-400">VFL : {fmt(month.vfl)} €</p>}
+                        {(month.cfp > 0 || month.vfl > 0) && <p className="text-[10px] text-white font-semibold border-t border-[#2a2a42] mt-0.5 pt-0.5">Total : {fmt(month.totalCharges)} €</p>}
                         {month.status === 'DECLARED' ? (
                           <p className="text-[10px] text-green-400 mt-1.5 font-medium">✅ Déclaré</p>
                         ) : month.isPast && month.hasCA ? (

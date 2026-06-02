@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { buildWikiContext } from '@/lib/wiki/reader'
 import { chatCompletion } from '@/lib/openrouter'
@@ -45,20 +45,16 @@ export async function POST(request: NextRequest) {
       data: { userId, role: 'USER', content: message },
     })
 
-    // Build wiki context and recent history in parallel
-    const [wikiContext, historyMessages] = await Promise.all([
+    // Build wiki context, recent history and KB count in parallel
+    const [wikiContext, historyMessages, kbCount] = await Promise.all([
       buildWikiContext(userId, message),
       prisma.chatMessage.findMany({
         where: { userId },
         orderBy: { createdAt: 'asc' },
         take: 10,
       }),
+      prisma.knowledgeDocument.count({ where: { userId, status: 'READY' } }),
     ])
-
-    // Compter les docs KB pour enrichir le prompt si base vide
-    const kbCount = await prisma.knowledgeDocument.count({
-      where: { userId, status: 'READY' }
-    })
     const kbNote = kbCount === 0
       ? `\n\n⚠️ Note : Cet utilisateur n'a encore uploadé aucun document dans sa Knowledge Base. Si la question porte sur des documents, tarifs, CGV ou contrats, précise-lui qu'il peut enrichir sa KB via le menu Knowledge Base pour obtenir des réponses personnalisées.`
       : `\n\n📚 Knowledge Base : ${kbCount} document(s) indexé(s).`

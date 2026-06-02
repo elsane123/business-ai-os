@@ -4,7 +4,7 @@
  * POST /api/reports/monthly               → envoyer par email (user connecté)
  */
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {

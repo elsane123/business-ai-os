@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getAgentById } from '@/lib/agents-catalog'
+import { getAgentContext } from '@/lib/agents-context'
 import { searchWiki } from '@/lib/wiki/query'
 import { chatCompletion } from '@/lib/openrouter'
 
@@ -88,10 +89,13 @@ export async function POST(req: Request, { params }: RouteParams) {
         content: m.content,
       }))
 
+    // Récupérer le contexte métier spécifique à l'agent
+    const agentContext = await getAgentContext(agentId, userId)
+
     // Appel LLM via openrouter
     const reply = await chatCompletion(
       [
-        { role: 'system', content: agent.systemPrompt + wikiContext },
+        { role: 'system', content: agent.systemPrompt + (agentContext ?? '') + wikiContext },
         ...historyMessages,
         { role: 'user', content: message },
       ],

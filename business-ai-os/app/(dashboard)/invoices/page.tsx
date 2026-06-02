@@ -257,6 +257,19 @@ export default function InvoicesPage() {
   const [saving, setSaving] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [showBriefModal, setShowBriefModal] = useState(false)
+  const [sellerMissing, setSellerMissing] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/auth/profile')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ user }) => {
+        if (!user) return
+        const hasName = !!(user.legalName || user.businessName)
+        const hasAddress = !!user.address
+        setSellerMissing(!hasName || !hasAddress)
+      })
+      .catch(() => null)
+  }, [])
 
   const handleClientNameSearch = (value: string) => {
     setClientName(value)
@@ -389,6 +402,15 @@ export default function InvoicesPage() {
   const [isUpgradeError, setIsUpgradeError] = useState(false)
 
   const handleCreate = async () => {
+    // Validation champs client obligatoires
+    if (!clientName.trim()) {
+      setCreateError('Le nom du client ou de la société est obligatoire.')
+      return
+    }
+    if (!clientAddress.trim()) {
+      setCreateError('L\'adresse du client est obligatoire pour la facturation légale.')
+      return
+    }
     setSaving(true)
     setCreateError('')
     setIsUpgradeError(false)
@@ -462,6 +484,25 @@ export default function InvoicesPage() {
           <button onClick={() => openModal('invoice')} className="px-4 py-2 bg-[#1e1e30] hover:bg-[#2a2a42] border border-[#2a2a42] text-white rounded-lg text-sm font-medium transition-colors">+ Nouvelle facture</button>
         </div>
       </div>
+
+      {/* Banner infos légales manquantes */}
+      {sellerMissing && (
+        <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3 mb-4">
+          <span className="text-amber-400 text-lg flex-shrink-0 mt-0.5">⚠️</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-amber-300">Vos informations légales sont incomplètes</p>
+            <p className="text-xs text-amber-400/80 mt-0.5">
+              Le nom de votre société et votre adresse sont requis pour générer des factures conformes.
+            </p>
+          </div>
+          <a
+            href="/settings"
+            className="flex-shrink-0 px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-medium rounded-lg transition-colors whitespace-nowrap"
+          >
+            Compléter dans Paramètres →
+          </a>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-[#151524] border border-[#2a2a42] rounded-xl p-4">

@@ -229,3 +229,67 @@ export async function sendMonthlyReportEmail(email: string, name: string, report
     html,
   })
 }
+
+export interface WeeklyDigestData {
+  businessName: string | null
+  caThisMonth: number
+  monthlyGoal: number
+  goalProgress: number
+  pipelineValue: number
+  activeProspects: number
+  ghostProspects: number
+  tasksCompletedLastWeek: number
+  tasksOpenTotal: number
+  weekLabel: string
+}
+
+export async function sendWeeklyDigestEmail(email: string, name: string, data: WeeklyDigestData) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://brainlo.ai'
+  const goalColor = data.goalProgress >= 75 ? '#22c55e' : data.goalProgress >= 40 ? '#f59e0b' : '#ef4444'
+  const ghostWarning = data.ghostProspects > 0
+    ? `<p style="margin:8px 0 0;font-size:12px;color:#f59e0b;">👻 ${data.ghostProspects} prospect${data.ghostProspects > 1 ? 's' : ''} fantôme${data.ghostProspects > 1 ? 's' : ''} — inactif${data.ghostProspects > 1 ? 's' : ''} depuis 14+ jours</p>`
+    : ''
+
+  const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;padding:32px 16px;">
+  <div style="max-width:560px;margin:0 auto;background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:28px 32px;">
+      <h1 style="margin:0;font-size:22px;font-weight:800;color:white;">📊 Digest hebdo</h1>
+      <p style="margin:6px 0 0;font-size:14px;color:rgba(255,255,255,0.8);">Semaine du ${data.weekLabel} · Bonjour ${name} !</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <div style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:12px;padding:20px;margin-bottom:20px;">
+        <h2 style="font-size:14px;font-weight:700;color:#4f46e5;margin:0 0 12px;">💰 CA ce mois</h2>
+        <p style="margin:0;font-size:28px;font-weight:800;color:#1e1b4b;">${data.caThisMonth.toLocaleString('fr-FR')} €</p>
+        <div style="margin:10px 0 4px;height:6px;background:#e0e7ff;border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${Math.min(data.goalProgress, 100)}%;background:${goalColor};border-radius:3px;"></div>
+        </div>
+        <p style="margin:0;font-size:12px;color:#6b7280;">${data.goalProgress}% de l'objectif (${data.monthlyGoal.toLocaleString('fr-FR')} €)</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div style="background:#f0fdf4;border-radius:10px;padding:16px;">
+          <p style="margin:0;font-size:12px;color:#6b7280;">Pipeline actif</p>
+          <p style="margin:4px 0 0;font-size:20px;font-weight:800;color:#166534;">${data.pipelineValue.toLocaleString('fr-FR')} €</p>
+          <p style="margin:2px 0 0;font-size:11px;color:#6b7280;">${data.activeProspects} prospect${data.activeProspects > 1 ? 's' : ''} actif${data.activeProspects > 1 ? 's' : ''}</p>
+          ${ghostWarning}
+        </div>
+        <div style="background:#eff6ff;border-radius:10px;padding:16px;">
+          <p style="margin:0;font-size:12px;color:#6b7280;">Tâches semaine</p>
+          <p style="margin:4px 0 0;font-size:20px;font-weight:800;color:#1d4ed8;">${data.tasksCompletedLastWeek} ✓</p>
+          <p style="margin:2px 0 0;font-size:11px;color:#6b7280;">${data.tasksOpenTotal} ouverte${data.tasksOpenTotal > 1 ? 's' : ''} en cours</p>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <a href="${appUrl}/cash" style="display:inline-block;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;font-weight:700;font-size:14px;padding:12px 28px;border-radius:10px;text-decoration:none;">Voir mon tableau de bord</a>
+        <p style="color:#94a3b8;font-size:12px;margin-top:16px;">Brainlo · brainlo.ai · Désabonnement non disponible pour les alertes PRO</p>
+      </div>
+    </div>
+  </div>
+</div>`
+
+  return resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: `📊 Votre digest hebdo — ${data.weekLabel}`,
+    html,
+  })
+}

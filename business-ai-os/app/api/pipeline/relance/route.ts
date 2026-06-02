@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
 const FALLBACK_MESSAGES: Record<string, Record<string, { subject: string; message: string; hook: string }>> = {

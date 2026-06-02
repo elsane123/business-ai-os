@@ -32,7 +32,7 @@ const SHOW_DAYS   = 30
 export default function OnboardingChecklist({ plan }: { plan: string }) {
   const [completed, setCompleted]   = useState<string[]>([])
   const [dismissed, setDismissed]   = useState(true) // start hidden to avoid flash
-  const [collapsed, setCollapsed]   = useState(false)
+  const [collapsed, setCollapsed]   = useState(true)
   const [loading, setLoading]       = useState(true)
   const [allDone, setAllDone]       = useState(false)
 
@@ -121,7 +121,11 @@ export default function OnboardingChecklist({ plan }: { plan: string }) {
         aria-controls="onboarding-steps"
       >
         <div className="flex items-center gap-3">
-          <span className="text-lg">🚀</span>
+          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#6366f1]/20 flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-[#818cf8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+            </svg>
+          </span>
           <div>
             <p className="text-white font-semibold text-sm">Premiers pas avec Brainlo</p>
             <p className="text-[#818cf8] text-xs" aria-live="polite" aria-atomic="true">{doneCount}/{STEPS.length} étapes complétées</p>

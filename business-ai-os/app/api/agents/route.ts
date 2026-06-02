@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { AGENTS_CATALOG, AGENT_SLOTS_BY_PLAN } from '@/lib/agents-catalog'
 
 export async function GET() {

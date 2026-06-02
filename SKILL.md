@@ -1,6 +1,6 @@
 # Brainlo — Skill Complet
 
-> Version : 1.4.0 | Onboarding simplifié + UX Activation + WCAG + E2E | 2026-05-26
+> Version : 1.5.0 | Audit technique complet — Code mort supprimé, redondances consolidées, perf optimisée, reset-tokens DB | 2026-05-27
 
 ## Démarrage rapide
 
@@ -8,8 +8,8 @@ Avant toute tâche, charger ce skill pour avoir le contexte complet du projet.
 
 ```bash
 # ⚡ Démarrer le serveur Next.js (MODE PRODUCTION)
-cd /a0/usr/projects/business_ai_os
-nohup npm start --prefix business-ai-os -- -p 50082 > nextjs.out.log 2>&1 & echo $! > nextjs.pid
+cd /a0/usr/projects/business_ai_os/business-ai-os
+nohup ./node_modules/.bin/next start -p 50082 > ../nextjs.out.log 2>&1 & echo $! > ../nextjs.pid
 # Démarrer le serveur Python
 nohup bash /a0/usr/projects/business_ai_os/start-python.sh > /a0/usr/projects/business_ai_os/python.out.log 2>&1 &
 # Vérifier que les deux serveurs sont UP
@@ -122,7 +122,6 @@ brainlo/
 │       ├── tasks/ (route.ts, prioritize/)
 │       ├── wiki/ (ingest/, query/)
 │       ├── knowledge/route.ts
-│       ├── agents/catalog/route.ts      # Catalogue agents avec état activation
 │       ├── reports/monthly/route.ts     # Rapport mensuel JSON + envoi email
 │       ├── cron/
 │       │   ├── daily-focus/route.ts     # Email Focus 8h UTC — x-cron-secret
@@ -163,7 +162,8 @@ brainlo/
 │   ├── agents-catalog.ts, blog.ts, assessment.ts
 │   ├── rate-limit.ts        # Rate limiting en mémoire (anti brute-force login)
 │   ├── sanitize.ts          # Sanitisation XSS (text, email, url, phone)
-│   └── reset-tokens.ts      # Tokens one-time pour forgot/reset password
+│   ├── focus-patterns.ts    # Helper partagé computeSkipPatterns() — extrait de focus/route + history/route
+│   └── reset-tokens.ts      # Tokens one-time TTL 1h — DB-backed (table password_reset_tokens)
 ├── prisma/schema.prisma
 └── python/
     ├── agents/
@@ -222,9 +222,13 @@ declaredAt
 
 ### Autres modèles
 - Transaction, DailyFocus, Relance, LinkedInPost
-- Quote, Invoice, Task, KnowledgeEntry
-- WikiPage, WikiEvent, CalendarEvent
+- Quote, Invoice, Task, KnowledgeDocument
+- WikiEvent, CalendarEvent
 - AgentActivation, AgentChatMessage
+- AssessmentLead, AIUsage
+- PasswordResetToken *(tokens reset mot de passe — DB-backed, table `password_reset_tokens`)*
+
+> ⚠️ `WikiPage` supprimé (table vide — wiki utilise exclusivement le filesystem)
 
 ---
 
@@ -549,7 +553,45 @@ npm run test:e2e:report    # Ouvrir le rapport HTML
 6. **Sécurité** — Libs critiques :
    - `lib/rate-limit.ts` → Rate limiting login (5/15min/IP)
    - `lib/sanitize.ts` → Sanitisation XSS obligatoire sur inputs libres
-   - `lib/reset-tokens.ts` → Tokens reset-password TTL 1h
+   - `lib/reset-tokens.ts` → Tokens reset-password TTL 1h — **DB-backed** (table `password_reset_tokens`) — persisté entre restarts, multi-instances safe
+
+---
+
+---
+
+### 🔧 Audit Technique v1.5.0 — Refactoring & Nettoyage (2026-05-27)
+
+**P1 — Code mort supprimé** :
+- `setAuthCookie()` / `clearAuthCookie()` retirées de `lib/auth.ts` (jamais appelées)
+- Import `setAuthCookie` retiré de `auth/register/route.ts`
+- `app/api/transactions/route.ts` supprimé (alias BUG-CRUD-01 résolu)
+- `app/api/agents/catalog/route.ts` supprimé (alias BUG-F Sprint 3 résolu)
+- Modèle Prisma `WikiPage` supprimé + table `wiki_pages` droppée (jamais alimentée)
+- Import `_ensureWikiExists` simplifié dans `lib/wiki/ingest.ts`
+
+**P2 — Corrections critiques** :
+- Log ajouté dans le `.catch()` silencieux de `lib/openrouter.ts` (tracking AIUsage)
+- Cookie `sameSite: 'strict'` confirmé uniforme après P1
+- Regex `sanitize.ts` vérifiée correcte (artefact d'affichage terminal confirmé)
+
+**P3 — Consolidation redondances** :
+- `lib/focus-patterns.ts` créé : helper partagé `computeSkipPatterns()` (-52 lignes dupliquées)
+- `cash/categorize/route.ts` : `fetch()` direct → `chatCompletion()` + tracking usage activé
+- `change-password` + `reset-password` : `bcrypt` direct → `hashPassword()` / `comparePassword()` (rounds unifiés à 12)
+
+**P4 — Harmonisation patterns** :
+- 30 fichiers API routes standardisés sur `import { prisma } from '@/lib/db'` (named export)
+
+**P5 — Performance** :
+- `app/api/chat/route.ts` : `kbCount` déplacé dans le `Promise.all` (3 requêtes parallèles)
+- `app/api/cash/runway/route.ts` : `findMany` → 4× `aggregate` parallèles (zéro transfert de lignes)
+
+**Bonus — reset-tokens DB** :
+- `lib/reset-tokens.ts` réécrit Map → Prisma DB (`password_reset_tokens`)
+- `forgot-password`, `reset-password`, `validate-reset-token` routes mis à jour avec `await`
+- Bug silencieux découvert : `validate-reset-token/route.ts` appelait `validateResetToken()` sans `await` → tous les tokens auraient été valides indéfiniment
+
+**Bilan** : 44 fichiers modifiés · 2 supprimés · 1 créé · ~145 lignes supprimées · 0 erreur TypeScript
 
 ---
 

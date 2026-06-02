@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import type { ActionStatus, FocusAction } from '@/app/api/focus/route'
+import { computeSkipPatterns } from '@/lib/focus-patterns'
 
 export interface HistoryEntry {
   id: string
@@ -99,34 +100,7 @@ export async function GET(req: Request) {
       select: { actions: true, statuses: true },
     })
 
-    // Count keyword skips
-    const keywordSkipCount: Record<string, number> = {}
-    const keywordTotalCount: Record<string, number> = {}
-    const STOP_WORDS = new Set(['le', 'la', 'les', 'de', 'du', 'des', 'un', 'une', 'et', 'en', 'au', 'aux', 'ce', 'se', 'sa', 'son', 'ses', 'mon', 'ma', 'mes', 'votre', 'vos', 'sur', 'par', 'pour', 'avec', 'dans', 'est', 'ou', 'qui', 'que', 'à', 'vos', 'nos', 'leur', 'leurs'])
-
-    for (const r of allRecords) {
-      const acts = parseActions(r.actions)
-      const stats = parseStatuses(r.statuses, acts.length)
-      acts.forEach((a, i) => {
-        const words = a.action.toLowerCase().split(/\W+/).filter(w => w.length > 3 && !STOP_WORDS.has(w))
-        const key = words.slice(0, 3).join('_') // Use first 3 meaningful words as key
-        if (key) {
-          keywordTotalCount[key] = (keywordTotalCount[key] ?? 0) + 1
-          if (stats[i] === 'skipped') {
-            keywordSkipCount[key] = (keywordSkipCount[key] ?? 0) + 1
-          }
-        }
-      })
-    }
-
-    // Skip patterns: keywords skipped > 60% of time and seen ≥ 2 times
-    const skipPatterns = Object.entries(keywordSkipCount)
-      .filter(([key, count]) => {
-        const total = keywordTotalCount[key] ?? 0
-        return total >= 2 && count / total > 0.6
-      })
-      .map(([key]) => key.replace(/_/g, ' '))
-      .slice(0, 5)
+    const skipPatterns = computeSkipPatterns(allRecords)
 
     return NextResponse.json({ history, skipPatterns })
   } catch (error) {

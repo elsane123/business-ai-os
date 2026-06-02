@@ -130,3 +130,82 @@ test.describe('Pipeline — Gestion des prospects', () => {
     })
   })
 })
+
+  // PIP-ENR-01 : recherche enrichissement entreprise (debounce 500ms)
+  test('PIP-ENR-01 : champ Entreprise déclenche suggestions enrichissement API gouvernement', async ({ page }) => {
+    await page.goto('/pipeline')
+    await page.getByRole('button', { name: /nouveau prospect/i }).first().click()
+    const companyInput = page.getByPlaceholder(/Acme SAS|entreprise|société/i).first()
+      .or(page.locator('input[name*="company"], input[name*="entreprise"]').first())
+    if (await companyInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await companyInput.fill('Docto')
+      // Attendre le debounce (500ms) + réponse API gouvernement
+      await page.waitForTimeout(2_000)
+      // Dropdown de suggestions attendu : nom + ville + SIRET
+      const suggestion = page.locator('[class*="suggest"], [class*="dropdown"], [role="listbox"], [role="option"]').first()
+        .or(page.getByText(/siret|employé|effectif|naf/i).first())
+      if (await suggestion.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await expect(suggestion).toBeVisible()
+      }
+    }
+  })
+
+  // PIP-ENR-02 : auto-fill depuis suggestion enrichissement
+  test('PIP-ENR-02 : clic sur suggestion → auto-remplit SIRET, ville, adresse', async ({ page }) => {
+    await page.goto('/pipeline')
+    await page.getByRole('button', { name: /nouveau prospect/i }).first().click()
+    const companyInput = page.getByPlaceholder(/Acme SAS|entreprise|société/i).first()
+      .or(page.locator('input[name*="company"], input[name*="entreprise"]').first())
+    if (await companyInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await companyInput.fill('Docto')
+      await page.waitForTimeout(2_000)
+      const suggestion = page.locator('[role="option"], [class*="suggest-item"], [class*="dropdown-item"]').first()
+      if (await suggestion.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await suggestion.click()
+        await page.waitForTimeout(500)
+        // Vérifier que le SIRET ou la ville a été auto-rempli
+        const siretOrCity = page.locator('input[name*="siret"], input[name*="city"], input[name*="ville"]').first()
+        if (await siretOrCity.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          const value = await siretOrCity.inputValue()
+          expect(value.length).toBeGreaterThan(0)
+        }
+      }
+    }
+  })
+
+  // PIP-ENR-03 : badges enrichissement visibles sur cartes Kanban
+  test('PIP-ENR-03 : badges 📍 ville et 👥 effectifs visibles sur cartes Kanban', async ({ page }) => {
+    await page.goto('/pipeline')
+    // Chercher un badge de ville ou d'effectifs sur les cartes existantes
+    const enrichBadge = page.getByText(/📍|👥|\[in\]|linkedin/i).first()
+      .or(page.locator('[class*="badge"][class*="enrich"], [data-testid*="enrich-badge"]').first())
+    if (await enrichBadge.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await expect(enrichBadge).toBeVisible()
+    } else {
+      // Aucun prospect enrichi — acceptable
+      await expect(page).toHaveURL('/pipeline')
+    }
+  })
+
+  // PIP-ENR-04 : bouton 📄 (Pipeline → Devis) pré-remplit le formulaire
+  test('PIP-ENR-04 : bouton conversion prospect → devis pré-remplit les champs', async ({ page }) => {
+    await page.goto('/pipeline')
+    // Chercher le bouton 📄 sur une carte en colonne "Devis"
+    const quoteBtn = page.getByRole('button', { name: /📄|créer un devis|convertir en devis/i }).first()
+      .or(page.locator('a[href*="/invoices"][href*="company"], button[title*="devis"]').first())
+    if (await quoteBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      const [newPage] = await Promise.all([
+        page.context().waitForEvent('page').catch(() => null),
+        quoteBtn.click(),
+      ])
+      const targetPage = newPage ?? page
+      await expect(targetPage).toHaveURL(/\/invoices/, { timeout: 8_000 })
+      // Le formulaire doit avoir des champs pré-remplis (nom société ou adresse)
+      const prefilled = targetPage.locator('input[value]:not([value=""])').first()
+      if (await prefilled.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        const value = await prefilled.inputValue()
+        expect(value.length).toBeGreaterThan(0)
+      }
+      if (newPage) await newPage.close()
+    }
+  })

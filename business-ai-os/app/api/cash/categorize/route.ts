@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
+import { chatCompletion } from '@/lib/openrouter'
 
 const CATEGORIES = [
   'Facture client', 'Freelances', 'Logiciels & SaaS', 'Marketing',
@@ -26,24 +27,10 @@ ${CATEGORIES.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
 Réponds UNIQUEMENT avec le nom exact de la catégorie, sans ponctuation ni explication.`
 
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'anthropic/claude-3-haiku',
-        max_tokens: 30,
-        temperature: 0,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    })
-
-    if (!res.ok) return NextResponse.json({ category: null })
-
-    const data = await res.json()
-    const raw = data.choices?.[0]?.message?.content?.trim() || ''
+    const raw = await chatCompletion(
+      [{ role: 'user', content: prompt }],
+      { model: 'anthropic/claude-3-haiku', temperature: 0, max_tokens: 30 }
+    )
 
     // Find exact match or partial match
     const exact = CATEGORIES.find(c => c.toLowerCase() === raw.toLowerCase())

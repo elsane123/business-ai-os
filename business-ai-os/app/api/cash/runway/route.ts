@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
 function addMonths(date: Date, months: number): Date {
@@ -31,30 +31,18 @@ export async function GET() {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
 
-    // All-time transactions for balance
-    const allTransactions = await prisma.transaction.findMany({
-      where: { userId: session.userId },
-      select: { amount: true, type: true, date: true },
-    })
+    // Aggregate queries — no row transfer, DB does the work
+    const userId = session.userId
+    const [allIncomeAgg, allExpenseAgg, monthIncomeAgg, monthExpenseAgg] = await Promise.all([
+      prisma.transaction.aggregate({ where: { userId, type: 'INCOME' }, _sum: { amount: true } }),
+      prisma.transaction.aggregate({ where: { userId, type: 'EXPENSE' }, _sum: { amount: true } }),
+      prisma.transaction.aggregate({ where: { userId, type: 'INCOME', date: { gte: startOfMonth, lte: endOfMonth } }, _sum: { amount: true } }),
+      prisma.transaction.aggregate({ where: { userId, type: 'EXPENSE', date: { gte: startOfMonth, lte: endOfMonth } }, _sum: { amount: true } }),
+    ])
 
-    // Current balance = sum of all transactions
-    const currentBalance = allTransactions.reduce((sum, t) => {
-      return t.type === 'INCOME' ? sum + t.amount : sum - t.amount
-    }, 0)
-
-    // Current month transactions
-    const monthTransactions = allTransactions.filter(t => {
-      const d = new Date(t.date)
-      return d >= startOfMonth && d <= endOfMonth
-    })
-
-    const monthlyIncome = monthTransactions
-      .filter(t => t.type === 'INCOME')
-      .reduce((sum, t) => sum + t.amount, 0)
-
-    const monthlyExpenses = monthTransactions
-      .filter(t => t.type === 'EXPENSE')
-      .reduce((sum, t) => sum + t.amount, 0)
+    const currentBalance = (allIncomeAgg._sum.amount ?? 0) - (allExpenseAgg._sum.amount ?? 0)
+    const monthlyIncome = monthIncomeAgg._sum.amount ?? 0
+    const monthlyExpenses = monthExpenseAgg._sum.amount ?? 0
 
     // Goal progress
     const goalProgress = monthlyGoal > 0

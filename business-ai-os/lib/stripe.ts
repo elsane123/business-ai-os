@@ -15,8 +15,8 @@ export async function createCheckoutSession(userId: string, email: string, baseU
       price: process.env.STRIPE_PRICE_ID_SOLO_PRO,
       quantity: 1,
     }],
-    success_url: `${appUrl}/focus?upgrade=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${appUrl}/focus?upgrade=cancel`,
+    success_url: `${appUrl}/settings?upgrade=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${appUrl}/settings?upgrade=cancel`,
     metadata: { userId },
   })
   return session
@@ -25,7 +25,7 @@ export async function createCheckoutSession(userId: string, email: string, baseU
 export async function createPortalSession(customerId: string) {
   return stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
   })
 }
 

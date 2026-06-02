@@ -26,7 +26,7 @@ export async function GET(
     }
   })
 
-  const pythonUrl = process.env.PYTHON_API_URL || 'http://localhost:8000'
+  const pythonUrl = process.env.PYTHON_AGENT_URL || 'http://localhost:8000'
 
   let lines: unknown[]
   try {

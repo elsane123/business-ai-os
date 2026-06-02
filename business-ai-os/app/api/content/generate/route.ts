@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { buildWikiContext } from '@/lib/wiki/reader'
 import { chatCompletion } from '@/lib/openrouter'

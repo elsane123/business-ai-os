@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { createResetToken } from '@/lib/reset-tokens'
 import { resend } from '@/lib/resend'
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, message: 'Si ce compte existe, un email a été envoyé.' })
     }
 
-    const token = createResetToken(email)
+    const token = await createResetToken(email)
     const resetUrl = `${APP_URL}/reset-password?token=${token}`
 
     await resend.emails.send({

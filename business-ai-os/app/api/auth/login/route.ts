@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { comparePassword, signToken } from '@/lib/auth'
 import { loginRateLimiter, getClientIp } from '@/lib/rate-limit'
 

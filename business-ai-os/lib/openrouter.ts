@@ -72,7 +72,7 @@ export async function chatCompletion(
 
     prisma.aIUsage.create({
       data: { userId, model, feature, promptTokens, completionTokens, totalTokens, estimatedCostUsd },
-    }).catch(() => { /* non-blocking — never fail the main request */ })
+    }).catch((e) => { console.error('[ai-usage tracking]', e) })
   }
 
   return content

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
-import { hashPassword, signToken, setAuthCookie } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import { hashPassword, signToken } from '@/lib/auth'
 import { ensureUserWikiExists } from '@/lib/wiki/ingest'
 import { sendWelcomeEmail } from '@/lib/resend'
 

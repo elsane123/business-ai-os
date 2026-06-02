@@ -4,11 +4,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const NAV_ITEMS = [
-  { href: '/focus', icon: '⚡', label: 'Focus' },
+  { href: '/chat',     icon: '🧠', label: 'Brain'    },
+  { href: '/focus',    icon: '⚡', label: "Auj'hui"  },
   { href: '/pipeline', icon: '👥', label: 'Pipeline' },
-  { href: '/cash', icon: '💰', label: 'Cash' },
-  { href: '/content', icon: '📣', label: 'Contenu' },
-  { href: '/chat', icon: '🧠', label: 'Brain' },
+  { href: '/cash',     icon: '💰', label: 'Cash'     },
+  { href: '/content',  icon: '📣', label: 'LinkedIn' },
 ]
 
 export function MobileNav() {

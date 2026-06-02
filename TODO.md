@@ -1,6 +1,6 @@
 # TODO — Brainlo Roadmap
 
-> Dernière mise à jour : 2026-05-26  
+> Dernière mise à jour : 2026-05-27  
 > État du projet : **Production-ready avec quelques bloquants à lever**
 
 ---
@@ -64,13 +64,14 @@
 - [ ] **Resend domain validation** — Valider SPF/DKIM sur dashboard Resend.com pour `brainlo.ai` → emails transactionnels non envoyés en prod (bienvenue, reset mdp)
 - [ ] **Stripe live vs test** — Vérifier que `STRIPE_SECRET_KEY` est bien `sk_live_` en production (et non `sk_test_`)
 - [ ] **HSTS via Caddy** — Ajouter `Strict-Transport-Security: max-age=63072000; includeSubDomains` dans le Caddyfile
+- [ ] **`vercel.json` manquant** — Les crons `daily-focus` et `monthly-report` ne se déclenchent **jamais** en production sans ce fichier. Créer `vercel.json` avec les schedules (`0 7 * * *` et `0 8 1 * *`) et s'assurer que Vercel passe bien le header `x-cron-secret`
 
 ---
 
 ## 🟡 Priorité 2 — UI manquante
 
-- [ ] **Page Rapports dashboard** — L'API `/api/reports/monthly` fonctionne (HTTP 200) mais aucune page Next.js pour visualiser les données. Créer `/app/(dashboard)/reports/page.tsx` avec graphiques CA mensuel, tâches, prospects
-- [ ] **Page `/fonctionnalites` intégrée Next.js** — Un fichier HTML statique existe dans `public/fonctionnalites.html` mais n'est pas une vraie page avec navigation. Créer `/app/fonctionnalites/page.tsx` avec tableau comparatif FREE/PRO
+- [x] **Page Rapports dashboard** — `/app/(dashboard)/reports/page.tsx` existe (204 lignes) avec KpiCards CA/charges/net, pipeline, tâches, focus
+- [x] **Page `/fonctionnalites` intégrée Next.js** — `/app/fonctionnalites/page.tsx` existe avec metadata, canonical, OpenGraph (la page HTML statique `public/fonctionnalites.html` peut être conservée ou supprimée)
 - [ ] **Email de bienvenue** — Déclenché à l'inscription dans le code mais bloqué par Resend (dépend Priorité 1)
 
 ---
@@ -81,6 +82,16 @@
 - [ ] **Tests E2E Playwright** — Mettre à jour les tests existants pour couvrir les nouveaux composants WCAG (skip-nav, aria-expanded, progressbar)
 - [ ] **Tests E2E Playwright** — Ajouter couverture des pages : `/onboarding`, `/settings#enrich`, flux Stripe checkout complet
 - [ ] **Performance** — Vérifier bundle size Next.js, lazy loading images, code splitting (score estimé 70/100)
+- [ ] **`.env.example` incomplet** — Ajouter les variables manquantes : `CRON_SECRET`, `NODE_ENV`, `DISABLE_RATE_LIMIT` (présentes dans `.env` mais non documentées)
+- [ ] **Doublon variable Python URL** — `.env` contient `PYTHON_AGENT_URL` et `PYTHON_API_URL` qui pointent vers la même URL. Consolider en une seule variable et nettoyer les références dans le code
+
+---
+
+## 🟣 Priorité 5 — Acquisition Client AI (Epics 8)
+
+- [ ] **E8.1 ICP Builder** — Bouton "Générer mon ICP" dans le pipeline : l'agent CRO analyse les deals WON + Business Brain → génère le Profil Client Idéal → sauvegarde dans `BRAIN.md` section `## Profil Client Idéal (ICP)`. Endpoint : `POST /api/pipeline/icp/generate`. Panel résultat dans la page pipeline. Score mécanique actuel (`calcLeadScore`) conservé tel quel.
+- [ ] **E8.2 Séquence Cold Email** — Agent CRO génère 5 emails de prospection contextualisés (offre Brain + ton + ICP) pour un prospect cible. Export copier/coller par email. Tonalité configurable.
+- [ ] **E8.3 LinkedIn Outreach** — Agent CMO rédige + publie un post LinkedIn ciblé ICP. Connexion via `LINKEDIN_ACCESS_TOKEN` (déjà en secrets). Preview avant publication. Analytics impressions/engagement.
 
 ---
 
@@ -110,8 +121,8 @@
 
 | Priorité | Items | Effort estimé |
 |---|---|---|
-| 🔴 Mise en production | 3 items | ~2h30 |
+| 🔴 Mise en production | 4 items | ~3h |
 | 🟡 UI manquante | 3 items | ~5h |
-| 🔵 Qualité technique | 4 items | ~1,5 jour |
+| 🔵 Qualité technique | 6 items | ~1,5 jour |
 | 🟢 Croissance | 4 items | ~4h |
-| **Total** | **14 items** | **~3 jours** |
+| **Total** | **17 items** | **~3 jours** |

@@ -1,4 +1,4 @@
-import { writeWikiPage, appendToLog, upsertWikiSection, ensureUserWikiExists as _ensureWikiExists } from './writer'
+import { writeWikiPage, appendToLog, upsertWikiSection, ensureUserWikiExists } from './writer'
 import { readWikiPage } from './reader'
 import { chatCompletion } from '../openrouter'
 

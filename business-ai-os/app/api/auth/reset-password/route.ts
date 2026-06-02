@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/db'
-import bcrypt from 'bcryptjs'
+import { prisma } from '@/lib/db'
+import { hashPassword } from '@/lib/auth'
 import { validateResetToken, consumeResetToken } from '@/lib/reset-tokens'
 
 // POST /api/auth/reset-password
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     }
 
     // Validate token
-    const email = validateResetToken(token)
+    const email = await validateResetToken(token)
     if (!email) {
       return NextResponse.json(
         { error: 'Lien invalide ou expiré. Veuillez refaire une demande de réinitialisation.' },
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     }
 
     // Hash and update password
-    const hash = await bcrypt.hash(password, 10)
+    const hash = await hashPassword(password)
     await prisma.user.update({ where: { email }, data: { passwordHash: hash } })
 
     // Invalidate token (one-time use)

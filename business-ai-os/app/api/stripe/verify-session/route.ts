@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@/lib/auth'
-import prisma from '@/lib/db'
+import { getSession, signToken } from '@/lib/auth'
+import { prisma } from '@/lib/db'
 import { stripe } from '@/lib/stripe'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,6 +31,17 @@ export async function POST(request: NextRequest) {
     await prisma.user.update({
       where: { id: session.userId },
       data: { plan: 'PRO' },
+    })
+
+    // Refresh JWT cookie so the client token is in sync with the new plan
+    const newToken = await signToken({ userId: session.userId, email: session.email, plan: 'PRO' })
+    const cookieStore = await cookies()
+    cookieStore.set('auth_token', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
     })
 
     console.log(`[stripe/verify-session] User ${session.userId} upgraded to PRO`)

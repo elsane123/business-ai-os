@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
 export async function POST() {
@@ -21,15 +21,14 @@ export async function POST() {
     })
 
     if (!user?.stripeCustomerId) {
-      // Fallback: redirect to checkout if no Stripe customer yet
-      console.log('[stripe/portal] No stripeCustomerId — redirecting to checkout')
-      const { createCheckoutSession } = await import('@/lib/stripe')
-      const user2 = await prisma.user.findUnique({
-        where: { id: session.userId },
-        select: { email: true },
-      })
-      const checkoutSession = await createCheckoutSession(session.userId, user2?.email ?? session.email)
-      return NextResponse.json({ url: checkoutSession.url, redirectedToCheckout: true })
+      // No Stripe customer yet — use the public portal login URL as fallback
+      const publicPortalUrl = process.env.STRIPE_CUSTOMER_PORTAL_URL
+      if (publicPortalUrl) {
+        console.log('[stripe/portal] No stripeCustomerId — redirecting to public portal URL')
+        return NextResponse.json({ url: publicPortalUrl })
+      }
+      console.log('[stripe/portal] No stripeCustomerId and no STRIPE_CUSTOMER_PORTAL_URL configured')
+      return NextResponse.json({ error: 'no_customer', message: 'Aucun abonnement Stripe actif trouvé pour ce compte.' }, { status: 404 })
     }
 
     const { createPortalSession } = await import('@/lib/stripe')

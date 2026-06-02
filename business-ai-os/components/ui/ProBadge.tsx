@@ -26,7 +26,7 @@ export default function ProBadge({ collapsed = false }: ProBadgeProps) {
         <span className="w-1.5 h-1.5 rounded-full bg-[#8b5cf6] flex-shrink-0" />
       ) : (
         // Full badge
-        <span className="flex-shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#8b5cf6]/20 text-[#a78bfa] border border-[#8b5cf6]/30 leading-none">
+        <span className="flex-shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#8b5cf6] text-white leading-none">
           PRO
         </span>
       )}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { ingestWikiEvent } from '@/lib/wiki/ingest'
 import { sanitizeText, sanitizeEmail, sanitizeUrl, sanitizePhone } from '@/lib/sanitize'

@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { getBusinessContext } from '@/lib/wiki/reader'
 import { appendToLog, appendToWikiPage } from '@/lib/wiki/writer'
+import { computeSkipPatterns } from '@/lib/focus-patterns'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -158,29 +159,7 @@ export async function POST() {
         select: { actions: true, statuses: true },
       })
 
-      const keywordSkip: Record<string, number> = {}
-      const keywordTotal: Record<string, number> = {}
-      const STOP = new Set(['le','la','les','de','du','des','un','une','et','en','au','aux','ce','se','sa','son','ses','mon','ma','mes','votre','vos','sur','par','pour','avec','dans','est','ou','qui','que'])
-
-      for (const pf of pastFocuses) {
-        let pActs: { action: string }[] = []
-        let pStats: string[] = []
-        try { pActs = JSON.parse(pf.actions) } catch { /* ignore */ }
-        try { pStats = JSON.parse(pf.statuses) } catch { /* ignore */ }
-        pActs.forEach((a, i) => {
-          const words = a.action.toLowerCase().split(/\W+/).filter((w: string) => w.length > 3 && !STOP.has(w))
-          const key = words.slice(0, 3).join('_')
-          if (key) {
-            keywordTotal[key] = (keywordTotal[key] ?? 0) + 1
-            if (pStats[i] === 'skipped') keywordSkip[key] = (keywordSkip[key] ?? 0) + 1
-          }
-        })
-      }
-
-      const skipPatterns = Object.entries(keywordSkip)
-        .filter(([k, count]) => (keywordTotal[k] ?? 0) >= 2 && count / (keywordTotal[k] ?? 1) > 0.6)
-        .map(([k]) => k.replace(/_/g, ' '))
-        .slice(0, 5)
+      const skipPatterns = computeSkipPatterns(pastFocuses)
 
       const res = await fetch(`${pythonUrl}/focus/generate`, {
         method: 'POST',

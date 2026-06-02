@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 
 // URSSAF rates by activity type (2025)
 const URSSAF_RATES: Record<string, number> = {
@@ -25,6 +25,30 @@ const TVA_TOLERANCE: Record<string, number> = {
   LIBERAL:     39100,
 }
 
+// Plafond CA micro-entrepreneur (au-delà = perte du régime)
+const CA_CEILINGS: Record<string, number> = {
+  SERVICE_BNC: 77700,
+  SERVICE_BIC: 77700,
+  COMMERCE:    188700,
+  LIBERAL:     77700,
+}
+
+// CFP — Cotisation Formation Professionnelle
+const CFP_RATES: Record<string, number> = {
+  SERVICE_BNC: 0.1,
+  SERVICE_BIC: 0.1,
+  COMMERCE:    0.3,
+  LIBERAL:     0.1,
+}
+
+// Versement Libératoire de l'IR (optionnel)
+const VFL_RATES: Record<string, number> = {
+  SERVICE_BNC: 2.2,
+  SERVICE_BIC: 1.7,
+  COMMERCE:    1.0,
+  LIBERAL:     2.2,
+}
+
 function monthLabel(year: number, month: number): string {
   return `${year}-${String(month).padStart(2, '0')}`
 }
@@ -42,6 +66,7 @@ export async function GET() {
         urssafRate: true,
         urssafPeriodicity: true,
         tvaThreshold: true,
+        versementLiberatoire: true,
       },
     })
 
@@ -50,6 +75,10 @@ export async function GET() {
     const urssafPeriodicity = user?.urssafPeriodicity || 'MONTHLY'
     const tvaThreshold = user?.tvaThreshold ?? TVA_THRESHOLDS[activityType] ?? 36800
     const tvaTolerance = TVA_TOLERANCE[activityType] ?? 39100
+    const versementLiberatoire = user?.versementLiberatoire ?? false
+    const caCeiling = CA_CEILINGS[activityType] ?? 77700
+    const cfpRate = CFP_RATES[activityType] ?? 0.1
+    const vflRate = versementLiberatoire ? (VFL_RATES[activityType] ?? 2.2) : 0
 
     const now = new Date()
     const currentYear = now.getFullYear()
@@ -95,6 +124,9 @@ export async function GET() {
       const period = monthLabel(currentYear, m)
       const ca = monthlyCA[period] || 0
       const cotisations = Math.round(ca * urssafRate) / 100
+      const cfp = Math.round(ca * cfpRate) / 100
+      const vfl = Math.round(ca * vflRate) / 100
+      const totalCharges = Math.round((cotisations + cfp + vfl) * 100) / 100
       const decl = declaredPeriods.get(period)
       const isPast = m < currentMonth
       const isCurrent = m === currentMonth
@@ -106,6 +138,9 @@ export async function GET() {
         label: new Date(currentYear, m - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }),
         ca: Math.round(ca * 100) / 100,
         cotisations: Math.round(cotisations * 100) / 100,
+        cfp: Math.round(cfp * 100) / 100,
+        vfl: Math.round(vfl * 100) / 100,
+        totalCharges,
         status: decl?.status || 'PENDING',
         declaredAt: decl?.declaredAt?.toISOString() || null,
         isPast,
@@ -124,15 +159,31 @@ export async function GET() {
           ? 'WARNING'
           : 'OK'
 
+    // CA ceiling tracker (plafond régime micro-entrepreneur)
+    const caPercent = Math.min(Math.round((annualCA / caCeiling) * 100), 150)
+    const caStatus = annualCA >= caCeiling
+      ? 'EXCEEDED'
+      : annualCA >= caCeiling * 0.9
+        ? 'WARNING'
+        : annualCA >= caCeiling * 0.7
+          ? 'WATCH'
+          : 'OK'
+
     // Pending declarations (past months with CA > 0 and not declared)
     const pendingCount = months.filter(m => m.isPast && m.hasCA && m.status === 'PENDING').length
 
     return NextResponse.json({
       activityType,
       urssafRate,
+      cfpRate,
+      vflRate,
+      versementLiberatoire,
       urssafPeriodicity,
       tvaThreshold,
       tvaTolerance,
+      caCeiling,
+      caPercent,
+      caStatus, // OK | WATCH | WARNING | EXCEEDED
       annualCA: Math.round(annualCA * 100) / 100,
       tvaPercent,
       tvaStatus, // OK | WARNING | TOLERANCE | EXCEEDED
@@ -188,7 +239,7 @@ export async function PATCH(request: NextRequest) {
     const session = await getSession()
     if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
 
-    const { activityType, urssafRate, urssafPeriodicity, tvaThreshold } = await request.json()
+    const { activityType, urssafRate, urssafPeriodicity, tvaThreshold, versementLiberatoire } = await request.json()
 
     const updateData: Record<string, unknown> = {}
     if (activityType) {
@@ -200,6 +251,7 @@ export async function PATCH(request: NextRequest) {
     if (urssafRate !== undefined) updateData.urssafRate = urssafRate
     if (urssafPeriodicity) updateData.urssafPeriodicity = urssafPeriodicity
     if (tvaThreshold !== undefined) updateData.tvaThreshold = tvaThreshold
+    if (versementLiberatoire !== undefined) updateData.versementLiberatoire = versementLiberatoire
 
     await prisma.user.update({
       where: { id: session.userId },

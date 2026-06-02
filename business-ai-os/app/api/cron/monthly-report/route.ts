@@ -4,7 +4,7 @@
  * Schedule: 0 9 1 * * curl -X POST -H 'x-cron-secret: ...' http://localhost:50082/api/cron/monthly-report
  */
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { sendMonthlyReportEmail } from '@/lib/resend'
 
 const CRON_SECRET = process.env.CRON_SECRET

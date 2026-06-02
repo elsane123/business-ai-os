@@ -1,5 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense, type Dispatch, type SetStateAction } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -19,11 +20,28 @@ interface UserProfile {
 }
 
 const SECTORS = [
-  'SaaS / Tech', 'Conseil / Coaching', 'Freelance / Indépendant',
-  'Commerce / E-commerce', 'Santé / Bien-être', 'Formation / Education',
-  'Marketing / Communication', 'Immobilier', 'Finance / Comptabilité',
-  'Design / Créatif', 'Juridique', 'Autre',
+  { id: 'tech',        label: 'Tech / SaaS' },
+  { id: 'consulting',  label: 'Consulting' },
+  { id: 'commerce',   label: 'Commerce' },
+  { id: 'services',   label: 'Services' },
+  { id: 'creative',   label: 'Créatif' },
+  { id: 'freelance',  label: 'Freelance / Indépendant' },
+  { id: 'health',     label: 'Santé / Bien-être' },
+  { id: 'education',  label: 'Formation / Education' },
+  { id: 'marketing',  label: 'Marketing / Communication' },
+  { id: 'real_estate',label: 'Immobilier' },
+  { id: 'finance',    label: 'Finance / Comptabilité' },
+  { id: 'legal',      label: 'Juridique' },
+  { id: 'other',      label: 'Autre' },
 ]
+
+// Normalize legacy sector label strings to new id-based values
+function normalizeSector(v: string): string {
+  if (!v) return ''
+  if (SECTORS.some(s => s.id === v)) return v
+  const match = SECTORS.find(s => s.label.toLowerCase() === v.toLowerCase())
+  return match ? match.id : v
+}
 
 function Alert({ type, message }: { type: 'success' | 'error'; message: string }) {
   if (!message) return null
@@ -71,15 +89,63 @@ function InputField({ label, type = 'text', value, onChange, placeholder, hint }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+// ── Stripe return detection in a separate component to satisfy Suspense requirement ──
+type StripeReturnHandlerProps = {
+  setProfile: Dispatch<SetStateAction<UserProfile | null>>
+  setSubMsg: Dispatch<SetStateAction<{ type: 'success' | 'error'; text: string } | null>>
+  router: ReturnType<typeof useRouter>
+}
+
+function StripeReturnHandler({ setProfile, setSubMsg, router }: StripeReturnHandlerProps) {
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    const upgrade = searchParams.get('upgrade')
+    const sessionId = searchParams.get('session_id')
+    if (upgrade === 'success' && sessionId) {
+      fetch('/api/stripe/verify-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.plan === 'PRO') {
+            setProfile((prev) => prev ? { ...prev, plan: 'PRO' } : prev)
+            setSubMsg({ type: 'success', text: '🎉 Bienvenue dans Solo Pro ! Votre abonnement est actif.' })
+            setTimeout(() => setSubMsg(null), 8000)
+            router.refresh()
+          }
+        })
+        .catch(() => null)
+      window.history.replaceState({}, '', '/settings')
+    } else if (upgrade === 'cancel') {
+      setSubMsg({ type: 'error', text: 'Paiement annulé. Votre plan reste inchangé.' })
+      setTimeout(() => setSubMsg(null), 5000)
+      window.history.replaceState({}, '', '/settings')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return null
+}
+
 export default function SettingsPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   // Cal.com form state
   const [calcomWebhookSecret, setCalcomWebhookSecret] = useState('')
   const [calcomBookingUrl, setCalcomBookingUrl] = useState('')
   const [calcomSaving, setCalcomSaving] = useState(false)
   const [calcomMsg, setCalcomMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  // Stripe Personal integration state
+  const [stripeConnect, setStripeConnect] = useState<{ connected: boolean; maskedKey: string | null; importedCount: number } | null>(null)
+  const [stripeApiKeyInput, setStripeApiKeyInput] = useState('')
+  const [stripeSaving, setStripeSaving] = useState(false)
+  const [stripeSyncing, setStripeSyncing] = useState(false)
+  const [stripeMsg, setStripeMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [stripeSyncResult, setStripeSyncResult] = useState<{ imported: number; skipped: number; total: number } | null>(null)
 
   // Profile form state
   const [name, setName] = useState('')
@@ -176,6 +242,14 @@ export default function SettingsPage() {
     }
   }
 
+  // ── Load Stripe connect status ──────────────────────────────────────────────
+  async function loadStripeConnect() {
+    try {
+      const res = await fetch('/api/stripe/connect')
+      if (res.ok) setStripeConnect(await res.json())
+    } catch { /* silent */ }
+  }
+
   // ── Load profile ────────────────────────────────────────────────────────────
   useEffect(() => {
     fetch('/api/auth/profile')
@@ -185,7 +259,7 @@ export default function SettingsPage() {
         setProfile(user)
         setName(user.name || '')
         setBusinessName(user.businessName || '')
-        setSector(user.sector || '')
+        setSector(normalizeSector(user.sector || ''))
         setMonthlyGoal(String(user.monthlyGoal || 0))
         setFixedCharges(String(user.fixedCharges || 0))
         setLinkedinUrl(user.linkedinUrl || '')
@@ -200,7 +274,63 @@ export default function SettingsPage() {
         setCalcomBookingUrl(user.calcomBookingUrl || '')
       })
       .finally(() => setLoading(false))
+    loadStripeConnect()
   }, [])
+
+  // ── Save Stripe personal API key ─────────────────────────────────────────────
+  async function handleSaveStripeKey(e: React.FormEvent) {
+    e.preventDefault()
+    if (!stripeApiKeyInput.trim()) return
+    setStripeSaving(true)
+    setStripeMsg(null)
+    try {
+      const res = await fetch('/api/stripe/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: stripeApiKeyInput.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erreur')
+      setStripeApiKeyInput('')
+      setStripeMsg({ type: 'success', text: '✅ Clé Stripe connectée avec succès !' })
+      await loadStripeConnect()
+    } catch (err: unknown) {
+      setStripeMsg({ type: 'error', text: err instanceof Error ? err.message : 'Erreur inconnue' })
+    } finally {
+      setStripeSaving(false)
+      setTimeout(() => setStripeMsg(null), 5000)
+    }
+  }
+
+  // ── Sync Stripe invoices as Cash transactions ────────────────────────────────
+  async function handleStripeSync() {
+    setStripeSyncing(true)
+    setStripeMsg(null)
+    setStripeSyncResult(null)
+    try {
+      const res = await fetch('/api/stripe/sync', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erreur synchronisation')
+      setStripeSyncResult({ imported: data.imported, skipped: data.skipped, total: data.total })
+      setStripeMsg({ type: 'success', text: `✅ Sync terminée — ${data.imported} nouvelle(s) transaction(s) importée(s)` })
+      await loadStripeConnect()
+    } catch (err: unknown) {
+      setStripeMsg({ type: 'error', text: err instanceof Error ? err.message : 'Erreur inconnue' })
+    } finally {
+      setStripeSyncing(false)
+      setTimeout(() => setStripeMsg(null), 6000)
+    }
+  }
+
+  // ── Disconnect Stripe ────────────────────────────────────────────────────────
+  async function handleDisconnectStripe() {
+    if (!confirm('Déconnecter votre compte Stripe ? Les transactions déjà importées seront conservées.')) return
+    try {
+      await fetch('/api/stripe/connect', { method: 'DELETE' })
+      setStripeConnect({ connected: false, maskedKey: null, importedCount: 0 })
+      setStripeSyncResult(null)
+    } catch { /* silent */ }
+  }
 
   // ── Save profile ────────────────────────────────────────────────────────────
   async function handleSaveProfile(e: React.FormEvent) {
@@ -212,7 +342,7 @@ export default function SettingsPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, businessName, sector, monthlyGoal, fixedCharges, linkedinUrl,
-          legalName, address, zipCode, city, siret, legalForm, vatNumber }),
+          legalName: businessName, address, zipCode, city, siret, legalForm, vatNumber }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erreur')
@@ -312,8 +442,19 @@ export default function SettingsPage() {
     try {
       const res = await fetch('/api/stripe/portal', { method: 'POST' })
       const data = await res.json()
-      if (data.url) window.location.href = data.url
-    } catch { /* ignore */ } finally {
+      if (data.url) {
+        window.location.href = data.url
+      } else if (data.error === 'no_customer') {
+        setSubMsg({ type: 'error', text: '⚠️ Aucun abonnement Stripe actif détecté. Veuillez contacter le support ou souscrire à nouveau.' })
+        setTimeout(() => setSubMsg(null), 8000)
+      } else {
+        setSubMsg({ type: 'error', text: data.message || 'Impossible d\'accéder au portail de gestion.' })
+        setTimeout(() => setSubMsg(null), 6000)
+      }
+    } catch {
+      setSubMsg({ type: 'error', text: 'Erreur de connexion. Veuillez réessayer.' })
+      setTimeout(() => setSubMsg(null), 5000)
+    } finally {
       setSubLoading(false)
     }
   }
@@ -334,6 +475,9 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto py-8 px-4">
+      <Suspense fallback={null}>
+        <StripeReturnHandler setProfile={setProfile} setSubMsg={setSubMsg} router={router} />
+      </Suspense>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Paramètres</h1>
@@ -359,7 +503,7 @@ export default function SettingsPage() {
           </div>
 
           <InputField
-            label="Nom de l'entreprise / Business"
+            label="Nom de l'entreprise / Raison sociale"
             value={businessName}
             onChange={setBusinessName}
             placeholder="Ma Super Boîte"
@@ -374,7 +518,7 @@ export default function SettingsPage() {
             >
               <option value="">Choisir un secteur...</option>
               {SECTORS.map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s.id} value={s.id}>{s.label}</option>
               ))}
             </select>
           </div>
@@ -409,7 +553,7 @@ export default function SettingsPage() {
           <div className="pt-4 border-t border-[#2a2a42]">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">🏢 Informations légales (devis & factures)</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Raison sociale" value={legalName} onChange={setLegalName} placeholder="Martin Consulting" />
+
               <InputField label="Forme juridique" value={legalForm} onChange={setLegalForm} placeholder="Auto-entrepreneur" />
               <InputField label="Adresse" value={address} onChange={setAddress} placeholder="12 rue de la Paix" />
               <div className="grid grid-cols-2 gap-2">
@@ -538,6 +682,93 @@ export default function SettingsPage() {
             </button>
           </div>
         </form>
+      </SectionCard>
+      </div>
+
+      {/* ── Section Stripe Personnel — Import Transactions ───────────────── */}
+      <div id="stripe-perso">
+      <SectionCard title="Intégration Stripe — Import Transactions" icon="💳">
+        {stripeMsg && <Alert type={stripeMsg.type} message={stripeMsg.text} />}
+        <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 mb-4">
+          <p className="font-semibold mb-1">💡 À quoi ça sert ?</p>
+          <p className="text-blue-200">Connectez votre compte Stripe personnel pour importer automatiquement vos factures payées comme transactions INCOME dans votre trésorerie. Fonctionne avec les ventes ponctuelles <strong>et</strong> les abonnements récurrents.</p>
+        </div>
+
+        {stripeConnect?.connected ? (
+          <div className="space-y-4">
+            {/* Connected status */}
+            <div className="flex items-center justify-between p-4 rounded-xl bg-green-500/5 border border-green-500/20">
+              <div className="flex items-center gap-3">
+                <span className="text-green-400 text-lg">✅</span>
+                <div>
+                  <p className="text-sm font-medium text-green-300">Compte Stripe connecté</p>
+                  <p className="text-xs text-[#6b7280] mt-0.5">Clé : {stripeConnect.maskedKey} · {stripeConnect.importedCount} transaction(s) importée(s)</p>
+                </div>
+              </div>
+              <button
+                onClick={handleDisconnectStripe}
+                className="text-xs text-red-400 hover:text-red-300 px-3 py-1.5 border border-red-500/20 rounded-lg transition-colors"
+              >
+                Déconnecter
+              </button>
+            </div>
+
+            {/* Sync button */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleStripeSync}
+                disabled={stripeSyncing}
+                className="flex-1 py-2.5 bg-[#4f46e5] hover:bg-[#4338ca] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                {stripeSyncing ? (
+                  <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Synchronisation en cours...</>
+                ) : (
+                  <>🔄 Synchroniser les factures Stripe</>
+                )}
+              </button>
+            </div>
+
+            {/* Sync result */}
+            {stripeSyncResult && (
+              <div className="p-3 rounded-lg bg-[#151524] border border-[#2a2a42] text-xs">
+                <p className="font-semibold text-white mb-1">📊 Résultat de la synchronisation</p>
+                <div className="grid grid-cols-3 gap-3 mt-2">
+                  <div className="text-center"><p className="text-2xl font-bold text-green-400">{stripeSyncResult.imported}</p><p className="text-[#6b7280] mt-0.5">Importées</p></div>
+                  <div className="text-center"><p className="text-2xl font-bold text-[#818cf8]">{stripeSyncResult.skipped}</p><p className="text-[#6b7280] mt-0.5">Déjà présentes</p></div>
+                  <div className="text-center"><p className="text-2xl font-bold text-white">{stripeSyncResult.total}</p><p className="text-[#6b7280] mt-0.5">Total Stripe</p></div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <form onSubmit={handleSaveStripeKey} className="space-y-4">
+            <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 mb-2">
+              <p className="font-semibold mb-1">🔑 Comment obtenir votre clé ?</p>
+              <ol className="list-decimal list-inside space-y-1 text-amber-200">
+                <li>Dans Stripe, allez dans <strong>Développeurs → Clés API</strong></li>
+                <li>Créez une <strong>clé restreinte</strong> avec accès lecture sur <strong>Invoices</strong></li>
+                <li>Copiez la clé (<code className="bg-[#0a0a1a] px-1 rounded text-indigo-300">rk_live_...</code>) ci-dessous</li>
+              </ol>
+            </div>
+            <InputField
+              label="Clé API Stripe restreinte"
+              type="password"
+              value={stripeApiKeyInput}
+              onChange={setStripeApiKeyInput}
+              placeholder="rk_live_... ou sk_live_..."
+              hint="Utilisée uniquement côté serveur pour lire vos factures payées"
+            />
+            <div className="flex justify-end pt-2">
+              <button
+                type="submit"
+                disabled={stripeSaving || !stripeApiKeyInput.trim()}
+                className="px-6 py-2 bg-[#4f46e5] hover:bg-[#4338ca] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                {stripeSaving ? 'Validation...' : 'Connecter Stripe'}
+              </button>
+            </div>
+          </form>
+        )}
       </SectionCard>
       </div>
 

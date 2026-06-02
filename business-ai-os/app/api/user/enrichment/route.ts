@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/auth'
+import { writeBrainFromEnrichment } from '@/lib/wiki/brain-writer'
 
 export interface EnrichmentData {
   // Offres & Pricing
@@ -77,18 +78,15 @@ export async function PATCH(req: NextRequest) {
       if (body[field] !== undefined) updated[field] = body[field]
     }
 
-    await prisma.user.update({
+    const userData = await prisma.user.update({
       where: { id: session.userId },
       data: { profileEnrichment: JSON.stringify(updated) },
+      select: { businessName: true, sector: true, monthlyGoal: true },
     })
 
-    // Trigger wiki ingest to update BRAIN.md
+    // Sync BRAIN.md directly (replaces the indirect wiki/ingest call)
     try {
-      await fetch(`${process.env.NEXTAUTH_URL ?? 'http://localhost:3000'}/api/wiki/ingest`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Cookie': `session=${session}` },
-        body: JSON.stringify({ eventType: 'profile_enrichment_update', data: updated }),
-      })
+      writeBrainFromEnrichment(session.userId, updated, userData)
     } catch { /* non-blocking */ }
 
     return NextResponse.json({ ok: true, score: computeScore(updated) })

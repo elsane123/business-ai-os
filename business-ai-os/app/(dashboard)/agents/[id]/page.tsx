@@ -31,6 +31,37 @@ type AgentMeta = {
   isActive: boolean
 }
 
+type BrainEnrichment = {
+  offerType?: string
+  priceRange?: string
+  targetClient?: string
+  valueProposition?: string
+  differentiator?: string
+  sector?: string
+  businessName?: string
+}
+
+// E2.2 — Dynamic questions based on agent id + profile enrichment
+function computeDynamicQuestions(agentId: string, e: BrainEnrichment): string[] {
+  const q: string[] = []
+  const price = e.priceRange ? `panier ${e.priceRange}` : null
+  const client = e.targetClient ? e.targetClient.split(/[,;.]/)[0].trim().slice(0, 40) : null
+  const vp = e.valueProposition ? e.valueProposition.slice(0, 60) : null
+
+  if (agentId === 'agent-cfo') {
+    if (price) q.push(`Avec un ${price}, quel CA mensuel dois-je viser pour atteindre mon objectif ?`)
+  } else if (agentId === 'agent-cro') {
+    if (client) q.push(`Comment optimiser ma conversion pour convaincre ${client} ?`)
+  } else if (agentId === 'agent-cmo') {
+    if (vp) q.push(`Comment formuler "${vp}" pour mes posts LinkedIn ?`)
+  } else if (agentId === 'agent-coach') {
+    if (e.differentiator) q.push(`Mon différenciateur est "${e.differentiator.slice(0, 50)}". Comment l\'exploiter au maximum ?`)
+  } else if (agentId === 'agent-legal') {
+    if (e.offerType) q.push(`Quels sont les points de vigilance contractuels pour une offre de type ${e.offerType} ?`)
+  }
+  return q
+}
+
 export default function AgentChatPage() {
   const params = useParams()
   const router = useRouter()
@@ -42,6 +73,9 @@ export default function AgentChatPage() {
   const [sending, setSending] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  // E2.1/E2.2/E2.3 — Brain context state
+  const [brainScore, setBrainScore] = useState(0)
+  const [brainEnrichment, setBrainEnrichment] = useState<BrainEnrichment>({})
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -68,6 +102,12 @@ export default function AgentChatPage() {
     } finally {
       setLoading(false)
     }
+
+    // E2.1 — Load brain enrichment (silent, non-blocking — does not affect agent loading)
+    fetch('/api/user/enrichment')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) { setBrainScore(d.score ?? 0); setBrainEnrichment(d.data ?? {}) } })
+      .catch(() => null)
   }
 
   useEffect(() => { loadData() }, [agentId])
@@ -163,6 +203,12 @@ export default function AgentChatPage() {
           <h1 className="font-bold text-sm text-white truncate">{agent.name}</h1>
           <p className="text-[#818cf8] text-xs truncate">{agent.tagline}</p>
         </div>
+        {/* E2.1 — Brain active indicator */}
+        {brainScore > 50 && (
+          <span className="hidden sm:flex items-center gap-1 text-[10px] text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full flex-shrink-0" title="Tes agents utilisent ton profil Business Brain complet">
+            🧠 Brain actif
+          </span>
+        )}
         <button
           onClick={clearHistory}
           className="text-[#818cf8] hover:text-red-400 text-xs px-2 py-1 rounded-lg hover:bg-red-900/20 transition-colors"
@@ -181,8 +227,30 @@ export default function AgentChatPage() {
             </div>
             <h2 className="font-bold text-white text-lg mb-1">{agent.name}</h2>
             <p className="text-[#818cf8] text-sm mb-6 max-w-xs">{agent.tagline}</p>
+
+            {/* E2.3 — Brain incomplete warning */}
+            {brainScore < 25 && (
+              <a
+                href="/profile"
+                className="flex items-center gap-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 px-4 py-2 rounded-xl mb-5 hover:bg-amber-500/20 transition-colors"
+              >
+                <span>⚠️</span>
+                <span>Business Brain incomplet — <span className="underline">Complète ton profil</span> pour des réponses personnalisées</span>
+              </a>
+            )}
+
+            {/* E2.2 — Dynamic + static suggested questions */}
             <p className="text-[#6b7280] text-xs mb-4">Questions exemples :</p>
             <div className="flex flex-col gap-2 w-full max-w-sm">
+              {computeDynamicQuestions(agentId, brainEnrichment).map((q, i) => (
+                <button
+                  key={`dyn-${i}`}
+                  onClick={() => sendMessage(q)}
+                  className="text-left px-4 py-2.5 bg-indigo-900/20 border border-indigo-500/30 rounded-xl text-sm text-indigo-300 hover:text-white hover:border-indigo-400/60 transition-all"
+                >
+                  ✨ {q}
+                </button>
+              ))}
               {agent.exampleQuestions.map((q, i) => (
                 <button
                   key={i}

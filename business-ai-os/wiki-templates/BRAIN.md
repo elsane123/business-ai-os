@@ -6,23 +6,43 @@
 - **Ton**: [professionnel/décontracté/expert]
 - **Langue**: Français
 
+## Offre principale
+- **Type d'offre**: [mission | retainer | produit | formation | mixte]
+- **Panier moyen**: [<1k | 1k-5k | 5k-15k | 15k+]
+- **Durée typique**: [jour | semaine | mois | plusieurs mois]
+- **Description courte**: [description concise de l'offre principale]
+
 ## Profil Client Idéal (ICP)
 - **Secteur cible**: [à compléter]
 - **Taille entreprise**: [à compléter]
 - **Budget typique**: [à compléter]
 - **Persona décideur**: [à compléter]
+- **Problème principal résolu**: [à compléter]
+
+## Proposition de valeur
+[En 1-2 phrases percutantes, ce que tu apportes de unique à tes clients.]
+
+## Différenciateur
+[Ce qui te rend unique vs tes concurrents — en quelques mots concrets.]
+
+## Concurrents principaux
+- [Concurrent 1] — différenciation:
+- [Concurrent 2] — différenciation:
+
+## Zone géographique & langues
+- **Géographie**: [local | national | europe | international]
+- **Langues de travail**: [fr | en | fr+en | autre]
 
 ## Objectifs
 - CA mensuel cible: [X]€
 - Nombre de clients actifs cible: [X]
 - Cycle de vente moyen: [X] jours
 
-## Proposition de valeur
-[En 2-3 phrases, ce que tu apportes de unique à tes clients.]
+## Ton & voix
+[Style de communication : expert, direct, pédagogue, chaleureux... Exemples de formulations typiques.]
 
-## Concurrents principaux
-- [Concurrent 1] — différenciation:
-- [Concurrent 2] — différenciation:
+## Brief complet
+[Brief commercial complet rédigé à la première personne — présentation, offres, clients cibles, valeur ajoutée, objectifs.]
 
 ## Conventions wiki
 - Chaque prospect a sa page dans /prospects/

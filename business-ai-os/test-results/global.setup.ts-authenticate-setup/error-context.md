@@ -12,41 +12,38 @@
 # Error details
 
 ```
-TimeoutError: locator.fill: Timeout 10000ms exceeded.
+Error: expect(page).toHaveURL(expected) failed
+
+Expected pattern: /\/(focus|dashboard)/
+Received string:  "http://localhost:50082/login"
+Timeout: 12000ms
+
 Call log:
-  - waiting for locator('input[type=email]')
-    - locator resolved to <input value="" required="" type="email" placeholder="vous@exemple.com" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"/>
-    - fill("test_qa_20260525@brainlo.test")
-  - attempting fill action
-    - waiting for element to be visible, enabled and editable
+  - Expect "toHaveURL" with timeout 12000ms
+    27 × unexpected value "http://localhost:50082/login"
 
 ```
 
-# Page snapshot
-
 ```yaml
-- generic [ref=e1]:
-  - generic [ref=e3]:
-    - generic [ref=e4]:
-      - img [ref=e7]
-      - heading "Connexion" [level=1] [ref=e17]
-      - paragraph [ref=e18]: Accédez à votre cerveau business
-    - generic [ref=e19]:
-      - generic [ref=e20]:
-        - generic [ref=e21]:
-          - generic [ref=e22]: Email
-          - textbox "vous@exemple.com" [active] [ref=e23]: test_qa_20260525@brainlo.test
-        - generic [ref=e24]:
-          - generic [ref=e25]: Mot de passe
-          - textbox "••••••••" [ref=e26]
-        - button "Se connecter" [ref=e27] [cursor=pointer]
-      - paragraph [ref=e28]:
-        - text: Pas encore de compte ?
-        - link "Créer un compte" [ref=e29] [cursor=pointer]:
-          - /url: /onboarding
-  - button "Open Next.js Dev Tools" [ref=e35] [cursor=pointer]:
-    - img [ref=e36]
-  - alert [ref=e39]
+- img
+- heading "Connexion" [level=1]
+- paragraph: Accédez à votre cerveau business
+- text: Email ou mot de passe incorrect Email
+- textbox "Email":
+  - /placeholder: vous@exemple.com
+  - text: test_qa_20260525@brainlo.test
+- text: Mot de passe
+- textbox "Mot de passe":
+  - /placeholder: ••••••••
+  - text: TestBrainlo123!
+- link "Mot de passe oublié ?":
+  - /url: /forgot-password
+- button "Se connecter"
+- paragraph:
+  - text: Pas encore de compte ?
+  - link "Créer un compte":
+    - /url: /onboarding
+- alert
 ```
 
 # Test source
@@ -59,12 +56,14 @@ Call log:
   5  | 
   6  | setup('authenticate', async ({ page }) => {
   7  |   await page.goto('/login')
-> 8  |   await page.locator('input[type=email]').fill('test_qa_20260525@brainlo.test')
-     |                                           ^ TimeoutError: locator.fill: Timeout 10000ms exceeded.
+  8  |   await page.locator('input[type=email]').fill('test_qa_20260525@brainlo.test')
   9  |   await page.locator('input[type=password]').fill('TestBrainlo123!')
   10 |   await page.getByRole('button', { name: /se connecter/i }).click()
-  11 |   await expect(page).toHaveURL(/\/(focus|dashboard)/, { timeout: 12_000 })
-  12 |   await page.context().storageState({ path: AUTH_FILE })
-  13 | })
-  14 | 
+> 11 |   await expect(page).toHaveURL(/\/(focus|dashboard)/, { timeout: 12_000 })
+     |                      ^ Error: expect(page).toHaveURL(expected) failed
+  12 |   // Dismiss the onboarding checklist panel for all tests
+  13 |   await page.evaluate(() => localStorage.setItem('brainlo_checklist_dismissed', 'true'))
+  14 |   await page.context().storageState({ path: AUTH_FILE })
+  15 | })
+  16 | 
 ```

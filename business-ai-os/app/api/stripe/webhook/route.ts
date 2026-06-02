@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 
 // Raw body required for Stripe signature verification
 // Note: bodyParser config not needed in Next.js 14 App Router — request.text() works natively
@@ -48,6 +48,58 @@ export async function POST(request: NextRequest) {
             },
           })
           console.log(`[stripe/webhook] User ${userId} upgraded to PRO`)
+
+          // Enregistrer la transaction d'abonnement dans le module Cash (idempotent via session.id)
+          const amountTotal = session.amount_total ? session.amount_total / 100 : 29
+          await prisma.transaction.upsert({
+            where: { userId_stripeId: { userId, stripeId: session.id } },
+            create: {
+              userId,
+              amount: amountTotal,
+              type: 'EXPENSE',
+              category: 'Abonnement',
+              description: 'Abonnement Solo Pro — Brainlo',
+              date: new Date(),
+              tvaRate: 20,
+              stripeId: session.id,
+            },
+            update: {},
+          })
+          console.log(`[stripe/webhook] Transaction abonnement créée pour ${userId}`)
+        }
+        break
+      }
+
+      case 'invoice.payment_succeeded': {
+        // Paiements récurrents mensuels
+        const invoice = event.data.object as import('stripe').Stripe.Invoice
+        const customerId = invoice.customer as string
+        // Ignorer la première facture (déjà traitée par checkout.session.completed)
+        if (invoice.billing_reason === 'subscription_create') break
+
+        if (customerId) {
+          const user = await prisma.user.findFirst({
+            where: { stripeCustomerId: customerId },
+            select: { id: true },
+          })
+          if (user) {
+            const amount = invoice.amount_paid ? invoice.amount_paid / 100 : 29
+            await prisma.transaction.upsert({
+              where: { userId_stripeId: { userId: user.id, stripeId: invoice.id } },
+              create: {
+                userId: user.id,
+                amount,
+                type: 'EXPENSE',
+                category: 'Abonnement',
+                description: `Abonnement Solo Pro — Brainlo (renouvellement)`,
+                date: new Date(),
+                tvaRate: 20,
+                stripeId: invoice.id,
+              },
+              update: {},
+            })
+            console.log(`[stripe/webhook] Transaction renouvellement créée pour ${user.id}`)
+          }
         }
         break
       }

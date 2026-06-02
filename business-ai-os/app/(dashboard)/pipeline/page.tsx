@@ -300,6 +300,7 @@ export default function PipelinePage() {
 
   // KPIs
   const activeProspects = prospects.filter(p => p.status !== 'LOST' && p.status !== 'WON')
+  const ghostDeals = activeProspects.filter(p => (daysSince(p.lastContactDate) ?? Infinity) >= 14)
   const totalPipelineValue = activeProspects.reduce((s, p) => s + p.value, 0)
   const wonThisMonth = prospects.filter(p => {
     if (p.status !== 'WON' || !p.lastContactDate) return false
@@ -643,6 +644,21 @@ export default function PipelinePage() {
           </button>
         </div>
       </div>
+
+      {/* Ghost Deal Alert — prospects inactifs 14+ jours */}
+      {ghostDeals.length > 0 && (
+        <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3 mb-6">
+          <span className="text-xl">👻</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-amber-400">
+              {ghostDeals.length} prospect{ghostDeals.length > 1 ? 's' : ''} fantôme{ghostDeals.length > 1 ? 's' : ''} — inactif{ghostDeals.length > 1 ? 's' : ''} depuis 14+ jours
+            </p>
+            <p className="text-xs text-amber-300/70 mt-0.5 truncate">
+              {ghostDeals.map(p => `${p.name}${p.company ? ` (${p.company})` : ''} — ${daysLabel(p.lastContactDate)}`).join(' · ')}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* KPI Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">

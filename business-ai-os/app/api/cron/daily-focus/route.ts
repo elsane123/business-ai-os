@@ -4,11 +4,11 @@
  * Called daily: 0 8 * * * curl -H 'x-cron-secret: ...' http://localhost:50082/api/cron/daily-focus
  */
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { getBusinessContext } from '@/lib/wiki/reader'
 import { sendDailyFocusEmail } from '@/lib/resend'
 
-const PYTHON_API = process.env.PYTHON_API_URL ?? 'http://localhost:8000'
+const PYTHON_API = process.env.PYTHON_AGENT_URL ?? 'http://localhost:8000'
 const CRON_SECRET = process.env.CRON_SECRET
 
 interface PythonFocusAction {

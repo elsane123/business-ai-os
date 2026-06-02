@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@/lib/auth'
+import { getSession, comparePassword, hashPassword } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import bcrypt from 'bcryptjs'
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -20,10 +19,10 @@ export async function PATCH(request: NextRequest) {
     })
     if (!user) return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 })
 
-    const isValid = await bcrypt.compare(currentPassword, user.passwordHash)
+    const isValid = await comparePassword(currentPassword, user.passwordHash)
     if (!isValid) return NextResponse.json({ error: 'Mot de passe actuel incorrect' }, { status: 400 })
 
-    const hash = await bcrypt.hash(newPassword, 10)
+    const hash = await hashPassword(newPassword)
     await prisma.user.update({
       where: { id: session.userId },
       data: { passwordHash: hash },

@@ -65,6 +65,20 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' },
         ],
       },
+      {
+        // Chunks Next.js : immutables (nom = hash du contenu)
+        source: '/_next/static/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        // HTML pages : jamais caché par Cloudflare → toujours la dernière version
+        source: '/((?!_next/static|_next/image|static/|favicon).*)',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        ],
+      },
     ]
   },
 
@@ -78,6 +92,7 @@ const nextConfig = {
       { source: '/register', destination: '/onboarding', permanent: false },
       { source: '/connexion', destination: '/login',  permanent: true },
       { source: '/fonctionalitee.html', destination: '/fonctionnalites.html', permanent: true },
+      { source: '/fonctionnalites.html', destination: '/fonctionnalites', permanent: true },
     ]
   },
 

@@ -1,6 +1,6 @@
 # Brainlo — Spécifications Techniques & Documentation
 
-> Version : 1.4.0 | Date : 2026-05-26 | Statut : **MVP en production — Facturation électronique Factur-X**
+> Version : 1.6.0 | Date : 2026-06-02 | Statut : **MVP en production — IA Fiscale FR + Stripe Import + Agents Proactifs + Alertes CFO**
 
 ---
 
@@ -191,6 +191,9 @@ model User {
   invoiceFooter   String?
   quoteCounter    Int      @default(0)
   invoiceCounter  Int      @default(0)
+  // IA Fiscale & Stripe Import (E6.1 / E6.2)
+  versementLiberatoire  Boolean  @default(false) // Versement Libératoire IR (auto-entrepreneur)
+  stripePersonalApiKey  String?                  // Clé API Stripe compte personnel (import factures)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -206,7 +209,9 @@ model Transaction {
   category    String
   description String?
   date        DateTime
+  stripeId    String?  // Stripe invoice ID (import Stripe personnel, déduplication)
   createdAt   DateTime @default(now())
+  @@unique([userId, stripeId]) // Idempotence import Stripe
 }
 ```
 
@@ -1820,6 +1825,11 @@ Fichier : `middleware.ts`
 /settings, /knowledge-base, /calendar, /profile, /invoices, /quotes, /agents
 ```
 
+> Note (session 2026-06-02) : `/knowledge-base` redirige désormais vers `/profile?tab=kb` (pages fusionnées en onglets).
+
+```
+```
+
 ---
 
 ### Headers de sécurité HTTP
@@ -1866,6 +1876,9 @@ Les jobs cron utilisent `curl` vers les endpoints Next.js protégés par `x-cron
 
 # Wiki lint — chaque lundi à 9h UTC
 0 9 * * 1 curl -s -X POST -H 'x-cron-secret: $CRON_SECRET' http://localhost:50082/api/cron/wiki-lint
+
+# Weekly digest — chaque lundi à 8h UTC (E7.2)
+0 8 * * 1 curl -s -X POST -H 'x-cron-secret: $CRON_SECRET' http://localhost:50082/api/cron/weekly-digest >> /path/to/cron-weekly-digest.log 2>&1
 ```
 
 ### Endpoints Cron
@@ -1930,6 +1943,7 @@ Les jobs cron utilisent `curl` vers les endpoints Next.js protégés par `x-cron
 /a0/usr/projects/business_ai_os/cron-daily-focus.log
 /a0/usr/projects/business_ai_os/cron-monthly-report.log
 /a0/usr/projects/business_ai_os/cron-wiki-lint.log
+/a0/usr/projects/business_ai_os/cron-weekly-digest.log
 ```
 
 ---
@@ -2085,7 +2099,153 @@ Les jobs cron utilisent `curl` vers les endpoints Next.js protégés par `x-cron
 
 ---
 
+---
+
+### v1.5.0 — 2026-06-02 — Business Brain IA + Dashboard Rapports + SEO
+
+#### ✅ Implémentations complétées
+
+##### Business Brain — Architecture (P0→P3)
+
+| Feature | Fichier(s) | Description |
+|---------|-----------|-------------|
+| **Brain Writer** | `lib/wiki/brain-writer.ts` | Nouveau — génère `wiki-data/{userId}/BRAIN.md` depuis `profileEnrichment` après le wizard |
+| **Sync Wizard→BRAIN.md** | `app/api/user/brain-wizard/route.ts` | Après génération wizard, appel `writeBrainFromEnrichment()` non-bloquant |
+| **getBrainContext()** | `lib/brain-context.ts` | Nouveau — fusionne Prisma + profileEnrichment + BRAIN.md en contexte unifié |
+| **Agents contextualisés** | `lib/agents-context.ts` | Tous les agents (CFO, CRO, CMO, Legal, CHRO, Ops, Coach) reçoivent le Brain Context |
+| **Sync enrichment manuel** | `app/api/user/enrichment/route.ts` | PATCH déclenche `writeBrainFromEnrichment()` directement |
+| **Template BRAIN.md enrichi** | `wiki-templates/BRAIN.md` | +4 sections : Offre, Ton/voix, Différenciateur, Brief complet |
+
+##### E1 — Brain Power UX (Mon Profil Business)
+
+| Feature | Fichier(s) | Description |
+|---------|-----------|-------------|
+| **Badge de niveau coloré** | `app/(dashboard)/profile/page.tsx` | 4 niveaux : Brain basique / actif / puissant / expert avec couleur rouge→vert |
+| **Suggestions contextuelles** | `app/(dashboard)/profile/page.tsx` | Carte "Prochaine action" cliquable avec scroll auto vers la section concernée |
+| **Badge Brain Actif sidebar** | `components/layout/Sidebar.tsx` | Point vert avec glow sur section Brain si score > 50% |
+| **Toast milestones** | `app/(dashboard)/profile/page.tsx` | Notification toast au franchissement de 25/50/75/100% |
+
+##### E2 — Agents Brain-Aware
+
+| Feature | Fichier(s) | Description |
+|---------|-----------|-------------|
+| **Indicateur Brain actif** | `app/(dashboard)/agents/[id]/page.tsx` | Badge "🧠 Brain actif" dans le header agent si score > 50% |
+| **Questions dynamiques** | `app/(dashboard)/agents/[id]/page.tsx` | Questions personnalisées selon agent (CFO/CRO/CMO/Legal/Coach) + profileEnrichment |
+| **Warning Brain incomplet** | `app/(dashboard)/agents/[id]/page.tsx` | Banner amber avec CTA /profile si score < 25% dans l'empty state |
+
+##### E3 — Production Readiness
+
+| Feature | Fichier(s) | Description |
+|---------|-----------|-------------|
+| **DNS brainlo.ai validé** | *(DNS Cloudflare)* | DKIM ✅ `resend._domainkey.brainlo.ai`, DMARC ✅ `p=quarantine`, SPF `include:amazonses.com` ✅ |
+| **PYTHON_AGENT_URL** | `app/api/invoices/[id]/facturx/route.ts`, `app/api/cron/daily-focus/route.ts`, `app/api/cron/wiki-lint/route.ts` | Consolidation : `PYTHON_API_URL` → `PYTHON_AGENT_URL` dans 3 fichiers |
+| **.env.example** | `.env.example` | Reécrit — 17 variables documentées avec sections et commentaires |
+
+##### E4 — Dashboard & Rapports
+
+| Feature | Fichier(s) | Description |
+|---------|-----------|-------------|
+| **Page Rapports** | `app/(dashboard)/reports/page.tsx` | Nouveau — vue mensuelle avec sélecteur de mois, KPIs Trésorerie/Pipeline/Tâches/Focus, barres de progression CSS, envoi email |
+| **Sidebar Rapports** | `components/layout/Sidebar.tsx` | Item "📊 Rapports" ajouté dans la section Carburant |
+| **Page /fonctionnalites** | `app/fonctionnalites/page.tsx` | Nouveau — porte `public/fonctionnalites.html` en page Next.js avec metadata SEO |
+| **Redirect HTML→Next.js** | `next.config.js` | `/fonctionnalites.html` → `/fonctionnalites` (301 permanent) |
+
+##### E5 — SEO & Croissance
+
+| Feature | Fichier(s) | Description |
+|---------|-----------|-------------|
+| **3 articles blog** | `seo-content/articles/` | `daily-focus-entrepreneur.md`, `guide-tresorerie-solopreneur.md`, `brainlo-vs-notion.md` — tous lus automatiquement par `lib/blog.ts` |
+| **Assessment SEO** | `app/assessment/layout.tsx` | Nouveau layout serveur avec metadata complète : title, description, OG, Twitter card, canonical, robots |
+
+---
+
+#### ⏳ À faire (stories restantes)
+
+| Story | Description | Priorité |
+|-------|-------------|----------|
+| **E3.2** | Stripe `sk_live_` en production + HSTS Caddy (`Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`) | 🔴 Critique |
+| **E5.3** | Newsletter Beehiiv : intégration API post-onboarding (non-bloquant, idempotent, silent fail) | 🟢 Medium |
+
+---
+
+---
+
+## Changelog — Session 2026-06-02 (v1.5.1)
+
+### Bug Fixes
+| Fichier | Fix |
+|---|---|
+| `app/api/user/brain-wizard/route.ts` | Ajout `sanitizeJsonStrings()` — échappe les control chars dans les valeurs JSON retournées par le LLM (SyntaxError: Bad control character) |
+| `app/api/cron/weekly-digest/route.ts` | Champ Prisma `completed` → `completedAt` |
+| `app/api/stripe/sync/route.ts` | Annotation de type explicite `Awaited<ReturnType<typeof stripe.invoices.list>>` pour résoudre la référence de type circulaire |
+
+### Navigation — Sidebar restructuré
+- **BRAIN** : Business Brain `/chat` + Mon Profil Business `/profile` + Agents IA `/agents` (déplacé depuis Carburant)
+- **CARBURANT** : Devis & Factures + Cash + Rapports + Contenu LinkedIn (6 → 4 items)
+- **Footer** : Paramètres + Aide `/wiki` (déplacé depuis Carburant)
+- Base de connaissance retirée du menu (fusionnée dans `/profile`)
+
+### Pages fusionnées
+- `/app/(dashboard)/profile/page.tsx` — page unifiée avec 2 onglets:
+  - `👤 Profil Business` — BrainWizard + enrichissement (Offres, ICP, Localisation, Brief)
+  - `📚 Base de connaissance` — upload docs, liste indexée, filtres catégories
+- `/app/(dashboard)/knowledge-base/page.tsx` — redirect client vers `/profile?tab=kb`
+
+### Nettoyage
+- `public/fonctionnalites.html` supprimé (remplacé par `/app/fonctionnalites/page.tsx`)
+- TODO.md mis à jour : Page Rapports ✅, Page `/fonctionnalites` ✅
+
+---
+
+### v1.6.0 — 2026-06-02 (IA Fiscale FR + Stripe Import + Agents Proactifs)
+
+#### Nouvelles fonctionnalités
+
+**E6.1 — IA Fiscale & URSSAF Auto-entrepreneur**
+| Fichier | Changement |
+|---|---|
+| `app/api/cash/urssaf/route.ts` | Ajout `CA_CEILINGS` (77 700€ services / 188 700€ commerce), `CFP_RATES`, `VFL_RATES`. Calcul mensuel CFP + Versement Libératoire. PATCH `versementLiberatoire`. |
+| `app/(dashboard)/cash/page.tsx` | 2e barre de progression plafond CA micro, toggle Versement Libératoire, détail charges CFP/VFL par mois, alerte objectif mensuel (jour ≥ 20 et CA < 60% objectif). |
+| `prisma/schema.prisma` | `User.versementLiberatoire Boolean @default(false)` |
+
+**E6.2 — Import Factures Stripe Compte Personnel**
+| Fichier | Changement |
+|---|---|
+| `lib/stripe-personal.ts` | ✅ Nouveau — `createPersonalStripe()` + `validateStripeKey()` |
+| `app/api/stripe/connect/route.ts` | ✅ Nouveau — GET (statut) / POST (valider + sauver clé) / DELETE (déconnecter) |
+| `app/api/stripe/sync/route.ts` | ✅ Nouveau — POST import toutes factures `paid` Stripe → transactions INCOME (idempotent via `stripeId`) |
+| `app/(dashboard)/settings/page.tsx` | Section "Intégration Stripe — Import Transactions" avec état connexion + bouton sync |
+| `prisma/schema.prisma` | `User.stripePersonalApiKey String?` + `Transaction.stripeId String?` + `@@unique([userId, stripeId])` |
+
+**E7.1 — Alerte Objectif Mensuel CFO**
+| Fichier | Changement |
+|---|---|
+| `app/(dashboard)/cash/page.tsx` | Block amber `goalAlert` (jour ≥ 20 et `goalProgress` < 60% et objectif > 0). Auto-dismiss quand objectif atteint. |
+
+**E7.2 — Deal Ghost Detector & Digest Hebdomadaire**
+| Fichier | Changement |
+|---|---|
+| `app/(dashboard)/pipeline/page.tsx` | Banner amber prospects inactifs ≥ 14 jours (`ghostDeals` filter) |
+| `lib/resend.ts` | Ajout `sendWeeklyDigestEmail()` + interface `WeeklyDigestData` (CA, pipeline, tâches) |
+| `app/api/cron/weekly-digest/route.ts` | ✅ Nouveau — cron lundi 8h UTC, email digest PRO users |
+
+#### Schéma DB — champs ajoutés
+| Modèle | Champ | Type | Rôle |
+|---|---|---|---|
+| `User` | `versementLiberatoire` | `Boolean @default(false)` | Option Versement Libératoire IR |
+| `User` | `stripePersonalApiKey` | `String?` | Clé API Stripe compte personnel |
+| `Transaction` | `stripeId` | `String?` | ID facture Stripe (déduplication) |
+
+#### Nouveaux endpoints
+| Route | Méthode | Rôle |
+|---|---|---|
+| `/api/stripe/connect` | GET / POST / DELETE | Connexion compte Stripe personnel |
+| `/api/stripe/sync` | POST | Import factures Stripe → transactions Cash |
+| `/api/cron/weekly-digest` | POST | Digest hebdo email PRO users |
+
+---
+
 > Document maintenu par Agent Zero
-> Derniere mise a jour : 2026-05-26
+> Derniere mise a jour : 2026-06-02
 > Fichier : `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md`
-> Version : 1.4.0 | ~2060 lignes
+> Version : 1.6.0 | ~2250 lignes

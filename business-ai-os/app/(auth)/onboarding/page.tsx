@@ -336,6 +336,14 @@ function StepActivation({ formData }: { formData: FormData }) {
         const data = await res.json()
         if (res.status === 409) { router.push('/login?msg=email_exists&email=' + encodeURIComponent(formData.email)); return }
         if (!res.ok) { setError(data.error ?? 'Erreur lors de la creation du compte'); return }
+        // Save pitch/description to enrichment briefContent
+        if (formData.description.trim()) {
+          await fetch('/api/user/enrichment', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ briefContent: formData.description.trim() }),
+          }).catch((err) => console.warn('[onboarding] enrichment briefContent save failed:', err))
+        }
         await fetch('/api/wiki/ingest', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

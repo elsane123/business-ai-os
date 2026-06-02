@@ -11,7 +11,7 @@ const JWT_SECRET = new TextEncoder().encode(
 const PROTECTED_PATHS = [
   '/focus', '/cash', '/pipeline', '/content', '/chat',
   '/tasks', '/settings', '/knowledge-base', '/calendar', '/profile', '/invoices', '/agents',
-  '/admin', '/wiki',
+  '/admin', '/wiki', '/profile',
 ]
 const AUTH_PATHS = ['/login']
 

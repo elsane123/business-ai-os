@@ -4,10 +4,10 @@
  * Schedule: 0 9 * * 1 curl -X POST -H 'x-cron-secret: ...' http://localhost:50082/api/cron/wiki-lint
  */
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import path from 'path'
 
-const PYTHON_API = process.env.PYTHON_API_URL ?? 'http://localhost:8000'
+const PYTHON_API = process.env.PYTHON_AGENT_URL ?? 'http://localhost:8000'
 const CRON_SECRET = process.env.CRON_SECRET
 const WIKI_BASE_PATH = path.join(process.cwd(), 'wiki-data')
 
