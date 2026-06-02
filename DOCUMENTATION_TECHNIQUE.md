@@ -1,6 +1,6 @@
 # Brainlo — Spécifications Techniques & Documentation
 
-> Version : 1.6.0 | Date : 2026-06-02 | Statut : **MVP en production — IA Fiscale FR + Stripe Import + Agents Proactifs + Alertes CFO**
+> Version : 1.7.0 | Date : 2026-06-02 | Statut : **MVP en production — Acquisition Client AI (ICP Builder + Cold Email + LinkedIn CMO) + CROISSANCE**
 
 ---
 
@@ -194,6 +194,7 @@ model User {
   // IA Fiscale & Stripe Import (E6.1 / E6.2)
   versementLiberatoire  Boolean  @default(false) // Versement Libératoire IR (auto-entrepreneur)
   stripePersonalApiKey  String?                  // Clé API Stripe compte personnel (import factures)
+  linkedinAccessToken   String?                  // Token LinkedIn OAuth (configuré par l'utilisateur dans Settings)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -835,6 +836,85 @@ model AssessmentLead {
 
 ---
 
+### 🚀 Acquisition Client AI (Epic 8)
+
+#### `POST /api/pipeline/icp/generate`
+```json
+// Response 200
+{
+  "icp": {
+    "sector": "SaaS B2B",
+    "companySize": "TPE 1-10",
+    "decisionMaker": "CEO / Fondateur",
+    "painPoint": "Manque de visibilité sur le pipeline commercial",
+    "confidence": "high"
+  },
+  "prospectScores": [
+    { "prospectId": "clx...", "score": 82, "reason": "Secteur et taille correspondent parfaitement" }
+  ],
+  "lowConfidence": false
+}
+// ICP aussi sauvegardé dans wiki-data/{userId}/BRAIN.md section ## Profil Client Ideal (ICP)
+```
+
+#### `POST /api/agents/cold-email/generate`
+```json
+// Body
+{
+  "prospectName": "Marie Dupont",
+  "company": "TechCorp",
+  "sector": "SaaS",
+  "tone": "professionnel" // professionnel | casual | direct
+}
+// Response 200
+{
+  "sequence": [
+    { "day": 1, "subject": "Objet email J1", "body": "Corps de l'email..." },
+    { "day": 3, "subject": "Objet email J3", "body": "Corps de l'email..." },
+    { "day": 7, "subject": "Objet email J7", "body": "Corps de l'email..." },
+    { "day": 14, "subject": "Objet email J14", "body": "Corps de l'email..." },
+    { "day": 21, "subject": "Objet email J21", "body": "Corps de l'email..." }
+  ]
+}
+```
+
+#### `POST /api/agents/linkedin-post/generate`
+```json
+// Body: none (utilise le contexte Brain du user)
+// Response 200
+{ "content": "Hook fort...\n\nProblème...\n\nSolution...\n\n#Hashtag1 #Hashtag2" }
+```
+
+#### `POST /api/agents/linkedin-post/publish`
+```json
+// Body
+{ "content": "Texte du post LinkedIn (max 3000 chars)" }
+// Response 200
+{ "postUrl": "https://www.linkedin.com/feed/update/urn:li:ugcPost:..." }
+// Response 401
+{ "error": "token_expired" } // → user doit reconfigurer dans Settings
+```
+
+#### `GET /api/user/linkedin-token`
+```json
+{ "configured": true }
+```
+
+#### `POST /api/user/linkedin-token`
+```json
+// Body
+{ "token": "AQV..." }
+// Response 200
+{ "success": true }
+```
+
+#### `DELETE /api/user/linkedin-token`
+```json
+{ "success": true }
+```
+
+---
+
 ## 7. Agents Python
 
 > Microservice FastAPI tournant sur **port 8000**. Toutes les routes acceptent du JSON et retournent du JSON.
@@ -1162,6 +1242,24 @@ WIKI_BASE_PATH=./wiki-data
 ```
 
 > ⚠️ Ne jamais commiter le fichier `.env`. Utiliser `.env.example` comme référence.
+
+### LinkedIn API (UGC Posts)
+
+| Endpoint | Usage |
+|---|---|
+| `GET https://api.linkedin.com/v2/userinfo` | Récupère le `sub` (person ID) pour construire l'URN |
+| `POST https://api.linkedin.com/v2/ugcPosts` | Publie un post sur le feed LinkedIn |
+
+```typescript
+// Token stocké par user dans DB (user.linkedinAccessToken)
+// Configuré via Settings > Intégrations > Token LinkedIn
+// Scope requis : w_member_social
+// URN format : urn:li:person:{userinfo.sub}
+```
+
+Erreurs gérées :
+- `401` / `403` → `{ error: 'token_expired' }` — l'utilisateur est redirigé vers Settings pour reconfigurer
+- Pas de `process.env.LINKEDIN_ACCESS_TOKEN` — token 100% user-configurable
 
 ---
 
@@ -1950,6 +2048,42 @@ Les jobs cron utilisent `curl` vers les endpoints Next.js protégés par `x-cron
 
 ## 17. Changelog Technique
 
+### v1.7.0 — 2026-06-02 (Epic 8 — Acquisition Client AI + Code Review A–F)
+
+#### Nouvelles fonctionnalités
+
+| Feature | Fichier | Description |
+|---|---|---|
+| ICP Builder | `app/api/pipeline/icp/generate/route.ts` | Agent CRO analyse deals WON + Brain → génère ICP + scores de closing par prospect |
+| Cold Email Sequence | `app/api/agents/cold-email/generate/route.ts` | Séquence 5 emails contextualisée (J1/J3/J7/J14/J21) avec tonalité configurable |
+| LinkedIn CMO Post | `app/api/agents/linkedin-post/generate` + `/publish` | Génère + publie post LinkedIn via UGC Posts API |
+| LinkedIn Token Settings | `app/api/user/linkedin-token/route.ts` | Token LinkedIn user-configurable via Settings > Intégrations (GET/POST/DELETE) |
+| Sidebar CROISSANCE | `components/layout/Sidebar.tsx` | Nouvelle section rose avec Contenu LinkedIn, ICP Builder, Séquence Email, LinkedIn CMO |
+
+#### Schéma Prisma
+
+| Modèle | Champ | Type | Description |
+|---|---|---|---|
+| `User` | `linkedinAccessToken` | `String?` | Token LinkedIn OAuth configuré par l'utilisateur |
+
+#### Patches Code Review (13 corrections)
+
+| # | Fichier | Fix |
+|---|---|---|
+| P1 | `onboarding/page.tsx` | Enrichment PATCH failures loggées (silent → console.warn) |
+| P2 | `invoices/page.tsx` | `r.ok` check avant `r.json()` dans fetch profile |
+| P3 | `pipeline/page.tsx` | `daysSince(null) → Infinity` — prospects jamais contactés inclus |
+| P4 | `settings/page.tsx` | `useSearchParams` extrait dans `<StripeReturnHandler>` + `<Suspense>` |
+| P5 | `cash/page.tsx` | `runway?.` optional chaining + `Math.max(0,...)` montant négatif |
+| P6 | `knowledge-base/page.tsx` | Return `null` au lieu de texte "Redirection..." visible |
+| P7 | `settings/page.tsx` | `normalizeSector()` rétrocompat anciennes valeurs string SECTORS |
+| P8 | `agents/[id]/chat/route.ts` | `agentContext ?? ''` empêche `"null"` dans prompt LLM |
+| P9 | `stripe/webhook/route.ts` | `upsert` avec `stripeId` — transactions idempotentes |
+| P10 | `Sidebar.tsx` | Bouton logout restauré en mode sidebar réduite |
+| P11+P12 | E2E specs (×5) | Suppression `})` orphelins causant TS1128 |
+
+---
+
 ### v1.2.0 — 2026-05-17 (Post-QA Sprint + Quick Wins)
 
 #### Nouvelles fonctionnalités
@@ -2248,4 +2382,4 @@ Les jobs cron utilisent `curl` vers les endpoints Next.js protégés par `x-cron
 > Document maintenu par Agent Zero
 > Derniere mise a jour : 2026-06-02
 > Fichier : `/a0/usr/projects/business_ai_os/DOCUMENTATION_TECHNIQUE.md`
-> Version : 1.6.0 | ~2250 lignes
+> Version : 1.7.0 | ~2385 lignes
