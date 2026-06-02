@@ -255,6 +255,30 @@ export default function PipelinePage() {
   const [copied, setCopied] = useState(false)
   const [upgradeModalReason, setUpgradeModalReason] = useState<'relance' | 'prospect' | null>(null)
 
+  // ICP Builder (Story 8.1)
+  const [icpLoading, setIcpLoading] = useState(false)
+  const [icpScores, setIcpScores] = useState<Record<string, { score: number; reason: string }> | null>(null)
+  const [icpLowConfidence, setIcpLowConfidence] = useState(false)
+
+  const handleGenerateICP = async () => {
+    setIcpLoading(true)
+    try {
+      const res = await fetch('/api/pipeline/icp/generate', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Erreur ICP')
+      const scoreMap: Record<string, { score: number; reason: string }> = {}
+      for (const s of (data.prospectScores ?? [])) {
+        scoreMap[s.prospectId] = { score: s.score, reason: s.reason }
+      }
+      setIcpScores(scoreMap)
+      setIcpLowConfidence(data.lowConfidence ?? false)
+    } catch (e) {
+      console.error('[ICP Builder]', e)
+    } finally {
+      setIcpLoading(false)
+    }
+  }
+
   // Cal.com integration
   const [calcomBookingUrl, setCalcomBookingUrl] = useState<string | null>(null)
   const [prospectEvents, setProspectEvents] = useState<Array<{
@@ -642,6 +666,13 @@ export default function PipelinePage() {
           >
             ✍️ Brief
           </button>
+          <button
+            onClick={handleGenerateICP}
+            disabled={icpLoading}
+            className="flex items-center gap-2 bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 text-pink-300 font-medium rounded-lg px-4 py-2.5 text-sm transition-colors whitespace-nowrap disabled:opacity-50"
+          >
+            {icpLoading ? '⏳ Analyse...' : '🎯 Générer mon ICP'}
+          </button>
         </div>
       </div>
 
@@ -749,7 +780,16 @@ export default function PipelinePage() {
                      return (
                       <div key={prospect.id} className="bg-[#1e1e30] border border-[#2a2a42] hover:border-[#4f46e5]/40 rounded-lg p-3 transition-all group">
                          <div className="mb-2">
-                           <p className="text-sm font-semibold text-white truncate">{prospect.name}</p>
+                           <div className="flex items-center justify-between gap-1">
+                             <p className="text-sm font-semibold text-white truncate">{prospect.name}</p>
+                             {icpScores?.[prospect.id] && (() => {
+                               const s = icpScores[prospect.id]
+                               const color = s.score >= 70 ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                 : s.score >= 40 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                                 : 'bg-red-500/20 text-red-400 border-red-500/30'
+                               return <span title={s.reason} className={`flex-shrink-0 text-[10px] font-bold border rounded px-1 py-0.5 ${color}`}>{s.score}%</span>
+                             })()}
+                           </div>
                            {prospect.position && <p className="text-[10px] text-indigo-400 truncate">{prospect.position}</p>}
                            {prospect.company && <p className="text-xs text-[#6b7280] truncate">{prospect.company}</p>}
                            {(prospect.enrichCity || prospect.employeeRange || prospect.linkedinUrl) && (

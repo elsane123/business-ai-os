@@ -1,0 +1,453 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: "Fonctionnalités Brainlo — L'IA qui pilote votre entreprise",
+  description: 'Daily Focus IA, trésorerie temps réel, CRM pipeline, agents IA spécialisés, wiki business. Toutes les fonctionnalités Brainlo pour solopreneurs et PME.',
+  alternates: { canonical: 'https://brainlo.ai/fonctionnalites' },
+  openGraph: {
+    title: "Fonctionnalités Brainlo — L'IA qui pilote votre entreprise",
+    description: 'Découvrez toutes les fonctionnalités Brainlo : Daily Focus IA, trésorerie, CRM, 7 agents spécialisés, wiki business.',
+    url: 'https://brainlo.ai/fonctionnalites',
+    type: 'website',
+  },
+  robots: { index: true, follow: true },
+}
+
+export default function FonctionnalitesPage() {
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: `
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#16161f;--card:#1a1a28;--border:#2a2a40;--indigo:#6366f1;--violet:#8b5cf6;--il:#818cf8;--vl:#a78bfa;--text:#e2e8f0;--muted:#94a3b8;--green:#10b981;--amber:#f59e0b;--red:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,20,0.85);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(99,102,241,0.14);height:64px}
+.nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,var(--il),var(--vl));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.88rem;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.btn-nav{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;padding:.5rem 1.25rem;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none}
+@media(max-width:640px){.hide-sm{display:none}}
+.hero{text-align:center;padding:8rem 2rem 5rem;position:relative;overflow:hidden}
+.glow{position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(99,102,241,.2) 0%,transparent 68%);pointer-events:none}
+.badge{display:inline-block;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.4);color:var(--il);padding:.3rem 1rem;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.6rem,5.5vw,4.2rem);font-weight:800;letter-spacing:-.035em;line-height:1.08;margin-bottom:1.5rem}
+.grad{background:linear-gradient(135deg,var(--il),var(--vl));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero>p{font-size:1.15rem;color:var(--muted);max-width:580px;margin:0 auto 2.5rem}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
+.btn-primary{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;padding:.85rem 2rem;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 24px rgba(99,102,241,.35);transition:transform .2s,box-shadow .2s;display:inline-block}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(99,102,241,.5)}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);padding:.85rem 2rem;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:border-color .2s}
+.btn-secondary:hover{border-color:var(--indigo);background:rgba(99,102,241,.07)}
+.focus-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;max-width:390px;margin:0 auto;text-align:left;box-shadow:0 24px 64px rgba(0,0,0,.55);position:relative;z-index:1}
+.fc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;font-size:.8rem;color:var(--muted)}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.fc-title{font-weight:700;font-size:.92rem;margin-bottom:.9rem}
+.fc-stat{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.22);border-radius:8px;padding:.6rem .9rem;margin-bottom:.85rem;font-size:.87rem}
+.fc-stat strong{color:var(--il)}
+.fc-item{display:flex;gap:.7rem;align-items:flex-start;padding:.65rem .75rem;border-radius:8px;background:var(--bg3);border:1px solid var(--border);font-size:.83rem;margin-bottom:.45rem}
+.dot{width:9px;height:9px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.d-r{background:var(--red)}.d-a{background:var(--amber)}.d-g{background:var(--green)}
+section{padding:6rem 2rem}
+.s-alt{background:var(--bg2)}
+.container{max-width:1100px;margin:0 auto}
+.stag{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--il);margin-bottom:.65rem}
+.stitle{font-size:clamp(1.75rem,3vw,2.6rem);font-weight:800;letter-spacing:-.025em;line-height:1.12;margin-bottom:.9rem}
+.ssub{color:var(--muted);font-size:.98rem;max-width:540px;margin-bottom:3.5rem}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.4rem}
+.fcard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.85rem;transition:border-color .25s,transform .25s}
+.fcard:hover{border-color:var(--indigo);transform:translateY(-3px)}
+.ficon{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;margin-bottom:1.15rem}
+.bi{background:rgba(99,102,241,.14)}.bv{background:rgba(139,92,246,.14)}.be{background:rgba(16,185,129,.14)}.ba{background:rgba(245,158,11,.14)}.br{background:rgba(244,63,94,.14)}.bs{background:rgba(14,165,233,.14)}
+.fcard h3{font-size:1rem;font-weight:700;margin-bottom:.45rem}
+.fcard p{color:var(--muted);font-size:.86rem;line-height:1.65}
+.flist{list-style:none;margin-top:1rem;display:flex;flex-direction:column;gap:.38rem}
+.flist li{font-size:.82rem;color:var(--muted);display:flex;align-items:flex-start;gap:.45rem}
+.flist li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+@media(max-width:780px){.g2,.agents-grid,.flows{grid-template-columns:1fr}}
+.code-block{background:var(--bg3);border:1px solid var(--border);border-radius:13px;padding:1.4rem;font-family:monospace;font-size:.78rem;line-height:1.85;overflow-x:auto}
+.cp{color:var(--il)}.ck{color:var(--vl)}.cv{color:var(--green)}.cm{color:var(--muted)}.cw{color:var(--amber)}
+.pill-list{display:flex;flex-direction:column;gap:.9rem;margin-top:1.75rem}
+.pill{display:flex;gap:1rem;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.15rem}
+.picon{font-size:1.2rem;flex-shrink:0}
+.pill h4{font-size:.9rem;font-weight:700;margin-bottom:.18rem}
+.pill p{font-size:.81rem;color:var(--muted)}
+.agents-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-bottom:2rem}
+.acard{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:1.5rem;text-align:center;transition:border-color .2s}
+.acard:hover{border-color:var(--violet)}
+.aicon{font-size:2rem;margin-bottom:.65rem}
+.acard h3{font-size:.92rem;font-weight:700;margin-bottom:.35rem}
+.acard p{font-size:.8rem;color:var(--muted)}
+.flows{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.flow-item{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:1rem;font-size:.82rem;color:var(--muted)}
+.flow-item strong{color:var(--il);display:block;margin-bottom:.25rem;font-size:.79rem;text-transform:uppercase;letter-spacing:.05em}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:1.2rem}
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.75rem;display:flex;flex-direction:column;gap:.85rem;transition:transform .25s,border-color .25s;position:relative}
+.pcard:hover{transform:translateY(-3px);border-color:var(--indigo)}
+.pcard.featured{border-color:var(--indigo);background:linear-gradient(160deg,rgba(99,102,241,.1),rgba(139,92,246,.07))}
+.pop-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;font-size:.67rem;font-weight:700;padding:.2rem .85rem;border-radius:999px;white-space:nowrap}
+.plan-name{font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.plan-price{font-size:2.1rem;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.plan-price .mo{font-size:.8rem;font-weight:500;color:var(--muted)}
+.plan-desc{font-size:.79rem;color:var(--muted)}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:.4rem;flex:1}
+.plan-feats li{font-size:.79rem;color:var(--muted);display:flex;align-items:flex-start;gap:.4rem}
+.plan-feats li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.plan-feats li.no{opacity:.4}
+.plan-feats li.no::before{content:'✗';color:var(--border)}
+.btn-plan{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;padding:.65rem 1rem;border-radius:9px;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:opacity .2s;display:block;margin-top:auto}
+.btn-plan:hover{opacity:.85}
+.btn-plan-out{background:transparent;color:var(--text);border:1px solid var(--border);padding:.65rem 1rem;border-radius:9px;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;display:block;margin-top:auto;transition:border-color .2s}
+.btn-plan-out:hover{border-color:var(--indigo)}
+    .cta-section{text-align:center;padding:7rem 2rem;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.08));border-top:1px solid var(--border)}
+    footer{background:var(--bg3);border-top:1px solid var(--border);padding:2.5rem;text-align:center;font-size:.82rem;color:var(--muted)}
+    footer a{color:var(--muted);text-decoration:none;margin:0 .75rem}
+    footer a:hover{color:var(--il)}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-bottom:4rem}
+    @media(max-width:640px){.stats-row{grid-template-columns:1fr}}
+    .stat-box{text-align:center}
+    .stat-num{font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,var(--il),var(--vl));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .stat-lbl{font-size:.85rem;color:var(--muted);margin-top:.25rem}
+  ` }} />
+      <div dangerouslySetInnerHTML={{ __html: `<nav aria-label="Navigation principale">
+  <div class="nav-inner">
+    <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;border-radius:11px;box-shadow:0 0 14px rgba(99,102,241,0.55);">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4f46e5"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+          <linearGradient id="gl" x1="8" y1="8" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e0e7ff"/><stop offset="100%" stop-color="#c4b5fd"/></linearGradient>
+        </defs>
+        <rect width="40" height="40" rx="11" fill="url(#bg)"/>
+        <rect x="10" y="10" width="4" height="20" rx="2" fill="url(#gl)"/>
+        <path d="M14 10 Q24 10 24 15.5 Q24 21 14 21" stroke="url(#gl)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <path d="M14 21 Q26 21 26 26.5 Q26 32 14 32" stroke="url(#gl)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <circle cx="28" cy="11" r="2.5" fill="#a5b4fc" opacity="0.85"/>
+        <circle cx="31" cy="19" r="1.8" fill="#c4b5fd" opacity="0.7"/>
+        <circle cx="28" cy="31" r="2" fill="#a5b4fc" opacity="0.6"/>
+        <line x1="24" y1="13" x2="26.5" y2="11" stroke="#818cf8" stroke-width="1" opacity="0.6"/>
+        <line x1="25" y1="19" x2="29.2" y2="19" stroke="#818cf8" stroke-width="1" opacity="0.5"/>
+        <line x1="24" y1="29" x2="26.5" y2="31" stroke="#818cf8" stroke-width="1" opacity="0.5"/>
+      </svg>
+      <span style="font-weight:700;font-size:17px;color:#fff;letter-spacing:-0.025em;line-height:1;">Brainlo</span>
+    </a>
+    <div class="nav-links" style="gap:20px;">
+      <a href="/login" style="color:#94a3b8;font-size:14px;font-weight:500;">Se connecter</a>
+      <a href="/assessment" style="color:#94a3b8;font-size:14px;font-weight:500;">Diagnostic IA</a>
+      <a href="/fonctionnalites.html" style="color:#818cf8;font-size:14px;font-weight:600;border:1px solid rgba(129,140,248,0.35);padding:6px 14px;border-radius:8px;">🚀 Fonctionnalités</a>
+      <a href="/onboarding" class="btn-nav" style="padding:9px 20px;border-radius:10px;font-size:14px;box-shadow:0 0 16px rgba(99,102,241,0.4);">Commencer</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="glow"></div>
+  <div class="badge">&#x2728; Nouveau &mdash; Bêta publique disponible</div>
+  <h1>L'IA qui <span class="grad">pilote votre entreprise</span><br>pendant que vous la construisez</h1>
+  <p>Un système d'exploitation IA pour solopreneurs et PME. Chaque fonction métier&nbsp;&mdash;&nbsp;finance, ventes, marketing&nbsp;&mdash;&nbsp;gérée par un agent dédié, interconnecté en temps réel.</p>
+  <div class="hero-cta">
+    <a href="#pricing" class="btn-primary">Démarrer gratuitement</a>
+    <a href="#features" class="btn-secondary">Voir les fonctionnalités</a>
+  </div>
+  <div class="focus-card">
+    <div class="fc-header">
+      <span>&#x1F4CD; Focus du jour &mdash; Jeudi 15 mai</span>
+      <span class="pulse-dot"></span>
+    </div>
+    <div class="fc-stat"><strong>&#x1F4B0; Cash&nbsp;: 4 820&nbsp;&euro;</strong> &nbsp;|&nbsp; Objectif mensuel&nbsp;: 78%</div>
+    <div class="fc-title">3 actions prioritaires aujourd'hui</div>
+    <div class="fc-item"><span class="dot d-r"></span><span>Relancer Sophie Moreau &mdash; devis 1 200&euro;, 12 jours sans réponse</span></div>
+    <div class="fc-item"><span class="dot d-a"></span><span>Facturer TechStart SAS &mdash; mission livrée lundi dernier</span></div>
+    <div class="fc-item"><span class="dot d-g"></span><span>Publier post LinkedIn &mdash; rédigé par l'IA, prêt à valider</span></div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num">5</div><div class="stat-lbl">Agents IA spécialisés</div></div>
+      <div class="stat-box"><div class="stat-num">3 min</div><div class="stat-lbl">Onboarding complet</div></div>
+      <div class="stat-box"><div class="stat-num">100%</div><div class="stat-lbl">Interconnectés nativement</div></div>
+    </div>
+    <div class="stag">Fonctionnalités</div>
+    <div class="stitle">Tout ce dont votre entreprise a besoin,<br>piloté par l'IA</div>
+    <p class="ssub">Chaque agent connait votre contexte, parle aux autres agents, et agit sur vos vraies données.</p>
+    <div class="grid3">
+      <div class="fcard">
+        <div class="ficon bi">&#x1F3AF;</div>
+        <h3>Daily Focus</h3>
+        <p>Chaque matin, 3 actions prioritaires calculées automatiquement selon votre cash, vos clients et vos objectifs.</p>
+        <ul class="flist">
+          <li>Priorisé par impact business réel</li>
+          <li>Chaque action cliquable vers la bonne vue</li>
+          <li>Notification email + push &agrave; 8h</li>
+          <li>Adapté &agrave; votre situation du jour</li>
+        </ul>
+      </div>
+      <div class="fcard">
+        <div class="ficon be">&#x1F4B0;</div>
+        <h3>Agent CFO &mdash; Cash &amp; Trésorerie</h3>
+        <p>Suivez votre cash en temps réel, anticipez les crises et pilotez votre runway comme un CFO expérimenté.</p>
+        <ul class="flist">
+          <li>Runway calculator 3 scénarios</li>
+          <li>Alertes impayés &gt; 14 jours</li>
+          <li>Objectif CA avec barre de progression</li>
+          <li>Prévision trésorerie 30/60/90 jours</li>
+        </ul>
+      </div>
+      <div class="fcard">
+        <div class="ficon bv">&#x1F91D;</div>
+        <h3>Agent CRO &mdash; Pipeline &amp; Ventes</h3>
+        <p>Un pipeline intelligent qui détecte les stagnations, suggère les relances et prédit votre CA du mois prochain.</p>
+        <ul class="flist">
+          <li>Lead scoring automatique</li>
+          <li>Relances IA contextualisées en 1 clic</li>
+          <li>Forecast CA 3 scénarios</li>
+          <li>Coach IA deal par deal</li>
+        </ul>
+      </div>
+      <div class="fcard">
+        <div class="ficon ba">&#x1F4E3;</div>
+        <h3>Agent CMO &mdash; Visibilité &amp; Marketing</h3>
+        <p>Générez du contenu LinkedIn, des newsletters et des articles SEO alignés sur votre brand voice, automatiquement.</p>
+        <ul class="flist">
+          <li>Posts LinkedIn auto-générés et planifiés</li>
+          <li>Adaptation article &rarr; LinkedIn &rarr; email</li>
+          <li>Calendrier éditorial 4 semaines</li>
+          <li>Publication automatique</li>
+        </ul>
+      </div>
+      <div class="fcard">
+        <div class="ficon bs">&#x1F9E0;</div>
+        <h3>Business Brain &mdash; Chat IA</h3>
+        <p>Posez des questions en langage naturel sur vos vraies données. L'IA lit votre contexte avant de répondre.</p>
+        <ul class="flist">
+          <li>"Puis-je me payer 500€ ce mois ?"</li>
+          <li>"Qui dois-je relancer en priorité ?"</li>
+          <li>Contexte enrichi par votre LLM Wiki</li>
+          <li>Recommandations actionnables</li>
+        </ul>
+      </div>
+      <div class="fcard">
+        <div class="ficon bi">&#x1F9FE;</div>
+        <h3>Facturation &eacute;lectronique Factur-X</h3>
+        <p>G&eacute;n&eacute;rez des factures au format Factur-X (PDF + XML CII EN&nbsp;16931 embarqu&eacute;), le standard europ&eacute;en de facturation &eacute;lectronique obligatoire en France d&egrave;s 2026.</p>
+        <ul class="flist">
+          <li>PDF hybride lisible + XML machine-readable</li>
+          <li>Profil BASIC conforme EN&nbsp;16931 / Chorus Pro</li>
+          <li>T&eacute;l&eacute;chargement en 1 clic depuis chaque facture</li>
+          <li>Enrichissement SIRET automatique (API gouvernementale)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="wiki" class="s-alt">
+  <div class="container">
+    <div class="g2">
+      <div>
+        <div class="stag">LLM Wiki &mdash; Pattern Karpathy</div>
+        <div class="stitle">Une mémoire d'entreprise<br>qui se bonifie dans le temps</div>
+        <p style="color:var(--muted);font-size:.98rem;margin-bottom:1.5rem">Au lieu de re-dériver la connaissance à chaque question, vos agents construisent et maintiennent une wiki persistante sur votre entreprise. Chaque action enrichit la mémoire.</p>
+        <div class="pill-list">
+          <div class="pill">
+            <span class="picon">&#x1F4E5;</span>
+            <div><h4>Ingest &mdash; à chaque action</h4><p>Nouveau prospect, transaction, deal gagné ou perdu : l'agent compile automatiquement la page wiki concernée.</p></div>
+          </div>
+          <div class="pill">
+            <span class="picon">&#x1F50D;</span>
+            <div><h4>Query &mdash; avant chaque réponse</h4><p>BM25 search sur vos pages markdown. L'IA lit votre contexte réel avant de répondre, jamais à partir de rien.</p></div>
+          </div>
+          <div class="pill">
+            <span class="picon">&#x1F9F9;</span>
+            <div><h4>Lint &mdash; hebdomadaire</h4><p>Vérification de cohérence, détection des infos périmées, mise à jour des patterns identifiés.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="code-block">
+<span class="cm"># wiki-data/{userId}/</span>
+<span class="cp">├── BRAIN.md</span>          <span class="cm"># Schéma entreprise + ICP</span>
+<span class="cp">├── index.md</span>           <span class="cm"># Index toutes les pages</span>
+<span class="cp">├── log.md</span>             <span class="cm"># Journal append-only</span>
+<span class="cp">├── prospects/</span>
+<span class="ck">│   └── arnaud-martin.md</span>
+<span class="cm">#   Secteur: SaaS B2B</span>
+<span class="cm">#   Budget: ~5k€ | Décideur: oui</span>
+<span class="cv">#   → Signal: levée de fonds détectée</span>
+<span class="cw">#   → Action: relance ROI recommandée</span>
+<span class="cp">├── business/</span>
+<span class="ck">│   ├── icp.md</span>         <span class="cm"># Profil client idéal</span>
+<span class="ck">│   ├── patterns.md</span>    <span class="cm"># Saisonnalité, cycles</span>
+<span class="ck">│   └── messages.md</span>    <span class="cm"># Ce qui convertit</span>
+<span class="cp">├── finance/</span>
+<span class="ck">│   └── patterns.md</span>    <span class="cm"># DSO, fiabilité paiements</span>
+<span class="cp">└── content/</span>
+<span class="ck">    ├── what-works.md</span>  <span class="cm"># Formats à fort engagement</span>
+<span class="ck">    └── ideas-bank.md</span>  <span class="cm"># Banque d'idées contenu</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="interconnect">
+  <div class="container">
+    <div class="stag">Architecture</div>
+    <div class="stitle">Des agents qui se parlent&nbsp;&mdash;<br>l'effet système d'exploitation</div>
+    <p class="ssub">Chaque agent partage son contexte avec les autres. Quand votre CRO prédit une baisse de CA, votre CFO recalcule le runway en temps réel.</p>
+    <div class="agents-grid">
+      <div class="acard">
+        <div class="aicon">&#x1F4B0;</div>
+        <h3>Agent CFO</h3>
+        <p>Cash, trésorerie, runway, P&amp;L et prévisions financières</p>
+      </div>
+      <div class="acard">
+        <div class="aicon">&#x1F91D;</div>
+        <h3>Agent CRO</h3>
+        <p>Pipeline, deals, relances intelligentes et forecast ventes</p>
+      </div>
+      <div class="acard">
+        <div class="aicon">&#x1F4E3;</div>
+        <h3>Agent CMO</h3>
+        <p>Contenu LinkedIn, SEO, newsletter et budget marketing</p>
+      </div>
+    </div>
+    <div class="flows">
+      <div class="flow-item"><strong>CRO &rarr; CFO</strong>Forecast M+1 &rarr; CFO révise le prévisionnel. Si écart &gt; 15% &rarr; alerte trésorerie automatique.</div>
+      <div class="flow-item"><strong>CFO &rarr; CMO</strong>Budget marketing disponible injecté dans le plan CMO. Allocation optimisée par canal &amp; ROI.</div>
+      <div class="flow-item"><strong>CMO &rarr; CRO</strong>Leads générés + score qualité transmis au pipeline. Personas qui convertissent remontés au CRO.</div>
+      <div class="flow-item"><strong>CRO &rarr; CMO</strong>Profils clients gagnants &rarr; CMO affine son ICP et son brand voice automatiquement.</div>
+      <div class="flow-item"><strong>CFO &rarr; CRO</strong>Capacité d'investissement commercial &rarr; CRO ajuste ses objectifs de prospection.</div>
+      <div class="flow-item"><strong>Tous &rarr; LLM Wiki</strong>Chaque action enrichit la mémoire partagée. Chaque réponse IA y puise le contexte réel.</div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="s-alt">
+  <div class="container">
+    <div class="stag">Tarifs</div>
+    <div class="stitle">Commencez gratuitement,<br>scalez quand vous grandissez</div>
+    <p class="ssub">Pas de carte bancaire requise pour démarrer. Changez de plan en un clic.</p>
+    <div class="pricing-grid">
+
+      <div class="pcard">
+        <div class="plan-name">Solo Free</div>
+        <div class="plan-price">0&euro; <span class="mo">/mois</span></div>
+        <div class="plan-desc">Pour découvrir l'outil sans engagement</div>
+        <ul class="plan-feats">
+          <li>Dashboard basique</li>
+          <li>3 prospects max</li>
+          <li>4 posts LinkedIn/mois</li>
+          <li>Rapport mensuel simple</li>
+          <li class="no">Daily Focus</li>
+          <li class="no">Chat Business Brain</li>
+          <li class="no">Relances IA</li>
+        </ul>
+        <a href="#" class="btn-plan-out">Commencer gratuitement</a>
+      </div>
+
+      <div class="pcard featured">
+        <span class="pop-tag">&#x2B50; Le plus populaire</span>
+        <div class="plan-name">Solo Pro</div>
+        <div class="plan-price">29&euro; <span class="mo">/mois</span></div>
+        <div class="plan-desc">Le coeur du produit pour solopreneurs actifs</div>
+        <ul class="plan-feats">
+          <li>Daily Focus IA (8h chaque matin)</li>
+          <li>Chat Business Brain complet</li>
+          <li>Pipeline illimité + relances IA</li>
+          <li>LinkedIn illimité + planification</li>
+          <li>Rapport mensuel PDF</li>
+          <li>Runway calculator 3 scénarios</li>
+          <li>LLM Wiki personnel</li>
+        </ul>
+        <a href="#" class="btn-plan">Essayer 14 jours gratuits</a>
+      </div>
+
+      <div class="pcard">
+        <div class="plan-name">Starter PME</div>
+        <div class="plan-price">149&euro; <span class="mo">/mois</span></div>
+        <div class="plan-desc">Pour les premières embauches (1&ndash;4 pers.)</div>
+        <ul class="plan-feats">
+          <li>Agent CFO light (connexion bancaire)</li>
+          <li>Agent CRO light (200 deals)</li>
+          <li>Pr&eacute;vision tr&eacute;sorerie 30/60j</li>
+          <li>3 utilisateurs</li>
+          <li>Export comptable PDF + CSV</li>
+          <li>Interconnexion CRO &rarr; CFO</li>
+          <li class="no">Agent CMO</li>
+        </ul>
+        <a href="#" class="btn-plan-out">Contacter l'&eacute;quipe</a>
+      </div>
+
+      <div class="pcard">
+        <div class="plan-name">PME Growth</div>
+        <div class="plan-price">349&euro; <span class="mo">/mois</span></div>
+        <div class="plan-desc">PME 5&ndash;20 personnes, CA 20k&ndash;200k&euro;/mois</div>
+        <ul class="plan-feats">
+          <li>Agent CFO complet (5 comptes)</li>
+          <li>Agent CRO complet + coach IA</li>
+          <li>Agent CMO complet (SEO + social)</li>
+          <li>Triple interconnexion agents</li>
+          <li>10 utilisateurs</li>
+          <li>Business Review mensuel OS</li>
+          <li>Benchmark sectoriel</li>
+        </ul>
+        <a href="#" class="btn-plan-out">Contacter l'&eacute;quipe</a>
+      </div>
+
+      <div class="pcard">
+        <div class="plan-name">PME Scale</div>
+        <div class="plan-price">499&euro; <span class="mo">/mois</span></div>
+        <div class="plan-desc">PME 20&ndash;50 personnes, full OS</div>
+        <ul class="plan-feats">
+          <li>Tous les agents actifs</li>
+          <li>Agent CHRO (RH &amp; masse salariale)</li>
+          <li>Multi-comptes illimit&eacute;s</li>
+          <li>Utilisateurs illimit&eacute;s</li>
+          <li>SLA prioritaire</li>
+          <li>Onboarding d&eacute;di&eacute;</li>
+          <li>API acc&egrave;s custom</li>
+        </ul>
+        <a href="#" class="btn-plan-out">Contacter l'&eacute;quipe</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <div class="stag" style="justify-content:center;display:flex">Rejoindre la b&ecirc;ta</div>
+    <div class="stitle">Votre entreprise m&eacute;rite<br>un syst&egrave;me d'exploitation</div>
+    <p style="color:var(--muted);font-size:1.05rem;max-width:520px;margin:0 auto 2.5rem">D&eacute;marrez gratuitement en 3 minutes. Aucune carte bancaire requise. Onboarding guid&eacute; pas &agrave; pas.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem">
+      <a href="#pricing" class="btn-primary" style="font-size:1.05rem;padding:1rem 2.5rem">Commencer gratuitement</a>
+      <a href="#features" class="btn-secondary" style="font-size:1.05rem;padding:1rem 2.5rem">Voir une d&eacute;mo</a>
+    </div>
+    <div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;font-size:.85rem;color:var(--muted)">
+      <span>&#x2713; Gratuit sans limite de dur&eacute;e</span>
+      <span>&#x2713; Onboarding en 3 minutes</span>
+      <span>&#x2713; Pas de carte bancaire</span>
+      <span>&#x2713; Donn&eacute;es h&eacute;berg&eacute;es en Europe</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div style="margin-bottom:1rem">
+    <span style="font-weight:700;font-size:1rem;background:linear-gradient(135deg,var(--il),var(--vl));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Brainlo</span>
+  </div>
+  <div style="margin-bottom:1rem">
+    <a href="#features">Fonctionnalit&eacute;s</a>
+    <a href="#wiki">LLM Wiki</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#">Mentions l&eacute;gales</a>
+    <a href="#">Confidentialit&eacute;</a>
+    <a href="#">Contact</a>
+  </div>
+  <p>&copy; 2026 Brainlo &mdash; Con&ccedil;u pour les entrepreneurs qui construisent.</p>
+</footer>` }} />
+    </>
+  )
+}

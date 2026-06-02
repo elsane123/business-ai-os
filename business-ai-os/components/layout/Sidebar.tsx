@@ -20,9 +20,10 @@ interface NavSection {
 }
 
 const sectionColors: Record<string, { text: string; bg: string; border: string; activeBg: string }> = {
-  brain:     { text: '#a78bfa', bg: 'rgba(167,139,250,0.12)', border: '#a78bfa', activeBg: 'rgba(167,139,250,0.18)' },
-  focus:     { text: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  border: '#fbbf24', activeBg: 'rgba(251,191,36,0.18)'  },
-  carburant: { text: '#34d399', bg: 'rgba(52,211,153,0.12)',  border: '#34d399', activeBg: 'rgba(52,211,153,0.18)'  },
+  brain:      { text: '#a78bfa', bg: 'rgba(167,139,250,0.12)', border: '#a78bfa', activeBg: 'rgba(167,139,250,0.18)' },
+  focus:      { text: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  border: '#fbbf24', activeBg: 'rgba(251,191,36,0.18)'  },
+  carburant:  { text: '#34d399', bg: 'rgba(52,211,153,0.12)',  border: '#34d399', activeBg: 'rgba(52,211,153,0.18)'  },
+  croissance: { text: '#f472b6', bg: 'rgba(244,114,182,0.12)', border: '#f472b6', activeBg: 'rgba(244,114,182,0.18)' },
 }
 
 const navSections: NavSection[] = [
@@ -54,7 +55,17 @@ const navSections: NavSection[] = [
       { icon: '📄', label: 'Devis & Factures', href: '/invoices', isPro: false },
       { icon: '💰', label: 'Cash',              href: '/cash',     isPro: false },
       { icon: '📊', label: 'Rapports',          href: '/reports',  isPro: false },
-      { icon: '📣', label: 'Contenu LinkedIn',  href: '/content',  isPro: true  },
+    ],
+  },
+  {
+    id: 'croissance',
+    icon: '🚀',
+    label: 'Croissance',
+    items: [
+      { icon: '📣', label: 'Contenu LinkedIn',  href: '/content',          isPro: true  },
+      { icon: '🎯', label: 'ICP Builder',        href: '/pipeline',         isPro: true  },
+      { icon: '📧', label: 'Séquence Email',     href: '/agents/agent-cro', isPro: true  },
+      { icon: '💼', label: 'LinkedIn CMO',       href: '/agents/agent-cmo', isPro: true  },
     ],
   },
 ]
@@ -73,7 +84,7 @@ export default function Sidebar({
   const [collapsed, setCollapsed] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   // All sections open by default
-  const [openSections, setOpenSections] = useState<string[]>(['brain', 'focus', 'carburant'])
+  const [openSections, setOpenSections] = useState<string[]>(['brain', 'focus', 'carburant', 'croissance'])
   // E1.3 — Brain active state
   const [brainScore, setBrainScore] = useState(0)
   const pathname = usePathname()
