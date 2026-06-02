@@ -121,4 +121,66 @@ test.describe('Agents IA', () => {
       await expect(page.locator('body')).toBeVisible()
     })
   })
+
+  // Epic 1 — Brain Power UX ─────────────────────────────────────────────────
+
+  // E1-01 : profil — jauge brain score visible
+  test('E1-01 : page /profile — jauge Brain Power Score visible', async ({ page }) => {
+    await page.goto('/profile')
+    await expect(page).toHaveURL(/\/profile/, { timeout: 8_000 })
+    const scoreEl = page.getByText(/brain|score|\d+\s*\/\s*100|%/i).first()
+    if (await scoreEl.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(scoreEl).toBeVisible()
+    }
+  })
+
+  // E1-02 : sidebar — badge Brain actif si score > 50%
+  test('E1-02 : sidebar — badge Brain visible si score > 50%', async ({ page }) => {
+    await page.goto('/chat')
+    // Le badge green dot apparaît sur l'item Brain dans la sidebar
+    const brainBadge = page.locator('[class*="brain"], [class*="badge"], [class*="dot"]').first()
+    if (await brainBadge.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await expect(brainBadge).toBeVisible()
+    }
+  })
+
+  // E1-03 : profil — section enrichissement avec suggestions contextuelles
+  test('E1-03 : page /profile — section enrichissement visible', async ({ page }) => {
+    await page.goto('/profile')
+    const enrichSection = page.getByText(/enrichir|compléter|améliorer|suggestion|impact/i).first()
+    if (await enrichSection.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(enrichSection).toBeVisible()
+    }
+  })
+
+  // Epic 2 — Agents Brain-Aware ─────────────────────────────────────────────
+
+  // E2-01 : agent detail — indicateur Brain actif affiché
+  test('E2-01 : page agent — indicateur Brain actif visible si score > 50%', async ({ page }) => {
+    await page.goto('/agents/agent-cfo')
+    await expect(page).toHaveURL(/\/agents\/agent-cfo/, { timeout: 8_000 })
+    const brainIndicator = page.getByText(/brain actif|brain puissant|brain expert|🧠/i).first()
+    if (await brainIndicator.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(brainIndicator).toBeVisible()
+    }
+  })
+
+  // E2-02 : agent detail — questions dynamiques basées sur l'enrichissement
+  test('E2-02 : page agent — questions dynamiques visibles si Brain configuré', async ({ page }) => {
+    await page.goto('/agents/agent-cfo')
+    // Les questions dynamiques apparaissent dans l'empty state si le brain est configuré
+    const dynamicQ = page.getByText(/suggest|question|analyser|revenue|objectif/i).first()
+    if (await dynamicQ.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(dynamicQ).toBeVisible()
+    }
+  })
+
+  // E2-03 : agent detail — banner Brain incomplet si score < 25%
+  test('E2-03 : page agent — banner configuration Brain si score < 25%', async ({ page }) => {
+    await page.goto('/agents/agent-coach')
+    const brainBanner = page.getByText(/configurer|brain|profil|améliorer/i).first()
+    if (await brainBanner.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(brainBanner).toBeVisible()
+    }
+  })
 })

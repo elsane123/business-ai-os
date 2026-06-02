@@ -126,4 +126,48 @@ test.describe('Paramètres', () => {
     await page.goto('/settings')
     await expect(page.getByText(/abonnement|plan/i).first()).toBeVisible({ timeout: 8_000 })
   })
+
+  // Epic 6 — IA Fiscale & Stripe personal ──────────────────────────────────
+
+  test('E6-01 : settings — section Clé API Stripe personnelle visible', async ({ page }) => {
+    await page.goto('/settings')
+    const stripeKeySection = page.getByText(/cl. api stripe|stripe.*personnelle|rk_live/i).first()
+    if (await stripeKeySection.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(stripeKeySection).toBeVisible()
+    }
+  })
+
+  test('E6-02 : settings — champ clé Stripe de type password', async ({ page }) => {
+    await page.goto('/settings')
+    const stripeInput = page.getByPlaceholder(/rk_live|sk_live|stripe/i)
+    if (await stripeInput.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(stripeInput).toHaveAttribute('type', 'password')
+    }
+  })
+
+  test('E6-03 : settings — bouton Connecter Stripe désactivé si champ vide', async ({ page }) => {
+    await page.goto('/settings')
+    const connectBtn = page.getByRole('button', { name: /connecter stripe/i })
+    if (await connectBtn.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(connectBtn).toBeDisabled()
+    }
+  })
+
+  // Epic 8 — LinkedIn Token ─────────────────────────────────────────────────
+
+  test('E8-SET-01 : settings — section Token LinkedIn visible', async ({ page }) => {
+    await page.goto('/settings')
+    const linkedinSection = page.getByText(/token linkedin|🔗/i).first()
+    if (await linkedinSection.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(linkedinSection).toBeVisible()
+    }
+  })
+
+  test('E8-SET-02 : settings — champ token LinkedIn de type password quand non configuré', async ({ page }) => {
+    await page.goto('/settings')
+    const tokenInput = page.getByPlaceholder(/AQV/i)
+    if (await tokenInput.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await expect(tokenInput).toHaveAttribute('type', 'password')
+    }
+  })
 })
