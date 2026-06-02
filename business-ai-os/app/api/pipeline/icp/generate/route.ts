@@ -88,7 +88,7 @@ export async function POST() {
     const cleaned = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
     const parsed = JSON.parse(cleaned) as { icp: ICPResult; prospectScores: ProspectScore[] }
 
-    updateBrainICP(userId, parsed.icp)
+    try { updateBrainICP(userId, parsed.icp) } catch (fsErr) { console.warn('[icp] brain.md write failed', fsErr) }
 
     return NextResponse.json({ icp: parsed.icp, prospectScores: parsed.prospectScores, lowConfidence })
   } catch (error) {

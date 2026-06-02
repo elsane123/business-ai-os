@@ -85,6 +85,7 @@ export default function AgentChatPage() {
   const [coldEmailForm, setColdEmailForm] = useState({ prospectName: '', company: '', sector: '', tone: 'professionnel' })
   const [coldEmailResult, setColdEmailResult] = useState<Array<{ day: number; subject: string; body: string }> | null>(null)
   const [coldEmailCopied, setColdEmailCopied] = useState<number | null>(null)
+  const [coldEmailError, setColdEmailError] = useState<string | null>(null)
 
   // Story 8.3 — LinkedIn CMO Post (CMO agent only)
   const [liPostLoading, setLiPostLoading] = useState(false)
@@ -143,6 +144,7 @@ export default function AgentChatPage() {
     if (!coldEmailForm.prospectName.trim()) return
     setColdEmailLoading(true)
     setColdEmailResult(null)
+    setColdEmailError(null)
     try {
       const res = await fetch('/api/agents/cold-email/generate', {
         method: 'POST',
@@ -154,6 +156,7 @@ export default function AgentChatPage() {
       setColdEmailResult(data.sequence)
     } catch (err) {
       console.error('[cold-email]', err)
+      setColdEmailError('Erreur lors de la génération. Réessaie.')
     } finally {
       setColdEmailLoading(false)
     }
@@ -388,6 +391,9 @@ export default function AgentChatPage() {
                       <option value="casual">Décontracté</option>
                       <option value="direct">Direct</option>
                     </select>
+                    {coldEmailError && (
+                      <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{coldEmailError}</p>
+                    )}
                     <div className="flex gap-2">
                       <button type="button" onClick={() => setColdEmailOpen(false)} className="flex-1 py-2 rounded-lg border border-white/10 text-slate-400 hover:text-white text-sm transition-colors">Annuler</button>
                       <button type="submit" disabled={coldEmailLoading || !coldEmailForm.prospectName.trim()} className="flex-1 py-2 rounded-lg bg-pink-600 hover:bg-pink-500 disabled:opacity-50 text-white font-medium text-sm transition-colors">
