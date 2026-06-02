@@ -7,6 +7,10 @@ export default defineConfig({
     globals: true,
     include: ['__tests__/**/*.test.ts'],
     exclude: ['**/node_modules/**', '**/e2e/**', '**/.next/**'],
+    testTimeout: 15_000,
+    env: {
+      BASE_URL: process.env.BASE_URL ?? 'http://localhost:50082',
+    },
   },
   resolve: {
     alias: {

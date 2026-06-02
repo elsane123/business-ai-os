@@ -17,7 +17,8 @@
     "python:install": "cd python && pip install -r requirements.txt",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "test:unit:coverage": "vitest run --coverage"
+    "test:unit:coverage": "vitest run --coverage",
+    "test:integration": "BASE_URL=http://localhost:50082 vitest run __tests__/integration"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
