@@ -79,6 +79,40 @@ export default function AgentChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  // Story 8.2 — Cold Email Sequence (CRO agent only)
+  const [coldEmailOpen, setColdEmailOpen] = useState(false)
+  const [coldEmailLoading, setColdEmailLoading] = useState(false)
+  const [coldEmailForm, setColdEmailForm] = useState({ prospectName: '', company: '', sector: '', tone: 'professionnel' })
+  const [coldEmailResult, setColdEmailResult] = useState<Array<{ day: number; subject: string; body: string }> | null>(null)
+  const [coldEmailCopied, setColdEmailCopied] = useState<number | null>(null)
+
+  async function handleGenerateColdEmail(e: React.FormEvent) {
+    e.preventDefault()
+    if (!coldEmailForm.prospectName.trim()) return
+    setColdEmailLoading(true)
+    setColdEmailResult(null)
+    try {
+      const res = await fetch('/api/agents/cold-email/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(coldEmailForm),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Erreur')
+      setColdEmailResult(data.sequence)
+    } catch (err) {
+      console.error('[cold-email]', err)
+    } finally {
+      setColdEmailLoading(false)
+    }
+  }
+
+  function copyColdEmail(idx: number, subject: string, body: string) {
+    navigator.clipboard.writeText(`${subject}\n\n${body}`)
+    setColdEmailCopied(idx)
+    setTimeout(() => setColdEmailCopied(null), 2000)
+  }
+
   async function loadData() {
     try {
       // Load agent info
@@ -261,6 +295,86 @@ export default function AgentChatPage() {
                 </button>
               ))}
             </div>
+
+            {/* Story 8.2 — Cold Email Generator (CRO agent only) */}
+            {agentId === 'agent-cro' && !coldEmailResult && (
+              <div className="mt-6 w-full max-w-sm">
+                {!coldEmailOpen ? (
+                  <button
+                    onClick={() => setColdEmailOpen(true)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 text-pink-300 font-medium rounded-xl text-sm transition-colors"
+                  >
+                    📧 Générer une séquence email
+                  </button>
+                ) : (
+                  <form onSubmit={handleGenerateColdEmail} className="bg-[#1a1d2e] border border-pink-500/20 rounded-xl p-4 space-y-3">
+                    <p className="text-sm font-semibold text-pink-300">📧 Séquence Cold Email</p>
+                    <input
+                      type="text" required placeholder="Prénom Nom du prospect *"
+                      value={coldEmailForm.prospectName}
+                      onChange={e => setColdEmailForm(f => ({ ...f, prospectName: e.target.value }))}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-pink-500/50"
+                    />
+                    <input
+                      type="text" placeholder="Entreprise"
+                      value={coldEmailForm.company}
+                      onChange={e => setColdEmailForm(f => ({ ...f, company: e.target.value }))}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-pink-500/50"
+                    />
+                    <input
+                      type="text" placeholder="Secteur"
+                      value={coldEmailForm.sector}
+                      onChange={e => setColdEmailForm(f => ({ ...f, sector: e.target.value }))}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-pink-500/50"
+                    />
+                    <select
+                      value={coldEmailForm.tone}
+                      onChange={e => setColdEmailForm(f => ({ ...f, tone: e.target.value }))}
+                      className="w-full bg-[#1a1d2e] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500/50"
+                    >
+                      <option value="professionnel">Professionnel</option>
+                      <option value="casual">Décontracté</option>
+                      <option value="direct">Direct</option>
+                    </select>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setColdEmailOpen(false)} className="flex-1 py-2 rounded-lg border border-white/10 text-slate-400 hover:text-white text-sm transition-colors">Annuler</button>
+                      <button type="submit" disabled={coldEmailLoading || !coldEmailForm.prospectName.trim()} className="flex-1 py-2 rounded-lg bg-pink-600 hover:bg-pink-500 disabled:opacity-50 text-white font-medium text-sm transition-colors">
+                        {coldEmailLoading ? '⏳ Génération...' : '✨ Générer'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            )}
+
+            {/* Cold Email Results */}
+            {agentId === 'agent-cro' && coldEmailResult && (
+              <div className="mt-6 w-full max-w-sm space-y-2">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-semibold text-pink-300">📧 Séquence générée ({coldEmailResult.length} emails)</p>
+                  <button onClick={() => { setColdEmailResult(null); setColdEmailOpen(false) }} className="text-xs text-slate-500 hover:text-white">✕ Fermer</button>
+                </div>
+                {coldEmailResult.map((email, idx) => (
+                  <details key={idx} className="bg-[#1a1d2e] border border-pink-500/20 rounded-xl overflow-hidden">
+                    <summary className="px-4 py-2.5 text-sm font-medium text-pink-200 cursor-pointer hover:bg-pink-500/10 flex items-center justify-between">
+                      <span>Jour {email.day} — {email.subject}</span>
+                      <button
+                        type="button"
+                        onClick={e => { e.preventDefault(); copyColdEmail(idx, email.subject, email.body) }}
+                        className="text-[10px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 hover:bg-pink-500/30 ml-2 flex-shrink-0"
+                      >
+                        {coldEmailCopied === idx ? '✓ Copié' : 'Copier'}
+                      </button>
+                    </summary>
+                    <div className="px-4 py-3 border-t border-pink-500/10">
+                      <p className="text-xs text-slate-400 mb-1 font-medium">Objet: {email.subject}</p>
+                      <pre className="text-xs text-slate-300 whitespace-pre-wrap font-sans leading-relaxed">{email.body}</pre>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            )}
+
           </div>
         )}
 
