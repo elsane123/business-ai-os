@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { daysSince } from '@/lib/utils'
 
 interface Relance {
   id: string
@@ -58,14 +59,11 @@ const COLUMN_META: Record<ProspectStatus, { label: string; icon: string; borderC
 
 const STATUS_ORDER: ProspectStatus[] = ['IDENTIFIED', 'CONTACTED', 'INTERESTED', 'PROPOSAL', 'WON', 'LOST']
 
-function daysSince(dateStr: string | null): number | null {
-  if (!dateStr) return null
-  return Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000)
-}
+
 
 function heatBadge(dateStr: string | null): { emoji: string; label: string; color: string } {
   const days = daysSince(dateStr)
-  if (days === null || days > 7) return { emoji: '🧊', label: 'Froid', color: 'text-blue-300 bg-blue-500/10' }
+  if (days > 7) return { emoji: '🧊', label: 'Froid', color: 'text-blue-300 bg-blue-500/10' }
   if (days <= 3) return { emoji: '🔥', label: 'Chaud', color: 'text-orange-400 bg-orange-500/10' }
   return { emoji: '⚡', label: 'Tiède', color: 'text-yellow-400 bg-yellow-500/10' }
 }

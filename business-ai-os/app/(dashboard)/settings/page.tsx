@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, Suspense, type Dispatch, type SetStateAction } from 'react'
+import { SECTORS, normalizeSector } from '@/lib/utils'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -19,29 +20,7 @@ interface UserProfile {
   calcomBookingUrl?: string
 }
 
-const SECTORS = [
-  { id: 'tech',        label: 'Tech / SaaS' },
-  { id: 'consulting',  label: 'Consulting' },
-  { id: 'commerce',   label: 'Commerce' },
-  { id: 'services',   label: 'Services' },
-  { id: 'creative',   label: 'Créatif' },
-  { id: 'freelance',  label: 'Freelance / Indépendant' },
-  { id: 'health',     label: 'Santé / Bien-être' },
-  { id: 'education',  label: 'Formation / Education' },
-  { id: 'marketing',  label: 'Marketing / Communication' },
-  { id: 'real_estate',label: 'Immobilier' },
-  { id: 'finance',    label: 'Finance / Comptabilité' },
-  { id: 'legal',      label: 'Juridique' },
-  { id: 'other',      label: 'Autre' },
-]
 
-// Normalize legacy sector label strings to new id-based values
-function normalizeSector(v: string): string {
-  if (!v) return ''
-  if (SECTORS.some(s => s.id === v)) return v
-  const match = SECTORS.find(s => s.label.toLowerCase() === v.toLowerCase())
-  return match ? match.id : v
-}
 
 function Alert({ type, message }: { type: 'success' | 'error'; message: string }) {
   if (!message) return null
