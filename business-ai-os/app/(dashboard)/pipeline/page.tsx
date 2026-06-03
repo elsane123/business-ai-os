@@ -84,8 +84,8 @@ function calcLeadScore(
   const statusScore = (STATUS_WEIGHT[prospect.status] ?? 0) / 4 // 0-1
   const valueScore = maxValue > 0 ? Math.min(prospect.value / maxValue, 1) : 0
   const days = daysSince(prospect.lastContactDate)
-  // Urgency: drops from 1 at 0 days to 0 at 30+ days; null = cold (0)
-  const urgency = days === null ? 0 : Math.max(0, 1 - days / 30)
+  // Urgency: drops from 1 at 0 days to 0 at 30+ days; never-contacted = cold (0)
+  const urgency = !isFinite(days) ? 0 : Math.max(0, 1 - days / 30)
   // Weighted composite
   const raw = statusScore * 0.35 + valueScore * 0.40 + urgency * 0.25
   return Math.round(raw * 100)
@@ -109,8 +109,8 @@ function ScoreBar({ score }: { score: number }) {
 }
 
 function daysLabel(dateStr: string | null): string {
+  if (!dateStr) return 'Jamais contacté'
   const days = daysSince(dateStr)
-  if (days === null) return 'Jamais contacté'
   if (days === 0) return "Aujourd'hui"
   if (days === 1) return 'Hier'
   return `Il y a ${days}j`
@@ -322,7 +322,7 @@ export default function PipelinePage() {
 
   // KPIs
   const activeProspects = prospects.filter(p => p.status !== 'LOST' && p.status !== 'WON')
-  const ghostDeals = activeProspects.filter(p => (daysSince(p.lastContactDate) ?? Infinity) >= 14)
+  const ghostDeals = activeProspects.filter(p => p.lastContactDate !== null && daysSince(p.lastContactDate) >= 14)
   const totalPipelineValue = activeProspects.reduce((s, p) => s + p.value, 0)
   const wonThisMonth = prospects.filter(p => {
     if (p.status !== 'WON' || !p.lastContactDate) return false
