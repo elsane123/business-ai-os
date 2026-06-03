@@ -64,8 +64,8 @@ const navSections: NavSection[] = [
     items: [
       { icon: '📣', label: 'Contenu LinkedIn',  href: '/content',          isPro: true  },
       { icon: '🎯', label: 'ICP Builder',        href: '/pipeline',         isPro: true  },
-      { icon: '📧', label: 'Séquence Email',     href: '/agents/agent-cro', isPro: true  },
-      { icon: '💼', label: 'LinkedIn CMO',       href: '/agents/agent-cmo', isPro: true  },
+      { icon: '🤝', label: 'Agent Commercial',   href: '/agent-cro',        isPro: true  },
+      { icon: '📣', label: 'Agent Marketing',     href: '/agent-cmo',        isPro: true  },
     ],
   },
 ]

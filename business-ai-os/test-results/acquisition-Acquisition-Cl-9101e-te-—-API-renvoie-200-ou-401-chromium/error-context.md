@@ -1,0 +1,402 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: acquisition.spec.ts >> Acquisition Client AI — Epic 8 >> ACQ-05 : linkedin post generate — API renvoie 200 ou 401
+- Location: e2e/acquisition.spec.ts:58:7
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "Aller au contenu principal" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img [ref=e7]
+          - generic [ref=e17]: Brainlo
+        - button "Collapse sidebar" [ref=e18] [cursor=pointer]:
+          - img [ref=e19]
+      - navigation "Navigation principale" [ref=e21]:
+        - generic [ref=e22]:
+          - button "🧠 Brain" [expanded] [ref=e23] [cursor=pointer]:
+            - generic [ref=e24]: 🧠
+            - generic [ref=e25]: Brain
+            - img [ref=e26]
+          - generic [ref=e28]:
+            - link "🧠 Business Brain" [ref=e29] [cursor=pointer]:
+              - /url: /chat
+              - generic [ref=e30]: 🧠
+              - generic [ref=e31]: Business Brain
+            - link "👤 Mon Profil Business" [ref=e32] [cursor=pointer]:
+              - /url: /profile
+              - generic [ref=e33]: 👤
+              - generic [ref=e34]: Mon Profil Business
+            - link "🤖 Agents IA" [ref=e35] [cursor=pointer]:
+              - /url: /agents
+              - generic [ref=e36]: 🤖
+              - generic [ref=e37]: Agents IA
+        - generic [ref=e38]:
+          - button "🎯 Focus" [expanded] [ref=e39] [cursor=pointer]:
+            - generic [ref=e40]: 🎯
+            - generic [ref=e41]: Focus
+            - img [ref=e42]
+          - generic [ref=e44]:
+            - link "⚡ Aujourd'hui" [ref=e45] [cursor=pointer]:
+              - /url: /focus
+              - generic [ref=e46]: ⚡
+              - generic [ref=e47]: Aujourd'hui
+            - link "📋 Tâches" [ref=e48] [cursor=pointer]:
+              - /url: /tasks
+              - generic [ref=e49]: 📋
+              - generic [ref=e50]: Tâches
+            - link "👥 Pipeline" [ref=e51] [cursor=pointer]:
+              - /url: /pipeline
+              - generic [ref=e52]: 👥
+              - generic [ref=e53]: Pipeline
+        - generic [ref=e54]:
+          - button "⛽ Carburant" [expanded] [ref=e55] [cursor=pointer]:
+            - generic [ref=e56]: ⛽
+            - generic [ref=e57]: Carburant
+            - img [ref=e58]
+          - generic [ref=e60]:
+            - link "📄 Devis & Factures" [ref=e61] [cursor=pointer]:
+              - /url: /invoices
+              - generic [ref=e62]: 📄
+              - generic [ref=e63]: Devis & Factures
+            - link "💰 Cash" [ref=e64] [cursor=pointer]:
+              - /url: /cash
+              - generic [ref=e65]: 💰
+              - generic [ref=e66]: Cash
+            - link "📊 Rapports" [ref=e67] [cursor=pointer]:
+              - /url: /reports
+              - generic [ref=e68]: 📊
+              - generic [ref=e69]: Rapports
+        - generic [ref=e70]:
+          - button "🚀 Croissance" [expanded] [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: 🚀
+            - generic [ref=e73]: Croissance
+            - img [ref=e74]
+          - generic [ref=e76]:
+            - link "📣 Contenu LinkedIn" [ref=e77] [cursor=pointer]:
+              - /url: /content
+              - generic [ref=e78]: 📣
+              - generic [ref=e79]: Contenu LinkedIn
+            - link "🎯 ICP Builder" [ref=e80] [cursor=pointer]:
+              - /url: /pipeline
+              - generic [ref=e81]: 🎯
+              - generic [ref=e82]: ICP Builder
+            - link "📧 Séquence Email" [ref=e83] [cursor=pointer]:
+              - /url: /agents/agent-cro
+              - generic [ref=e84]: 📧
+              - generic [ref=e85]: Séquence Email
+            - link "💼 LinkedIn CMO" [ref=e86] [cursor=pointer]:
+              - /url: /agents/agent-cmo
+              - generic [ref=e87]: 💼
+              - generic [ref=e88]: LinkedIn CMO
+        - generic [ref=e89]:
+          - link "⚙️ Paramètres" [ref=e90] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e91]: ⚙️
+            - generic [ref=e92]: Paramètres
+          - link "❓ Aide" [ref=e93] [cursor=pointer]:
+            - /url: /wiki
+            - generic [ref=e94]: ❓
+            - generic [ref=e95]: Aide
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - generic [ref=e98]: QT
+          - generic [ref=e99]:
+            - paragraph [ref=e100]: test_qa_20260525@brainlo.test
+            - paragraph [ref=e101]: PRO
+        - button "Se déconnecter" [ref=e102] [cursor=pointer]:
+          - img [ref=e103]
+          - generic [ref=e105]: Se déconnecter
+    - generic [ref=e106]:
+      - button "🚀 Premiers pas 2/10" [ref=e108] [cursor=pointer]:
+        - generic [ref=e109]: 🚀
+        - generic [ref=e110]: Premiers pas
+        - generic [ref=e111]: 2/10
+      - main [ref=e112]:
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - generic [ref=e115]:
+              - generic [ref=e116]: 🤖
+              - heading "Agents IA Spécialisés" [level=1] [ref=e117]
+            - paragraph [ref=e118]: Activez les agents experts dont votre business a besoin. Chaque agent est un directeur IA dédié à son domaine.
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - generic [ref=e121]: Plan actuel
+              - generic [ref=e122]: Solo Pro
+            - generic [ref=e123]:
+              - generic [ref=e124]: Agents actifs
+              - generic [ref=e125]: 0 / 2
+          - generic [ref=e129]:
+            - button "Tous les agents" [ref=e130] [cursor=pointer]
+            - button "🧮 Finance" [ref=e131] [cursor=pointer]
+            - button "📈 Commercial" [ref=e132] [cursor=pointer]
+            - button "📣 Marketing" [ref=e133] [cursor=pointer]
+            - button "⚖️ Juridique" [ref=e134] [cursor=pointer]
+            - button "👥 RH" [ref=e135] [cursor=pointer]
+            - button "⚙️ Opérations" [ref=e136] [cursor=pointer]
+            - button "🎯 Stratégie" [ref=e137] [cursor=pointer]
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - generic [ref=e140]:
+                - generic [ref=e141]: 🧮
+                - generic [ref=e142]:
+                  - heading "Agent CFO" [level=3] [ref=e143]
+                  - paragraph [ref=e144]: Votre directeur financier IA
+              - generic [ref=e145]: Finance
+              - paragraph [ref=e146]: Analyse votre trésorerie, prédit vos flux, détecte les risques financiers et vous aide à prendre les bonnes décisions budgétaires.
+              - generic [ref=e147]:
+                - generic [ref=e148]:
+                  - generic [ref=e149]: ✓
+                  - generic [ref=e150]:
+                    - text: Analyse trésorerie
+                    - generic [ref=e151]: — Suivi et prévision des flux de trésorerie
+                - generic [ref=e152]:
+                  - generic [ref=e153]: ✓
+                  - generic [ref=e154]:
+                    - text: P&L mensuel
+                    - generic [ref=e155]: — Compte de résultat simplifié automatique
+                - generic [ref=e156]:
+                  - generic [ref=e157]: ✓
+                  - generic [ref=e158]:
+                    - text: Forecast 30/60/90j
+                    - generic [ref=e159]: — Prévisions financières avec scénarios
+                - generic [ref=e160]:
+                  - generic [ref=e161]: ✓
+                  - generic [ref=e162]:
+                    - text: Alertes impayés
+                    - generic [ref=e163]: — Détection et suivi des factures en retard
+                - generic [ref=e164]:
+                  - generic [ref=e165]: ✓
+                  - generic [ref=e166]:
+                    - text: Optimisation BFR
+                    - generic [ref=e167]: — Conseils besoin en fonds de roulement
+              - button "+ Activer" [ref=e169] [cursor=pointer]
+            - generic [ref=e170]:
+              - generic [ref=e171]:
+                - generic [ref=e172]: 📈
+                - generic [ref=e173]:
+                  - heading "Agent CRO" [level=3] [ref=e174]
+                  - paragraph [ref=e175]: Votre directeur commercial IA
+              - generic [ref=e176]: Commercial
+              - paragraph [ref=e177]: Optimise votre pipeline de ventes, identifie les deals prioritaires, génère des relances personnalisées et prédit votre chiffre d'affaires.
+              - generic [ref=e178]:
+                - generic [ref=e179]:
+                  - generic [ref=e180]: ✓
+                  - generic [ref=e181]:
+                    - text: Analyse pipeline
+                    - generic [ref=e182]: — Scoring et priorisation de vos deals
+                - generic [ref=e183]:
+                  - generic [ref=e184]: ✓
+                  - generic [ref=e185]:
+                    - text: Relances intelligentes
+                    - generic [ref=e186]: — Messages personnalisés par prospect
+                - generic [ref=e187]:
+                  - generic [ref=e188]: ✓
+                  - generic [ref=e189]:
+                    - text: Forecast CA
+                    - generic [ref=e190]: — Prévision revenus sur 30/60/90 jours
+                - generic [ref=e191]:
+                  - generic [ref=e192]: ✓
+                  - generic [ref=e193]:
+                    - text: Coach deal
+                    - generic [ref=e194]: — Stratégie deal par deal pour closer
+                - generic [ref=e195]:
+                  - generic [ref=e196]: ✓
+                  - generic [ref=e197]:
+                    - text: Analyse pertes
+                    - generic [ref=e198]: — Patterns d'échec pour améliorer
+              - button "+ Activer" [ref=e200] [cursor=pointer]
+            - generic [ref=e201]:
+              - generic [ref=e202]:
+                - generic [ref=e203]: 📣
+                - generic [ref=e204]:
+                  - heading "Agent CMO" [level=3] [ref=e205]
+                  - paragraph [ref=e206]: Votre directeur marketing IA
+              - generic [ref=e207]: Marketing
+              - paragraph [ref=e208]: Crée votre stratégie de contenu, optimise votre présence digitale, génère des contenus LinkedIn et pilote votre visibilité en ligne.
+              - generic [ref=e209]:
+                - generic [ref=e210]:
+                  - generic [ref=e211]: ✓
+                  - generic [ref=e212]:
+                    - text: Stratégie contenu
+                    - generic [ref=e213]: — Calendrier éditorial personnalisé
+                - generic [ref=e214]:
+                  - generic [ref=e215]: ✓
+                  - generic [ref=e216]:
+                    - text: Génération LinkedIn
+                    - generic [ref=e217]: — Posts optimisés pour l'engagement
+                - generic [ref=e218]:
+                  - generic [ref=e219]: ✓
+                  - generic [ref=e220]:
+                    - text: SEO basique
+                    - generic [ref=e221]: — Conseils référencement naturel
+                - generic [ref=e222]:
+                  - generic [ref=e223]: ✓
+                  - generic [ref=e224]:
+                    - text: Brand voice
+                    - generic [ref=e225]: — Cohérence de votre identité éditoriale
+                - generic [ref=e226]:
+                  - generic [ref=e227]: ✓
+                  - generic [ref=e228]:
+                    - text: Email marketing
+                    - generic [ref=e229]: — Séquences nurturing et newsletters
+              - button "+ Activer" [ref=e231] [cursor=pointer]
+            - generic [ref=e232]:
+              - generic [ref=e233]:
+                - generic [ref=e234]: ⚖️
+                - generic [ref=e235]:
+                  - heading "Agent Juridique" [level=3] [ref=e236]
+                  - paragraph [ref=e237]: Votre conseiller juridique IA
+              - generic [ref=e238]: Juridique
+              - paragraph [ref=e239]: "Vous guide sur les aspects juridiques de votre activité : contrats, CGV, conformité RGPD, mentions légales et statuts."
+              - generic [ref=e240]:
+                - generic [ref=e241]:
+                  - generic [ref=e242]: ✓
+                  - generic [ref=e243]:
+                    - text: Revue contrats
+                    - generic [ref=e244]: — Analyse et points d'attention contractuels
+                - generic [ref=e245]:
+                  - generic [ref=e246]: ✓
+                  - generic [ref=e247]:
+                    - text: CGV & mentions
+                    - generic [ref=e248]: — Rédaction conditions générales de vente
+                - generic [ref=e249]:
+                  - generic [ref=e250]: ✓
+                  - generic [ref=e251]:
+                    - text: RGPD
+                    - generic [ref=e252]: — Conformité protection des données
+                - generic [ref=e253]:
+                  - generic [ref=e254]: ✓
+                  - generic [ref=e255]:
+                    - text: Statuts juridiques
+                    - generic [ref=e256]: — Conseils sur les formes légales
+                - generic [ref=e257]:
+                  - generic [ref=e258]: ✓
+                  - generic [ref=e259]:
+                    - text: Litiges client
+                    - generic [ref=e260]: — Procédures en cas de conflit
+              - button "+ Activer" [ref=e262] [cursor=pointer]
+            - generic [ref=e263]:
+              - generic [ref=e264]:
+                - generic [ref=e265]: 👥
+                - generic [ref=e266]:
+                  - heading "Agent CHRO" [level=3] [ref=e267]
+                  - paragraph [ref=e268]: Votre DRH IA
+              - generic [ref=e269]: Ressources Humaines
+              - paragraph [ref=e270]: "Gère vos enjeux RH : recrutement, onboarding, masse salariale, bien-être équipe et conformité sociale."
+              - generic [ref=e271]:
+                - generic [ref=e272]:
+                  - generic [ref=e273]: ✓
+                  - generic [ref=e274]:
+                    - text: Recrutement
+                    - generic [ref=e275]: — Fiches de poste et processus hiring
+                - generic [ref=e276]:
+                  - generic [ref=e277]: ✓
+                  - generic [ref=e278]:
+                    - text: Onboarding
+                    - generic [ref=e279]: — Intégration des nouveaux collaborateurs
+                - generic [ref=e280]:
+                  - generic [ref=e281]: ✓
+                  - generic [ref=e282]:
+                    - text: Masse salariale
+                    - generic [ref=e283]: — Analyse et optimisation des coûts RH
+                - generic [ref=e284]:
+                  - generic [ref=e285]: ✓
+                  - generic [ref=e286]:
+                    - text: Conformité sociale
+                    - generic [ref=e287]: — Obligations légales employeur
+                - generic [ref=e288]:
+                  - generic [ref=e289]: ✓
+                  - generic [ref=e290]:
+                    - text: Performance
+                    - generic [ref=e291]: — Entretiens et évaluation équipe
+              - button "+ Activer" [ref=e293] [cursor=pointer]
+            - generic [ref=e294]:
+              - generic [ref=e295]:
+                - generic [ref=e296]: ⚙️
+                - generic [ref=e297]:
+                  - heading "Agent Ops" [level=3] [ref=e298]
+                  - paragraph [ref=e299]: Votre directeur des opérations IA
+              - generic [ref=e300]: Opérations
+              - paragraph [ref=e301]: Optimise vos processus internes, automatise les tâches répétitives, améliore votre productivité et structure votre organisation.
+              - generic [ref=e302]:
+                - generic [ref=e303]:
+                  - generic [ref=e304]: ✓
+                  - generic [ref=e305]:
+                    - text: Process mapping
+                    - generic [ref=e306]: — Cartographie et optimisation des process
+                - generic [ref=e307]:
+                  - generic [ref=e308]: ✓
+                  - generic [ref=e309]:
+                    - text: Automatisation
+                    - generic [ref=e310]: — Identification des tâches automatisables
+                - generic [ref=e311]:
+                  - generic [ref=e312]: ✓
+                  - generic [ref=e313]:
+                    - text: Productivité
+                    - generic [ref=e314]: — Outils et méthodes pour aller plus vite
+                - generic [ref=e315]:
+                  - generic [ref=e316]: ✓
+                  - generic [ref=e317]:
+                    - text: KPIs opérationnels
+                    - generic [ref=e318]: — Indicateurs clés à suivre
+                - generic [ref=e319]:
+                  - generic [ref=e320]: ✓
+                  - generic [ref=e321]:
+                    - text: Organisation
+                    - generic [ref=e322]: — Structure et délégation efficaces
+              - button "+ Activer" [ref=e324] [cursor=pointer]
+            - generic [ref=e325]:
+              - generic [ref=e326]:
+                - generic [ref=e327]: 🎯
+                - generic [ref=e328]:
+                  - heading "Agent Coach" [level=3] [ref=e329]
+                  - paragraph [ref=e330]: Votre coach business IA
+              - generic [ref=e331]: Stratégie
+              - paragraph [ref=e332]: Vous accompagne sur la vision, les décisions clés et le développement de votre leadership d'entrepreneur.
+              - generic [ref=e333]:
+                - generic [ref=e334]:
+                  - generic [ref=e335]: ✓
+                  - generic [ref=e336]:
+                    - text: Vision & objectifs
+                    - generic [ref=e337]: — Clarification OKR et feuille de route
+                - generic [ref=e338]:
+                  - generic [ref=e339]: ✓
+                  - generic [ref=e340]:
+                    - text: Prise de décision
+                    - generic [ref=e341]: — Aide à la décision avec frameworks
+                - generic [ref=e342]:
+                  - generic [ref=e343]: ✓
+                  - generic [ref=e344]:
+                    - text: Leadership
+                    - generic [ref=e345]: — Développement posture dirigeant
+                - generic [ref=e346]:
+                  - generic [ref=e347]: ✓
+                  - generic [ref=e348]:
+                    - text: Plan 90 jours
+                    - generic [ref=e349]: — Sprint stratégique trimestriel
+                - generic [ref=e350]:
+                  - generic [ref=e351]: ✓
+                  - generic [ref=e352]:
+                    - text: Revue hebdo
+                    - generic [ref=e353]: — Bilan et ajustements chaque semaine
+              - button "+ Activer" [ref=e355] [cursor=pointer]
+  - alert [ref=e356]
+```
