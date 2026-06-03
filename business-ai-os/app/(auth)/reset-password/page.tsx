@@ -1,7 +1,7 @@
 'use client'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Brain, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 
 function InvalidTokenScreen() {
@@ -24,12 +24,15 @@ function InvalidTokenScreen() {
   )
 }
 
-function ResetPasswordForm() {
+export default function ResetPasswordPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const token = searchParams.get('token') ?? ''
-
+  const [token, setToken] = useState('')
   const [tokenValid, setTokenValid] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setToken(params.get('token') ?? '')
+  }, [])
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
@@ -158,14 +161,4 @@ function ResetPasswordForm() {
   )
 }
 
-export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#030712] flex items-center justify-center">
-        <div className="text-white">Chargement...</div>
-      </div>
-    }>
-      <ResetPasswordForm />
-    </Suspense>
-  )
-}
+

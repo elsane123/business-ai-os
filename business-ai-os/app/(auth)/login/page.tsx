@@ -1,18 +1,25 @@
 'use client'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Loader2, Info } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import BrainloLogo from '@/components/ui/BrainloLogo'
 
-function LoginForm() {
+export default function LoginPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const [email, setEmail] = useState(searchParams.get('email') ?? '')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const msg = searchParams.get('msg')
+  const [msg, setMsg] = useState('')
+  const [returnTo, setReturnTo] = useState('')
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('email')) setEmail(params.get('email')!)
+    if (params.get('msg')) setMsg(params.get('msg')!)
+    if (params.get('returnTo')) setReturnTo(params.get('returnTo')!)
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -26,7 +33,6 @@ function LoginForm() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erreur de connexion')
-      const returnTo = searchParams.get('returnTo')
       router.push(returnTo || '/focus')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur inconnue')
@@ -119,10 +125,4 @@ function LoginForm() {
   )
 }
 
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#030712] flex items-center justify-center"><div className="text-white">Chargement...</div></div>}>
-      <LoginForm />
-    </Suspense>
-  )
-}
+
