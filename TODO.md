@@ -1,6 +1,6 @@
 # TODO — Brainlo Roadmap
 
-> Dernière mise à jour : 2026-06-02 (session 3)  
+> Dernière mise à jour : 2026-06-03 (session 4)  
 > État du projet : **Production-ready avec quelques bloquants à lever**
 
 ---
@@ -51,6 +51,8 @@
 - [x] API REST complète (tous les endpoints opérationnels)
 - [x] Sécurité : rate limiting, sanitize XSS, isolation cross-user
 - [x] Security headers HTTP (CSP, X-Frame-Options, Permissions-Policy...)
+- [x] **Auth centralisée via proxy.ts** — middleware Edge unique, whitelist PUBLIC_PATHS, redirect `/login?returnTo=`, 401 JSON sur les routes API non authentifiées
+- [x] **NeonDB reconnect strategy** — `connect_timeout=30`, `connection_limit=5`, `$on('error')` handler qui détecte `E57P01` (admin_shutdown) et force un `$disconnect/$connect`
 - [x] SEO : robots.ts, sitemap.ts, canonical, JSON-LD, OG images
 - [x] Error Boundaries (global, dashboard, auth, pages publiques)
 - [x] Tests E2E Playwright (24 tests, 96% de succès)
@@ -78,6 +80,7 @@
 
 ## 🔵 Priorité 3 — Qualité technique
 
+- [ ] **NeonDB cold-start (production)** — NeonDB free tier auto-suspend après 5 min d'inactivité → cold-start 3–5s au premier accès. Reconnect strategy implémentée (`lib/db.ts`), mais pour une prod sans friction : upgrader vers **NeonDB Scale** (auto-suspend désactivé) ou adopter **Prisma Accelerate** (connection pooler, warm connections, cache). À prioriser avant lancement public.
 - [ ] **Accessibilité WCAG → 90+/100** — Score estimé 78/100 après le sprint WCAG. Aller plus loin : contrastes couleurs (#818cf8 sur fond sombre), modales avec focus-trap, alertes ARIA dans les pages dashboard
 - [ ] **Tests E2E Playwright** — Mettre à jour les tests existants pour couvrir les nouveaux composants WCAG (skip-nav, aria-expanded, progressbar)
 - [ ] **Tests E2E Playwright** — Ajouter couverture des pages : `/onboarding`, `/settings#enrich`, flux Stripe checkout complet
