@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 export default function GlobalError({
   error,
   reset,
@@ -7,6 +9,13 @@ export default function GlobalError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    // ChunkLoadError = stale HTML after a deploy — hard reload fetches fresh chunks
+    if (error?.name === 'ChunkLoadError' || error?.message?.includes('ChunkLoadError')) {
+      window.location.reload()
+    }
+  }, [error])
+
   return (
     <html lang="fr" className="dark">
       <body className="min-h-screen bg-[#0d0d1a] flex items-center justify-center">
