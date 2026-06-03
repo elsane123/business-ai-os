@@ -13,12 +13,19 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [msg, setMsg] = useState('')
   const [returnTo, setReturnTo] = useState('')
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('email')) setEmail(params.get('email')!)
     if (params.get('msg')) setMsg(params.get('msg')!)
-    if (params.get('returnTo')) setReturnTo(params.get('returnTo')!)
+    const rt = params.get('returnTo') || ''
+    if (rt) setReturnTo(rt)
+    // If already authenticated, redirect away — otherwise show the form
+    fetch('/api/auth/profile')
+      .then(r => { if (r.ok) router.push(rt || '/focus'); else setMounted(true) })
+      .catch(() => setMounted(true))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -40,6 +47,12 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
+
+  if (!mounted) return (
+    <div className="min-h-screen bg-[#030712] flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-[#030712] flex items-center justify-center px-4">
