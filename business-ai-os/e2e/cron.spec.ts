@@ -64,9 +64,11 @@ test.describe('Cron Endpoints — Protection x-cron-secret', () => {
   })
 
   // CRON-07 : GET /api/reports/monthly sans auth → 401 ou redirect
-  test('CRON-07 : GET /api/reports/monthly sans auth → 401', async ({ request }) => {
-    const response = await request.get('/api/reports/monthly?month=2026-05')
-    // Sans cookie auth, doit retourner 401
+  test('CRON-07 : GET /api/reports/monthly sans auth → 401', async ({ playwright }) => {
+    // Use a fresh context without storageState to get a truly unauthenticated request
+    const ctx = await playwright.request.newContext({ baseURL: 'http://localhost:50082', storageState: { cookies: [], origins: [] } })
+    const response = await ctx.get('/api/reports/monthly?month=2026-05')
+    await ctx.dispose()
     expect([401, 302, 403]).toContain(response.status())
   })
 

@@ -4,9 +4,11 @@ import UpgradeBanner from '@/components/ui/UpgradeBanner'
 import OnboardingChecklist from '@/components/dashboard/OnboardingChecklist'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { redirect } from 'next/navigation'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession()
+  if (!session?.userId) redirect('/login')
 
   const userEmail = session?.email ?? 'user@example.com'
 

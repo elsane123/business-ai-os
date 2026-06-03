@@ -20,7 +20,7 @@ test.describe('Administration', () => {
 
   // ADM-02 : accès sans auth → redirect login
   test('ADM-02 : accès /admin sans authentification → redirect /login', async ({ browser }) => {
-    const context = await browser.newContext() // pas de storageState
+    const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
     const page = await context.newPage()
     await page.goto('http://localhost:50082/admin')
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 })
@@ -29,7 +29,7 @@ test.describe('Administration', () => {
 
   // ADM-02b : accès /admin/users sans auth → redirect login
   test('ADM-02b : accès /admin/users sans auth → redirect /login', async ({ browser }) => {
-    const context = await browser.newContext()
+    const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
     const page = await context.newPage()
     await page.goto('http://localhost:50082/admin/users')
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 })

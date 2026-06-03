@@ -108,7 +108,7 @@ test.describe('Paramètres', () => {
 
   // SET-10 : accès sans auth → redirect login
   test('SET-10 : accès /settings sans authentification → redirect /login', async ({ browser }) => {
-    const context = await browser.newContext() // pas de storageState
+    const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
     const page = await context.newPage()
     await page.goto('http://localhost:50082/settings')
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 })

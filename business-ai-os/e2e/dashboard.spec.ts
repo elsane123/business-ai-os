@@ -67,7 +67,7 @@ test.describe('Dashboard — Checklist & Navigation', () => {
 
   // DASH-06 : accès sans auth → redirect login
   test('DASH-06 : accès /focus sans authentification → redirect /login', async ({ browser }) => {
-    const context = await browser.newContext() // pas de storageState
+    const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
     const page = await context.newPage()
     await page.goto('http://localhost:50082/focus')
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 })
