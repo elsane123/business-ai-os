@@ -22,7 +22,7 @@ const WIKI_SECTIONS: WikiSection[] = [
     summary: 'Passez de zéro à un OS business opérationnel en moins de 2 minutes.',
     keyPoints: [
       'Aucune carte bancaire requise pour commencer',
-      'Formulaire unique — les données alimentent tous vos agents IA',
+      'Formulaire unique en 3 étapes — les données alimentent tous vos agents IA',
       'La checklist dashboard guide la découverte progressive des modules',
       'Enrichissement du profil à votre rythme depuis les Settings',
     ],
@@ -267,6 +267,127 @@ const WIKI_SECTIONS: WikiSection[] = [
       { title: 'Protection automatique', description: 'Après 5 tentatives de connexion échouées, votre compte est protégé automatiquement pendant 15 minutes.' },
     ],
   },
+  {
+    id: 'profile',
+    icon: '🧠',
+    title: 'Brain Power Score & Profil',
+    href: '/profile',
+    isPro: true,
+    summary: 'Votre Business Brain est d’autant plus puissant qu’il est enrichi. Le Brain Power Score mesure la qualite du contexte disponible pour vos agents IA.',
+    keyPoints: [
+      'Score 0-100 calcule sur la completude de votre profil, offres, objectifs et base de connaissances',
+      'Suggestions contextuelles pour ameliorer chaque dimension du score',
+      'Badge Brain actif dans la sidebar des que le score depasse 50%',
+      'Les agents IA generent des questions dynamiques personnalisees si le Brain est bien configure',
+    ],
+    steps: [
+      { title: 'Consulter votre score', description: 'Cliquez sur « Profil » dans la sidebar — votre Brain Power Score s’affiche avec la jauge de progression.' },
+      { title: 'Identifier les lacunes', description: 'Les suggestions contextuelles indiquent quelle dimension ameliorer en priorite (secteur, offres, KB, objectifs).' },
+      { title: 'Enrichir le profil', description: 'Cliquez sur une suggestion pour acceder directement a la section concernee (Parametres, Base de Connaissances...).' },
+      { title: 'Importer des documents', description: 'Uploadez vos supports commerciaux, tarifs et contrats dans la Base de Connaissances — chaque document augmente le score.' },
+      { title: 'Activer le badge Brain', description: 'Des que le score depasse 50%, un badge vert apparait dans la sidebar — vos agents IA sont en mode expert.' },
+    ],
+  },
+  {
+    id: 'agents',
+    icon: '🤖',
+    title: 'Agents IA Specialises',
+    href: '/agents',
+    isPro: true,
+    summary: 'Activez des agents IA dedies a chaque domaine de votre business : Finance, Commercial, Marketing, Strategie. Chaque agent exploite votre Business Brain pour des reponses 100% contextualisees.',
+    keyPoints: [
+      '8+ agents specialises : CFO, CRO, CMO, Coach, Stratege...',
+      'Chaque agent lit votre wiki, vos donnees et votre profil — pas de reponses generiques',
+      'Brain-aware : indicateur de qualite Brain (Actif / Puissant / Expert) affiche sur chaque agent',
+      '2 slots d’activation simultanee en Solo Pro',
+    ],
+    steps: [
+      { title: 'Explorer le catalogue', description: 'Cliquez sur « Agents » dans la sidebar pour voir tous les agents disponibles avec leurs domaines et capacites.' },
+      { title: 'Activer un agent', description: 'Cliquez « Activer » sur la fiche d’un agent — il occupe un slot et devient accessible depuis son interface dediee.' },
+      { title: 'Interagir avec l’agent', description: 'Ouvrez l’agent active pour acceder a son chat contextuel et ses questions suggerees, basees sur vos vraies donnees.' },
+      { title: 'Enrichir le Brain', description: 'Plus votre Brain Power Score est eleve, plus les agents proposent des questions dynamiques personnalisees.' },
+      { title: 'Gerer vos slots', description: 'Desactivez un agent pour liberer un slot et en activer un autre selon vos besoins du moment.' },
+    ],
+  },
+  {
+    id: 'icp-builder',
+    icon: '🎯',
+    title: 'ICP Builder — Profil Client Ideal',
+    href: '/pipeline',
+    isPro: true,
+    summary: 'Generez en un clic votre profil de client ideal (ICP) et laissez l’IA scorer chaque prospect selon son adequation avec ce profil.',
+    keyPoints: [
+      'ICP genere automatiquement a partir de votre secteur, offres et donnees Brain',
+      'Score de closing affiche sur chaque carte prospect du Kanban',
+      'Priorisez vos efforts commerciaux sur les deals les plus susceptibles de closer',
+      'L’ICP s’affine avec vos donnees reelles au fil du temps',
+    ],
+    steps: [
+      { title: 'Generer votre ICP', description: 'Sur la page Pipeline, cliquez sur « Generer mon ICP » — l’IA analyse votre profil et vos deals pour definir votre client ideal.' },
+      { title: 'Lire le profil genere', description: 'L’ICP decrit le secteur, la taille d’entreprise, les douleurs typiques et les signaux d’achat de votre client ideal.' },
+      { title: 'Consulter les scores de closing', description: 'Chaque carte prospect affiche un score (%) indiquant l’adequation avec votre ICP.' },
+      { title: 'Prioriser vos actions', description: 'Concentrez vos relances sur les prospects avec les scores les plus eleves — ils sont les plus proches de votre client ideal.' },
+    ],
+  },
+  {
+    id: 'cold-email',
+    icon: '✉️',
+    title: 'Sequence Cold Email',
+    href: '/agents',
+    isPro: true,
+    summary: 'Generez une sequence de 3 a 5 emails de prospection froide personnalises a votre secteur et votre ICP, prets a copier-coller.',
+    keyPoints: [
+      'Sequence complete : email d’accroche, relance J+3, relance J+7, breakup email',
+      'Ton et contenu adaptes a votre secteur d’activite et votre ICP',
+      'Chaque email a un objet, un corps et un CTA clairs',
+      'Accessible depuis l’agent CRO dans la section CROISSANCE de la sidebar',
+    ],
+    steps: [
+      { title: 'Acceder a l’agent CRO', description: 'Dans la sidebar, section CROISSANCE, cliquez sur « Sequence Email » pour ouvrir l’agent CRO.' },
+      { title: 'Generer la sequence', description: 'Cliquez « Generer une sequence email » — l’IA produit 3 a 5 emails adaptes a votre profil en quelques secondes.' },
+      { title: 'Copier les emails', description: 'Copiez chaque email individuellement et collez-les dans votre outil d’envoi prefere (Gmail, Lemlist, La Growth Machine...).' },
+      { title: 'Personaliser et envoyer', description: 'Ajoutez le nom du prospect et un detail personnel — la personnalisation augmente significativement le taux de reponse.' },
+    ],
+  },
+  {
+    id: 'cmo-linkedin',
+    icon: '💼',
+    title: 'LinkedIn CMO Outreach',
+    href: '/agents',
+    isPro: true,
+    summary: 'Votre CMO IA genere des posts LinkedIn professionnels adaptes a votre audience et publie directement sur votre profil via votre token configure.',
+    keyPoints: [
+      'Post LinkedIn genere avec ton, format et hashtags adaptes a votre secteur',
+      'Publication directe sur LinkedIn depuis Brainlo si le token est configure dans les Parametres',
+      'Accessible depuis la section CROISSANCE de la sidebar',
+      'Oriente acquisition client — different du Generateur LinkedIn standard',
+    ],
+    steps: [
+      { title: 'Configurer votre token LinkedIn', description: 'Dans « Parametres → Integrations », collez votre token LinkedIn personnel (commence par AQV...) pour activer la publication directe.' },
+      { title: 'Acceder au CMO', description: 'Dans la sidebar, section CROISSANCE, cliquez sur « LinkedIn CMO » pour ouvrir l’agent CMO.' },
+      { title: 'Generer un post', description: 'Decrivez votre message cle ou laissez l’IA proposer un post base sur votre actualite business — contenu genere en 10 secondes.' },
+      { title: 'Publier sur LinkedIn', description: 'Cliquez « Publier sur LinkedIn » — le post est envoye directement sur votre profil via l’API LinkedIn.' },
+    ],
+  },
+  {
+    id: 'upgrade',
+    icon: '🚀',
+    title: 'Passer a Solo Pro',
+    href: '/settings',
+    summary: 'Debloquez toutes les fonctionnalites IA avancees en passant a Solo Pro : Focus IA, Agents, Relances, ICP Builder, Cold Email, CMO LinkedIn.',
+    keyPoints: [
+      'Focus IA quotidien — 3 actions prioritaires personnalisees chaque matin',
+      'Agents IA specialises — 2 slots actifs pour CFO, CRO, CMO et autres',
+      'Relances IA, ICP Builder et Sequences Cold Email inclus',
+      'Emails automatiques Daily Focus + rapport mensuel',
+    ],
+    steps: [
+      { title: 'Lancer l’upgrade', description: 'Cliquez sur le bouton « Passer a Solo Pro » visible sur toutes les fonctionnalites bloquees ou dans Parametres.' },
+      { title: 'Payer en securite', description: 'Vous etes redirige vers la page de paiement Stripe securisee — aucune donnee bancaire n’est stockee sur nos serveurs.' },
+      { title: 'Acces immediat', description: 'Des que le paiement est confirme, toutes les fonctionnalites Pro sont debloquees instantanement — pas besoin de reconnexion.' },
+      { title: 'Gerer l’abonnement', description: 'Dans Parametres → Abonnement, cliquez « Gerer mon abonnement » pour modifier ou annuler via le portail Stripe.' },
+    ],
+  },
 ]
 
 export default function WikiPage() {
@@ -435,7 +556,7 @@ export default function WikiPage() {
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-[#2a2a42] text-center">
           <p className="text-sm text-[#4b5563]">
-            Brainlo v1.4.0 — {WIKI_SECTIONS.length} fonctionnalités documentées
+            Brainlo v2.0.0 — {WIKI_SECTIONS.length} fonctionnalités documentées
           </p>
         </div>
       </div>
