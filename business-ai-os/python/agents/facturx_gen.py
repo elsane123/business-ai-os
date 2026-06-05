@@ -4,7 +4,6 @@ Produit un PDF hybride Factur-X profil BASIC (EN 16931).
 """
 from datetime import datetime
 from lxml import etree
-from weasyprint import HTML
 from facturx import generate_from_binary
 from models.schemas import FacturXRequest
 
@@ -338,6 +337,7 @@ def _render_html(req: FacturXRequest) -> str:
 
 async def generate_facturx_pdf(req: FacturXRequest) -> bytes:
     """Genere un PDF Factur-X BASIC : weasyprint + XML CII embarque."""
+    from weasyprint import HTML  # lazy import — evite le crash au demarrage si les libs systeme manquent
     html = _render_html(req)
     pdf_bytes = HTML(string=html).write_pdf()
     xml_bytes = build_cii_xml(req)
