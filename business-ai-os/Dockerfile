@@ -7,8 +7,9 @@ RUN npm ci --production=false
 FROM node:22-slim AS builder
 WORKDIR /app
 RUN apt-get update && apt-get install -y openssl libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+COPY --from=deps /app/node_modules ./node_modules
+RUN rm -rf node_modules/.prisma node_modules/@prisma/client
 RUN npx prisma generate
 RUN npm run build
 
