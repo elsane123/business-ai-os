@@ -188,19 +188,15 @@ test.describe('Authentification', () => {
     // Étape 2 — Profil rapide : secteur, CA mensuel
     const nextBtn = page.getByRole('button', { name: /suivant|continuer|next/i }).first()
     if (await nextBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      // Remplir les champs requis de l'étape 1
-      const nameInput = page.locator('input[name*="name"], input[name*="nom"]').first()
-      if (await nameInput.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        await nameInput.fill('Test Onboarding E2E')
-      }
-      const emailInput = page.locator('input[type="email"]').first()
-      if (await emailInput.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        await emailInput.fill(`onboarding_e2e_${Date.now()}@brainlo.test`)
-      }
-      const pwdInput = page.locator('input[type="password"]').first()
-      if (await pwdInput.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        await pwdInput.fill('TestBrainlo123!')
-      }
+      // Remplir les 5 champs requis — exact:true évite l'ambiguïté entre
+      // 'Mot de passe' et 'Confirmer le mot de passe' (partial match par défaut)
+      await page.getByLabel('Prenom et Nom', { exact: true }).fill('Test Onboarding E2E')
+      await page.getByLabel('Entreprise', { exact: true }).fill('Acme Test SAS')
+      await page.getByLabel('Email professionnel', { exact: true }).fill(`onboarding_e2e_${Date.now()}@brainlo.test`)
+      await page.getByLabel('Mot de passe', { exact: true }).fill('TestBrainlo123!')
+      await page.getByLabel('Confirmer le mot de passe', { exact: true }).fill('TestBrainlo123!')
+      // Attendre que React traite tous les changements d'état et active le bouton
+      await expect(nextBtn).toBeEnabled({ timeout: 3_000 })
       await nextBtn.click()
       await page.waitForTimeout(500)
       // Étape 2 : secteur visible

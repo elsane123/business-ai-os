@@ -374,7 +374,7 @@ export default function ContentPage() {
           </div>
 
           {/* Post list */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1">
             {historyLoading ? (
               <div className="flex items-center justify-center py-12">
                 <svg className="animate-spin h-6 w-6 text-[#4f46e5]" viewBox="0 0 24 24" fill="none">

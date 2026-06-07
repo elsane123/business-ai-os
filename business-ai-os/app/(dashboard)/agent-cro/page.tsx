@@ -223,7 +223,7 @@ export default function AgentCROPage() {
       </div>
 
       {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="flex-1 px-4 py-4 space-y-4">
         {!chatLoading && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-10">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 bg-blue-500/20 text-blue-300">{AGENT_ICON}</div>

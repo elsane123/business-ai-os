@@ -202,7 +202,7 @@ function TaskModal({ task, prefill, prospects, onClose, onSave }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 pointer-events-none">
-      <div className="bg-[#1a1d2e] border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto pointer-events-auto">
+      <div className="bg-[#1a1d2e] border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] pointer-events-auto">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <h2 className="text-lg font-semibold text-white">
             {task ? '✏️ Modifier la tâche' : '✨ Nouvelle tâche'}

@@ -852,7 +852,7 @@ export default function PipelinePage() {
       {/* Edit Prospect Modal */}
       {editProspect && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && setEditProspect(null)}>
-          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl overflow-y-auto max-h-[90vh]">
+          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh]">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-white">✏️ Modifier le prospect</h2>
               <button onClick={() => setEditProspect(null)} className="text-[#6b7280] hover:text-white transition-colors text-xl">✕</button>
@@ -901,7 +901,7 @@ export default function PipelinePage() {
       {/* Add Prospect Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl overflow-y-auto max-h-[90vh]">
+          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh]">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-white">Nouveau prospect</h2>
               <button onClick={() => setShowAddModal(false)} className="text-[#6b7280] hover:text-white transition-colors text-xl">✕</button>
@@ -1022,7 +1022,7 @@ export default function PipelinePage() {
       {/* Relance IA Modal */}
       {relanceProspect && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-xl shadow-2xl overflow-y-auto max-h-[90vh]">
+          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-xl shadow-2xl max-h-[90vh]">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-lg font-semibold text-white">✉ Relance IA</h2>

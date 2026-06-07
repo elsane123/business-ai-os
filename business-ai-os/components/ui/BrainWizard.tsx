@@ -137,7 +137,7 @@ export function BrainWizard({ onComplete }: { onComplete: (score: number) => voi
       {/* Modal overlay */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#0f0f1f] border border-[#2a2a42] rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#0f0f1f] border border-[#2a2a42] rounded-2xl w-full max-w-xl max-h-[90vh] shadow-2xl">
 
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-[#2a2a42]">

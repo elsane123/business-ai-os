@@ -185,7 +185,7 @@ function TransactionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[#2a2a42] sticky top-0 bg-[#151524] z-10">
           <div>

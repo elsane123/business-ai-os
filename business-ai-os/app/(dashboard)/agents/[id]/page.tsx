@@ -308,7 +308,7 @@ export default function AgentChatPage() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="flex-1 px-4 py-4 space-y-4">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-10">
             <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-4 ${styles.icon}`}>

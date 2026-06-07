@@ -138,7 +138,7 @@ export default function ChatPage() {
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
+      <div className="flex-1 px-4 py-6 space-y-1">
         {initialLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="flex gap-1">

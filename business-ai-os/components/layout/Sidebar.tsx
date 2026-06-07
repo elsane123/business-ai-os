@@ -28,16 +28,6 @@ const sectionColors: Record<string, { text: string; bg: string; border: string; 
 
 const navSections: NavSection[] = [
   {
-    id: 'brain',
-    icon: '🧠',
-    label: 'Brain',
-    items: [
-      { icon: '🧠', label: 'Business Brain',      href: '/chat',    isPro: true  },
-      { icon: '👤', label: 'Mon Profil Business', href: '/profile', isPro: false },
-      { icon: '🤖', label: 'Agents IA',           href: '/agents',  isPro: true  },
-    ],
-  },
-  {
     id: 'focus',
     icon: '🎯',
     label: 'Focus',
@@ -53,20 +43,32 @@ const navSections: NavSection[] = [
     label: 'Carburant',
     items: [
       { icon: '📄', label: 'Devis & Factures', href: '/invoices', isPro: false },
-      { icon: '💰', label: 'Cash',              href: '/cash',     isPro: false },
-      { icon: '📊', label: 'Rapports',          href: '/reports',  isPro: false },
+      { icon: '💰', label: 'Cash',             href: '/cash',     isPro: false },
+      { icon: '📊', label: 'Rapport',          href: '/reports',  isPro: false },
+      { icon: '💼', label: 'LinkedIn',         href: '/content',  isPro: true  },
     ],
   },
   {
-    id: 'croissance',
-    icon: '🚀',
-    label: 'Croissance',
+    id: 'brain',
+    icon: '🧠',
+    label: 'Brain',
     items: [
-      { icon: '📣', label: 'Contenu LinkedIn',  href: '/content',          isPro: true  },
-      { icon: '🤝', label: 'Agent Commercial',   href: '/agent-cro',        isPro: true  },
-      { icon: '📣', label: 'Agent Marketing',     href: '/agent-cmo',        isPro: true  },
+      { icon: '🧠', label: 'Business Brain',      href: '/chat',    isPro: true  },
+      { icon: '👤', label: 'Mon Profil Business', href: '/profile', isPro: false },
+      { icon: '🤖', label: 'Agents IA',           href: '/agents',  isPro: true  },
     ],
   },
+  // CROISSANCE — hidden for now
+  // {
+  //   id: 'croissance',
+  //   icon: '🚀',
+  //   label: 'Croissance',
+  //   items: [
+  //     { icon: '📣', label: 'Contenu LinkedIn',  href: '/content',   isPro: true  },
+  //     { icon: '🤝', label: 'Agent Commercial',  href: '/agent-cro', isPro: true  },
+  //     { icon: '📣', label: 'Agent Marketing',   href: '/agent-cmo', isPro: true  },
+  //   ],
+  // },
 ]
 
 interface SidebarProps {
@@ -83,7 +85,7 @@ export default function Sidebar({
   const [collapsed, setCollapsed] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   // All sections open by default
-  const [openSections, setOpenSections] = useState<string[]>(['brain', 'focus', 'carburant', 'croissance'])
+  const [openSections, setOpenSections] = useState<string[]>(['focus', 'carburant', 'brain'])
   // E1.3 — Brain active state
   const [brainScore, setBrainScore] = useState(0)
   const pathname = usePathname()
@@ -143,7 +145,7 @@ export default function Sidebar({
       </div>
 
       {/* Navigation — 3 blocs accordéon */}
-      <nav className="flex-1 px-2 py-3 overflow-y-auto space-y-1.5" aria-label="Navigation principale">
+      <nav className="flex-1 px-2 py-3 space-y-1.5" aria-label="Navigation principale">
         {navSections.map((section) => {
           const colors = sectionColors[section.id]
           const isOpen = openSections.includes(section.id)
