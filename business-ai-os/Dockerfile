@@ -12,7 +12,6 @@ COPY --from=deps /app/node_modules ./node_modules
 RUN rm -rf node_modules/.prisma node_modules/@prisma/client
 RUN npx prisma generate
 RUN rm -f node_modules/.prisma/client/libquery_engine-linux-musl.so.node
-ENV PRISMA_QUERY_ENGINE_LIBRARY=/app/node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node
 RUN npm run build
 
 FROM node:22-slim AS runner
