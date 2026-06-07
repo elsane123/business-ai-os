@@ -5,7 +5,7 @@
 // RecurrenceType: NONE | DAILY | WEEKLY | MONTHLY_START | MONTHLY_END | QUARTERLY | CUSTOM
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["debian-openssl-3.0.x"]
+  binaryTargets = ["debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
