@@ -621,7 +621,7 @@ export default function InvoicesPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && setShowModal(false)}>
-          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-2xl shadow-2xl max-h-[90vh]">
+          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-2xl shadow-2xl overflow-y-auto max-h-[90vh]">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">{modalType === 'quote' ? '📋 Nouveau devis' : '🧾 Nouvelle facture'}</h2>
               <button onClick={() => setShowModal(false)} className="text-[#6b7280] hover:text-white text-2xl leading-none">×</button>
