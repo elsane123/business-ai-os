@@ -131,7 +131,7 @@ export default function FocusStreak() {
       {/* 14-day heatmap */}
       <div>
         <div className="text-[10px] text-[#4a4a6a] uppercase tracking-wide mb-2">14 derniers jours</div>
-        <div className="flex gap-1.5 items-end">
+        <div className="flex gap-1.5 items-end overflow-x-auto pb-1 -mx-1 px-1">
           {data.last14Days.map(day => (
             <DayDot key={day.date} day={day} />
           ))}

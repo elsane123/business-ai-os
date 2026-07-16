@@ -365,6 +365,16 @@ export default function SettingsPage() {
   // ── Save profile ────────────────────────────────────────────────────────────
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault()
+    // PROF-05: validation montants négatifs
+    if (parseFloat(monthlyGoal) < 0 || parseFloat(fixedCharges) < 0) {
+      setProfileMsg({ type: 'error', text: 'Les montants ne peuvent pas être négatifs.' })
+      return
+    }
+    // PROF-07: validation URL LinkedIn
+    if (linkedinUrl && !/^https?:\/\/(www\.)?linkedin\.com\/.+/.test(linkedinUrl.trim())) {
+      setProfileMsg({ type: 'error', text: 'Veuillez saisir une URL LinkedIn valide (ex: https://www.linkedin.com/in/votre-profil)' })
+      return
+    }
     setProfileSaving(true)
     setProfileMsg(null)
     try {

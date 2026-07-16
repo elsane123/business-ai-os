@@ -47,9 +47,23 @@ export async function PATCH(request: NextRequest) {
     if (name !== undefined)         updateData.name = String(name).trim()
     if (businessName !== undefined) updateData.businessName = String(businessName).trim()
     if (sector !== undefined)       updateData.sector = String(sector).trim()
-    if (monthlyGoal !== undefined)  updateData.monthlyGoal = parseFloat(monthlyGoal) || 0
-    if (fixedCharges !== undefined) updateData.fixedCharges = parseFloat(fixedCharges) || 0
-    if (linkedinUrl !== undefined)  updateData.linkedinUrl = String(linkedinUrl).trim()
+    if (monthlyGoal !== undefined) {
+      const goalVal = parseFloat(monthlyGoal)
+      if (isNaN(goalVal) || goalVal < 0) return NextResponse.json({ error: 'Objectif CA invalide : doit être un nombre positif.' }, { status: 400 })
+      updateData.monthlyGoal = goalVal
+    }
+    if (fixedCharges !== undefined) {
+      const chargesVal = parseFloat(fixedCharges)
+      if (isNaN(chargesVal) || chargesVal < 0) return NextResponse.json({ error: 'Charges fixes invalides : doit être un nombre positif.' }, { status: 400 })
+      updateData.fixedCharges = chargesVal
+    }
+    if (linkedinUrl !== undefined) {
+      const urlTrimmed = String(linkedinUrl).trim()
+      if (urlTrimmed !== '' && !/^https?:\/\/(www\.)?linkedin\.com\/.+/.test(urlTrimmed)) {
+        return NextResponse.json({ error: 'URL LinkedIn invalide. Format attendu : https://www.linkedin.com/in/votre-profil' }, { status: 400 })
+      }
+      updateData.linkedinUrl = urlTrimmed
+    }
     if (legalName !== undefined)     updateData.legalName = String(legalName).trim()
     if (address !== undefined)       updateData.address = String(address).trim()
     if (zipCode !== undefined)       updateData.zipCode = String(zipCode).trim()

@@ -136,7 +136,7 @@ section{padding:6rem 2rem}
       <a href="/login" style="color:#94a3b8;font-size:14px;font-weight:500;">Se connecter</a>
       <a href="/assessment" style="color:#94a3b8;font-size:14px;font-weight:500;">Diagnostic IA</a>
       <a href="/fonctionnalites.html" style="color:#818cf8;font-size:14px;font-weight:600;border:1px solid rgba(129,140,248,0.35);padding:6px 14px;border-radius:8px;">🚀 Fonctionnalités</a>
-      <a href="/onboarding" class="btn-nav" style="padding:9px 20px;border-radius:10px;font-size:14px;box-shadow:0 0 16px rgba(99,102,241,0.4);">Commencer</a>
+      <a href="/onboarding" class="btn-nav" style="padding:9px 16px;border-radius:10px;font-size:13px;box-shadow:0 0 16px rgba(99,102,241,0.4);white-space:nowrap;flex-shrink:0;">Commencer</a>
     </div>
   </div>
 </nav>
@@ -344,7 +344,7 @@ section{padding:6rem 2rem}
           <li class="no">Chat Business Brain</li>
           <li class="no">Relances IA</li>
         </ul>
-        <a href="#" class="btn-plan-out">Commencer gratuitement</a>
+        <a href="/onboarding" class="btn-plan-out">Commencer gratuitement</a>
       </div>
 
       <div class="pcard featured">
@@ -361,7 +361,7 @@ section{padding:6rem 2rem}
           <li>Runway calculator 3 scénarios</li>
           <li>LLM Wiki personnel</li>
         </ul>
-        <a href="#" class="btn-plan">Essayer 14 jours gratuits</a>
+        <a href="/onboarding" class="btn-plan">Essayer 14 jours gratuits</a>
       </div>
 
       <div class="pcard">
@@ -377,7 +377,7 @@ section{padding:6rem 2rem}
           <li>Interconnexion CRO &rarr; CFO</li>
           <li class="no">Agent CMO</li>
         </ul>
-        <a href="#" class="btn-plan-out">Contacter l'&eacute;quipe</a>
+        <a href="mailto:contact@brainlo.ai" class="btn-plan-out">Contacter l'&eacute;quipe</a>
       </div>
 
       <div class="pcard">
@@ -393,7 +393,7 @@ section{padding:6rem 2rem}
           <li>Business Review mensuel OS</li>
           <li>Benchmark sectoriel</li>
         </ul>
-        <a href="#" class="btn-plan-out">Contacter l'&eacute;quipe</a>
+        <a href="mailto:contact@brainlo.ai" class="btn-plan-out">Contacter l'&eacute;quipe</a>
       </div>
 
       <div class="pcard">
@@ -409,7 +409,7 @@ section{padding:6rem 2rem}
           <li>Onboarding d&eacute;di&eacute;</li>
           <li>API acc&egrave;s custom</li>
         </ul>
-        <a href="#" class="btn-plan-out">Contacter l'&eacute;quipe</a>
+        <a href="mailto:contact@brainlo.ai" class="btn-plan-out">Contacter l'&eacute;quipe</a>
       </div>
 
     </div>

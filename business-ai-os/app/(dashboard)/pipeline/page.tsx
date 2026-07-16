@@ -19,6 +19,7 @@ interface Prospect {
   value: number
   status: string
   lastContactDate: string | null
+  updatedAt: string
   notes: string | null
   relances: Relance[]
   // Enrichissement
@@ -328,8 +329,8 @@ export default function PipelinePage() {
   const ghostDeals = activeProspects.filter(p => p.lastContactDate !== null && daysSince(p.lastContactDate) >= 14)
   const totalPipelineValue = activeProspects.reduce((s, p) => s + p.value, 0)
   const wonThisMonth = prospects.filter(p => {
-    if (p.status !== 'WON' || !p.lastContactDate) return false
-    const d = new Date(p.lastContactDate)
+    if (p.status !== 'WON') return false
+    const d = new Date(p.updatedAt)
     const now = new Date()
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
   })
@@ -395,6 +396,16 @@ export default function PipelinePage() {
   const handleEditSave = async () => {
     if (!editProspect) return
     if (!editName.trim()) { setEditError('Le nom est requis'); return }
+    // PIP-08: validation email
+    if (editEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editEmail.trim())) {
+      setEditError('Format d\'adresse email invalide (ex: prenom@domaine.com)')
+      return
+    }
+    // PIP-05: validation téléphone
+    if (editPhone && !/^[\+\d\s\-\.\(\)]{7,20}$/.test(editPhone.trim())) {
+      setEditError('Format de téléphone invalide (chiffres, +, espaces, tirets uniquement)')
+      return
+    }
     setEditLoading(true)
     setEditError(null)
     try {
@@ -466,6 +477,16 @@ export default function PipelinePage() {
   const handleAddProspect = async (e: React.FormEvent) => {
     e.preventDefault()
     setAddError(null)
+    // PIP-08: validation format email
+    if (addEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addEmail.trim())) {
+      setAddError('Format d\'adresse email invalide (ex: prenom@domaine.com)')
+      return
+    }
+    // PIP-05: validation format téléphone
+    if (addPhone && !/^[\+\d\s\-\.\(\)]{7,20}$/.test(addPhone.trim())) {
+      setAddError('Format de téléphone invalide (chiffres, +, espaces, tirets uniquement)')
+      return
+    }
     setAddLoading(true)
     try {
       const res = await fetch('/api/pipeline/prospects', {
@@ -857,8 +878,8 @@ export default function PipelinePage() {
 
       {/* Edit Prospect Modal */}
       {editProspect && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && setEditProspect(null)}>
-          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh]">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={e => e.target === e.currentTarget && setEditProspect(null)}>
+          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto my-auto">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-white">✏️ Modifier le prospect</h2>
               <button onClick={() => setEditProspect(null)} className="text-[#6b7280] hover:text-white transition-colors text-xl">✕</button>
@@ -906,8 +927,8 @@ export default function PipelinePage() {
 
       {/* Add Prospect Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh]">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-[#151524] border border-[#2a2a42] rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto my-auto">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-white">Nouveau prospect</h2>
               <button onClick={() => setShowAddModal(false)} className="text-[#6b7280] hover:text-white transition-colors text-xl">✕</button>

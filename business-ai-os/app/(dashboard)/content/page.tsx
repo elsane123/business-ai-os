@@ -409,7 +409,7 @@ export default function ContentPage() {
                         </span>
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDelete(post.id) }}
-                          className="text-[#818cf8] hover:text-red-400 transition-colors text-xs p-0.5 rounded"
+                          className="text-[#818cf8] hover:text-red-400 transition-colors text-xs p-2 rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
                           title="Supprimer"
                         >
                           🗑️
