@@ -239,6 +239,7 @@ function StepIdentity({ formData, update, onNext, onBack }: {
         { icon: '📋', label: 'Pre-remplit vos devis et factures' },
         { icon: '⚡', label: 'Active votre Daily Focus' },
       ]} />
+      <form noValidate onSubmit={e => e.preventDefault()} style={{ display: 'contents' }}>
       <div className="glass-ai" style={{ borderRadius: 20, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           <Field label="Prenom et Nom" value={formData.name} onChange={v => update('name', v)} placeholder="Jean Dupont" />
@@ -260,6 +261,7 @@ function StepIdentity({ formData, update, onNext, onBack }: {
           <p style={{ fontSize: '0.72rem', color: 'rgba(251,113,133,0.8)', marginTop: -10 }}>Les mots de passe ne correspondent pas</p>
         )}
       </div>
+      </form>
       <NavRow onBack={onBack} onNext={onNext} canNext={ok} nextLabel="Continuer" />
     </div>
   )

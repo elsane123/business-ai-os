@@ -292,7 +292,7 @@ export default function AssessmentPage() {
               <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Prénom *</label>
                 <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Jean"
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '2px solid #e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s' }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '2px solid #e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s', color: '#111827', background: '#ffffff' }}
                   onFocus={e => e.currentTarget.style.borderColor = '#4f46e5'}
                   onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
                 />
@@ -300,7 +300,7 @@ export default function AssessmentPage() {
               <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Nom *</label>
                 <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Dupont"
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '2px solid #e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s' }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '2px solid #e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s', color: '#111827', background: '#ffffff' }}
                   onFocus={e => e.currentTarget.style.borderColor = '#4f46e5'}
                   onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
                 />
@@ -309,7 +309,7 @@ export default function AssessmentPage() {
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Email professionnel *</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jean@entreprise.com"
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '2px solid #e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s' }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '2px solid #e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', transition: 'border-color .15s', color: '#111827', background: '#ffffff' }}
                 onFocus={e => e.currentTarget.style.borderColor = '#4f46e5'}
                 onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
               />
