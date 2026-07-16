@@ -257,9 +257,11 @@ export default function PipelinePage() {
   const [icpLoading, setIcpLoading] = useState(false)
   const [icpScores, setIcpScores] = useState<Record<string, { score: number; reason: string }> | null>(null)
   const [icpLowConfidence, setIcpLowConfidence] = useState(false)
+  const [icpError, setIcpError] = useState<string | null>(null)
 
   const handleGenerateICP = async () => {
     setIcpLoading(true)
+    setIcpError(null)
     try {
       const res = await fetch('/api/pipeline/icp/generate', { method: 'POST' })
       const data = await res.json()
@@ -272,6 +274,7 @@ export default function PipelinePage() {
       setIcpLowConfidence(data.lowConfidence ?? false)
     } catch (e) {
       console.error('[ICP Builder]', e)
+      setIcpError(e instanceof Error ? e.message : 'Erreur lors de la génération ICP')
     } finally {
       setIcpLoading(false)
     }
@@ -671,6 +674,9 @@ export default function PipelinePage() {
           >
             {icpLoading ? '⏳ Analyse...' : '🎯 Générer mon ICP'}
           </button>
+          {icpError && (
+            <p className="text-xs text-red-400 mt-2 text-right">⚠️ {icpError}</p>
+          )}
         </div>
       </div>
 

@@ -41,9 +41,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // ── AUTH-09: Vérification verrouillage compte ─────────────────────────────
+    if (user.lockedUntil && user.lockedUntil > new Date()) {
+      const retryAfterSec = Math.ceil((user.lockedUntil.getTime() - Date.now()) / 1000)
+      return NextResponse.json(
+        { error: `Compte temporairement verrouillé. Réessayez dans ${Math.ceil(retryAfterSec / 60)} minute(s).` },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(retryAfterSec) },
+        }
+      )
+    }
+
     const isValid = await comparePassword(password, user.passwordHash)
 
     if (!isValid) {
+      // Incrémenter le compteur d'échecs ; verrouiller 15 min après 5 échecs
+      const newAttempts = user.loginAttempts + 1
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          loginAttempts: newAttempts,
+          lockedUntil: newAttempts >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null,
+        },
+      })
       return NextResponse.json(
         { error: 'Email ou mot de passe incorrect' },
         { status: 401 }
@@ -56,6 +77,12 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       )
     }
+
+    // Réinitialiser le compteur d'échecs après succès
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { loginAttempts: 0, lockedUntil: null },
+    })
 
     const token = await signToken({ userId: user.id, email: user.email, plan: user.plan })
 

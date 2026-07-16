@@ -56,6 +56,8 @@ model User {
   // Admin
   isAdmin            Boolean  @default(false)
   isSuspended        Boolean  @default(false)
+  loginAttempts      Int      @default(0)       // Compteur tentatives échouées (brute force)
+  lockedUntil        DateTime?                  // Verrouillage temporaire après trop d'échecs
   lastActiveAt       DateTime?
   // Statut fiscal auto-entrepreneur
   activityType  String?  @default("SERVICE_BNC") // SERVICE_BNC | SERVICE_BIC | COMMERCE | LIBERAL

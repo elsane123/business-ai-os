@@ -392,6 +392,7 @@ export default function TasksPage() {
   const [prospects, setProspects] = useState<Prospect[]>([])
   const [loading, setLoading] = useState(true)
   const [prioritizing, setPrioritizing] = useState(false)
+  const [prioritizeError, setPrioritizeError] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>()
   const [filterCategory, setFilterCategory] = useState<string>('all')
@@ -451,9 +452,14 @@ export default function TasksPage() {
 
   async function handlePrioritize() {
     setPrioritizing(true)
+    setPrioritizeError(null)
     try {
-      await fetch('/api/tasks/prioritize', { method: 'POST' })
+      const res = await fetch('/api/tasks/prioritize', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Erreur lors de la priorisation')
       loadTasks()
+    } catch (e) {
+      setPrioritizeError(e instanceof Error ? e.message : 'Service de priorisation indisponible')
     } finally {
       setPrioritizing(false)
     }
@@ -499,9 +505,14 @@ export default function TasksPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <button onClick={handlePrioritize} disabled={prioritizing}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-sm font-medium transition-all disabled:opacity-50"
-            >{prioritizing ? '⏳ Analyse...' : '✨ Prioriser'}</button>
+            <div className="flex flex-col items-end gap-1">
+              <button onClick={handlePrioritize} disabled={prioritizing}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-sm font-medium transition-all disabled:opacity-50"
+              >{prioritizing ? '⏳ Analyse...' : '✨ Prioriser'}</button>
+              {prioritizeError && (
+                <p className="text-xs text-red-400">⚠️ {prioritizeError}</p>
+              )}
+            </div>
             <button onClick={() => setShowBriefModal(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-violet-500/20 hover:bg-violet-500/30 border border-violet-500/30 text-violet-300 text-sm font-medium transition-all"
             >✍️ Brief</button>

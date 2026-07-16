@@ -442,8 +442,8 @@ section{padding:6rem 2rem}
     <a href="#features">Fonctionnalit&eacute;s</a>
     <a href="#wiki">LLM Wiki</a>
     <a href="#pricing">Tarifs</a>
-    <a href="#">Mentions l&eacute;gales</a>
-    <a href="#">Confidentialit&eacute;</a>
+    <a href="/mentions-legales">Mentions l&eacute;gales</a>
+    <a href="/confidentialite">Confidentialit&eacute;</a>
     <a href="#">Contact</a>
   </div>
   <p>&copy; 2026 Brainlo &mdash; Con&ccedil;u pour les entrepreneurs qui construisent.</p>

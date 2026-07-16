@@ -55,7 +55,16 @@ export async function PATCH(request: NextRequest) {
     if (zipCode !== undefined)       updateData.zipCode = String(zipCode).trim()
     if (city !== undefined)          updateData.city = String(city).trim()
     if (country !== undefined)       updateData.country = String(country).trim()
-    if (siret !== undefined)         updateData.siret = String(siret).trim()
+    if (siret !== undefined) {
+      const cleanedSiret = String(siret).replace(/\s/g, '')
+      if (cleanedSiret !== '' && !/^\d{14}$/.test(cleanedSiret)) {
+        return NextResponse.json(
+          { error: 'Format SIRET invalide. Le SIRET doit contenir exactement 14 chiffres.' },
+          { status: 400 }
+        )
+      }
+      updateData.siret = cleanedSiret
+    }
     if (legalForm !== undefined)     updateData.legalForm = String(legalForm).trim()
     if (vatNumber !== undefined)     updateData.vatNumber = String(vatNumber).trim()
     if (shareCapital !== undefined)  updateData.shareCapital = String(shareCapital).trim()

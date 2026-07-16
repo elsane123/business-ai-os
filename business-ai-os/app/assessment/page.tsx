@@ -321,6 +321,12 @@ export default function AssessmentPage() {
             <p style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', margin: 0 }}>
               🔒 Aucun spam. Vos données sont confidentielles.
             </p>
+            <p style={{ fontSize: 11, color: '#64748b', textAlign: 'center', margin: 0 }}>
+              En soumettant ce formulaire, vous acceptez notre{' '}
+              <Link href="/confidentialite" target="_blank" style={{ color: '#6366f1', textDecoration: 'underline' }}>
+                Politique de Confidentialité
+              </Link>
+            </p>
           </form>
         </div>
       </div>

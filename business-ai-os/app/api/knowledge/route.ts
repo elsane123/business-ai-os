@@ -67,19 +67,36 @@ export async function POST(req: NextRequest) {
     await copyFile(tmpPath, join(filesDir, `${doc.id}${ext}`))
 
     // Appeler le microservice Python pour extraction
-    const extractRes = await fetch(`${PYTHON_URL}/kb/extract`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_id: user.userId,
-        doc_id: doc.id,
-        doc_name: doc.name,
-        original_filename: file.name,
-        file_path: tmpPath,
-        category,
-        wiki_base_path: WIKI_BASE,
+    let extractRes: Response
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 30000)
+      extractRes = await fetch(`${PYTHON_URL}/kb/extract`, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.userId,
+          doc_id: doc.id,
+          doc_name: doc.name,
+          original_filename: file.name,
+          file_path: tmpPath,
+          category,
+          wiki_base_path: WIKI_BASE,
+        })
       })
-    })
+      clearTimeout(timeout)
+    } catch {
+      await unlink(tmpPath).catch(() => {})
+      await prisma.knowledgeDocument.update({
+        where: { id: doc.id },
+        data: { status: 'ERROR' }
+      })
+      return NextResponse.json(
+        { error: 'Service d\'extraction indisponible. Veuillez réessayer dans quelques instants.' },
+        { status: 503 }
+      )
+    }
 
     const extractData = await extractRes.json()
 

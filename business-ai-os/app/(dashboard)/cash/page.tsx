@@ -598,7 +598,7 @@ export default function CashPage() {
       const res = await fetch(`/api/cash/transactions/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Erreur suppression')
       setTransactions(prev => prev.filter(t => t.id !== id))
-      await fetchRunway()
+      await Promise.all([fetchRunway(), fetchUrssaf()])
     } catch (e) {
       console.error('[cash/page handleDelete]', e)
     } finally {
@@ -666,7 +666,7 @@ export default function CashPage() {
           initial={modalInitial}
           editId={modalEditId}
           onClose={() => setModalMode(null)}
-          onSuccess={async () => { await fetchTransactions(); await fetchRunway() }}
+          onSuccess={async () => { await fetchTransactions(); await fetchRunway(); await fetchUrssaf() }}
         />
       )}
 
