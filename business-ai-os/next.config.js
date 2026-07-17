@@ -8,10 +8,9 @@ const nextConfig = {
   poweredByHeader: false,
 
   // ─── Variables d'environnement ───
-  env: {
-    PYTHON_AGENT_URL: process.env.PYTHON_AGENT_URL || 'http://localhost:8000',
-    WIKI_BASE_PATH: process.env.WIKI_BASE_PATH || './wiki-data',
-  },
+  // NOTE: ne pas mettre PYTHON_AGENT_URL / WIKI_BASE_PATH ici :
+  // next.config.js `env` bake les valeurs au BUILD TIME (process.env non dispo dans docker build)
+  // → les API routes lisent process.env à RUNTIME, ce qui est correct sans ce bloc.
 
   // ─── Headers SEO & Sécurité ───
   async headers() {
