@@ -444,7 +444,7 @@ section{padding:6rem 2rem}
     <a href="#pricing">Tarifs</a>
     <a href="/mentions-legales">Mentions l&eacute;gales</a>
     <a href="/confidentialite">Confidentialit&eacute;</a>
-    <a href="#">Contact</a>
+    <a href="/contact">Contact</a>
   </div>
   <p>&copy; 2026 Brainlo &mdash; Con&ccedil;u pour les entrepreneurs qui construisent.</p>
 </footer>` }} />

@@ -256,9 +256,11 @@ export default function LandingPage() {
       </main>
 
       {/* ═══ FOOTER ═══ */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '32px 24px', textAlign: 'center', color: '#374151', fontSize: 13 }}>
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '32px 24px', textAlign: 'center', color: '#4b5563', fontSize: 13 }}>
         <span>© 2026 Brainlo · Made with ❤️ · </span>
-        <Link href="/privacy" style={{ color: '#374151', textDecoration: 'underline' }}>Politique de confidentialité</Link>
+        <Link href="/mentions-legales" style={{ color: '#4b5563', textDecoration: 'underline', margin: '0 8px' }}>Mentions légales</Link>
+        <Link href="/confidentialite" style={{ color: '#4b5563', textDecoration: 'underline', margin: '0 8px' }}>Confidentialité</Link>
+        <Link href="/contact" style={{ color: '#4b5563', textDecoration: 'underline', margin: '0 8px' }}>Contact</Link>
       </footer>
 
     </div>
