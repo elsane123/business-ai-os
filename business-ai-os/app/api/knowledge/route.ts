@@ -69,6 +69,8 @@ export async function POST(req: NextRequest) {
     // Appeler le microservice Python pour extraction
     let extractRes: Response
     try {
+      console.log('[knowledge] PYTHON_URL:', PYTHON_URL)
+      console.log('[knowledge] tmpPath:', tmpPath)
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(), 30000)
       extractRes = await fetch(`${PYTHON_URL}/kb/extract`, {
@@ -86,7 +88,8 @@ export async function POST(req: NextRequest) {
         })
       })
       clearTimeout(timeout)
-    } catch {
+    } catch (err) {
+      console.error('[knowledge] Python fetch error:', err)
       await unlink(tmpPath).catch(() => {})
       await prisma.knowledgeDocument.update({
         where: { id: doc.id },
